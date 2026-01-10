@@ -1,21 +1,26 @@
 import { createBrowserRouter } from "react-router-dom";
 import App from "../App";
 import NotFound from "../pages/NotFound";
-import Home from "../pages/Home";
+// import Home from "../pages/Home";
 import AdminRoute from "./AdminRoutes";
 import Login from "@/pages/Login";
 import Signup from "@/pages/Signup";
 import AdminDashboard from "@/pages/Dashboard/AdminDashboard";
 import ClientDashboard from "@/pages/Dashboard/ClientDashboard";
+import RoleSelection from "@/pages/RoleSelection";
 
 const routes = createBrowserRouter([
   {
     path: "/",
     element: <App />,
     children: [
+      // {
+      //   path: "/",
+      //   element: <Home />,
+      // },
       {
         path: "/",
-        element: <Home />,
+        element: <RoleSelection />,
       },
       {
         path: "/login",
