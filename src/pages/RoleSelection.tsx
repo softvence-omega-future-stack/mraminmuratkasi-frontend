@@ -1,7 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useNavigate } from "react-router-dom";
 // import { useAuth } from "../context/AuthContext"
-// import Logo from "../components/Logo"
-// import Button from "../components/ui/Button"
 import { ShieldCheck, Users } from "lucide-react";
 import Logo from "../../public/images/authLogo.png";
 
@@ -29,7 +28,7 @@ export default function RoleSelection() {
           Welcome to Unfall Update
         </h1>
 
-        <div className="flex gap-4">
+        <div className="flex flex-col md:flex-row gap-4">
           <AdminCardButton handleAdminClick={handleAdminClick} />
           <ClientCardButton handleClientClick={handleClientClick} />
         </div>
@@ -104,7 +103,7 @@ const ClientCardButton = ({ handleClientClick }: any) => {
 
       {/* Subtitle */}
       <p className="mt-1 text-sm text-gray-500">
-        Manage users and system settings
+        Access services and manage account{" "}
       </p>
     </button>
   );

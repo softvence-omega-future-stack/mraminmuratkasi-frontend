@@ -8,6 +8,12 @@ import Signup from "@/pages/Signup";
 import AdminDashboard from "@/pages/Dashboard/AdminDashboard";
 import ClientDashboard from "@/pages/Dashboard/ClientDashboard";
 import RoleSelection from "@/pages/RoleSelection";
+import ClientSignIn from "@/pages/auth/client/ClientSignIn";
+import ClientSignUp from "@/pages/auth/client/ClientSignUp";
+import ForgotPasswordEmail from "@/pages/auth/forgot-password/ForgotPasswordEmail";
+import ForgotPasswordOTP from "@/pages/auth/forgot-password/ForgotPasswordOTP";
+import ResetPassword from "@/pages/auth/forgot-password/ResetPassword";
+import AdminSignIn from "@/pages/auth/admin/AdminSignIn";
 
 const routes = createBrowserRouter([
   {
@@ -21,6 +27,30 @@ const routes = createBrowserRouter([
       {
         path: "/",
         element: <RoleSelection />,
+      },
+      {
+        path: "/admin/signin",
+        element: <AdminSignIn />,
+      },
+      {
+        path: "/client/signin",
+        element: <ClientSignIn />,
+      },
+      {
+        path: "/client/signup",
+        element: <ClientSignUp />,
+      },
+      {
+        path: "/forgot-password",
+        element: <ForgotPasswordEmail />,
+      },
+      {
+        path: "/forgot-password/verify",
+        element: <ForgotPasswordOTP />,
+      },
+      {
+        path: "reset-password",
+        element: <ResetPassword />,
       },
       {
         path: "/login",
