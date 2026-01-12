@@ -1,0 +1,49 @@
+"use client";
+
+import ClientSidebar from "@/pages/clientDashboard/ClientSidebar";
+import ClientTopNav from "@/pages/clientDashboard/ClientTopNav";
+import type React from "react";
+
+import { useState } from "react";
+// import { useLocation } from "react-router-dom";
+// import { useAuth } from "../../context/AuthContext";
+// import Sidebar from "./Sidebar";
+// import TopNav from "./TopNav";
+
+interface DashboardLayoutProps {
+  children: React.ReactNode;
+}
+
+export default function ClientDashboardLayout({
+  children,
+}: DashboardLayoutProps) {
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [showProfileMenu, setShowProfileMenu] = useState(false);
+  //   const { user } = useAuth();
+  //   const location = useLocation();
+
+  return (
+    <div className="flex flex-col h-screen bg-gray-50 overflow-hidden px-6 pt-3">
+      {/* Top Navigation - Full Width */}
+      <ClientTopNav
+        onMenuClick={() => setSidebarOpen(true)}
+        showProfileMenu={showProfileMenu}
+        setShowProfileMenu={setShowProfileMenu}
+      />
+
+      {/* Main Container - Flex Sidebar and Content */}
+      <div className="flex flex-1 gap-6 overflow-hidden px-6 pt-3">
+        {/* Mobile Sidebar overlay is inside ClientSidebar, but desktop persistent sidebar is here */}
+        <ClientSidebar
+          isOpen={sidebarOpen}
+          onClose={() => setSidebarOpen(false)}
+        />
+
+        {/* Page Content */}
+        <main className="flex-1 overflow-auto">
+          <div className="max-w-7x mx-auto">{children}</div>
+        </main>
+      </div>
+    </div>
+  );
+}

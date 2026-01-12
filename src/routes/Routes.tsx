@@ -1,13 +1,13 @@
 import { createBrowserRouter } from "react-router-dom";
 import App from "../App";
 import NotFound from "../pages/NotFound";
-// import Home from "../pages/Home";
-import AdminRoute from "./AdminRoutes";
 import Login from "@/pages/Login";
 import Signup from "@/pages/Signup";
 import AdminDashboard from "@/pages/Dashboard/AdminDashboard";
 import ClientDashboard from "@/pages/Dashboard/ClientDashboard";
 import RoleSelection from "@/pages/RoleSelection";
+import ClientDashboardLayout from "@/Layout/ClientDashboardLayout";
+import AdminDashboardLayout from "@/Layout/AdminDashboardLayout";
 import ClientSignIn from "@/pages/auth/client/ClientSignIn";
 import ClientSignUp from "@/pages/auth/client/ClientSignUp";
 import ForgotPasswordEmail from "@/pages/auth/forgot-password/ForgotPasswordEmail";
@@ -62,17 +62,26 @@ const routes = createBrowserRouter([
       },
       {
         path: "/admin",
-        element: <AdminRoute />,
+        // element: <AdminRoute />,
         children: [
           {
             path: "",
-            element: <AdminDashboard />,
+            element: (
+              <AdminDashboardLayout>
+                <AdminDashboard />
+              </AdminDashboardLayout>
+            ),
           },
         ],
       },
       {
         path: "client",
-        element: <ClientDashboard />,
+        element: (
+          <ClientDashboardLayout>
+            <ClientDashboard />
+          </ClientDashboardLayout>
+        ),
+        // element: <ClientDashboard />,
       },
     ],
   },
