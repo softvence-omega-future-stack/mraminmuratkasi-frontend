@@ -15,7 +15,7 @@ export default function RoleSelection() {
 
   const handleClientClick = () => {
     // setUserRole("client")
-    navigate("/client/signin");
+    navigate("/admin/signin");
   };
 
   return (

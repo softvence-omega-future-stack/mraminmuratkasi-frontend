@@ -5,7 +5,7 @@ import type React from "react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Logo from "/public/images/authLogo.png";
-import { User, Mail, Phone, Car, Lock, Eye, EyeOff, X } from "lucide-react";
+import { User, Mail, Lock, Eye, EyeOff, X } from "lucide-react";
 
 export default function ClientSignUp() {
   const navigate = useNavigate();
@@ -76,9 +76,9 @@ export default function ClientSignUp() {
         </h1>
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="grid grid-cols-2 gap-5">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             {/* Full Name */}
-            <div>
+            <div className="col-span-2">
               <p className="font-semibold mb-2">
                 Full Name <span className="text-[#FE1B1B]">*</span>
               </p>
@@ -96,45 +96,28 @@ export default function ClientSignUp() {
               </div>
             </div>
 
-            {/* Phone */}
-            <div>
-              <p className="font-semibold mb-2">
-                Phone Number <span className="text-[#FE1B1B]">*</span>
-              </p>
+            {/* Email */}
+            <div className="col-span-2">
+              <p className="font-semibold mb-2">Email Address <span className="text-[#FE1B1B]">*</span></p>
               <div className="relative">
-                <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-[#1878B5]" />
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-[#1878B5]" />
                 <Input
-                  name="phone"
-                  value={formData.phone}
+                  name="email"
+                  type="email"
+                  value={formData.email}
                   onChange={handleChange}
-                  placeholder="Enter phone number"
+                  placeholder="Enter email address"
                   className={`pl-10 py-6 ${
-                    errors.phone ? errorInputStyle : ""
+                    errors.email ? errorInputStyle : ""
                   }`}
                 />
               </div>
             </div>
 
-            {/* Email */}
-            <div>
-              <p className="font-semibold mb-2">Email Address (Optional)</p>
-              <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-[#1878B5]" />
-                <Input
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  placeholder="Enter email address"
-                  className="pl-10 py-6"
-                />
-              </div>
-            </div>
-
             {/* License Plate */}
-            <div>
+            {/* <div className="col-span-2 md:col-span-1">
               <p className="font-semibold mb-2">
-                Car License Plate Number{" "}
-                <span className="text-[#FE1B1B]">*</span>
+                Car License Plate Number <span className="text-[#FE1B1B]">*</span>
               </p>
               <div className="relative">
                 <Car className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-[#1878B5]" />
@@ -148,10 +131,10 @@ export default function ClientSignUp() {
                   }`}
                 />
               </div>
-            </div>
+            </div> */}
 
             {/* Password */}
-            <div>
+            <div className="col-span-2 md:col-span-1">
               <p className="font-semibold mb-2">
                 Password <span className="text-[#FE1B1B]">*</span>
               </p>
@@ -182,7 +165,7 @@ export default function ClientSignUp() {
             </div>
 
             {/* Confirm Password */}
-            <div>
+            <div className="col-span-2 md:col-span-1">
               <p className="font-semibold mb-2">
                 Confirm Password <span className="text-[#FE1B1B]">*</span>
               </p>
@@ -240,7 +223,7 @@ export default function ClientSignUp() {
         <p className="text-center text-[#90969A] text-sm mt-4">
           I have an account.{" "}
           <button
-            onClick={() => navigate("/client/signin")}
+            onClick={() => navigate("/admin/signin")}
             className="text-[#1878B5] hover:underline font-medium cursor-pointer"
           >
             Sign in

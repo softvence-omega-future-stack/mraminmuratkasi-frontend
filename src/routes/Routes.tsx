@@ -14,6 +14,10 @@ import ForgotPasswordEmail from "@/pages/auth/forgot-password/ForgotPasswordEmai
 import ForgotPasswordOTP from "@/pages/auth/forgot-password/ForgotPasswordOTP";
 import ResetPassword from "@/pages/auth/forgot-password/ResetPassword";
 import AdminSignIn from "@/pages/auth/admin/AdminSignIn";
+import ClientChatPage from "@/pages/clientDashboard/ClientChatPage";
+import ClientCasesPage from "@/pages/clientDashboard/ClientCasesPage";
+import ChangePasswordPage from "@/common/ChangePasswordPage";
+import EditProfilePage from "@/common/EditProfilePage";
 
 const routes = createBrowserRouter([
   {
@@ -61,6 +65,14 @@ const routes = createBrowserRouter([
         element: <Signup />,
       },
       {
+        path: "/change-password",
+        element: <ChangePasswordPage />,
+      },
+      {
+        path: "/edit-profile",
+        element: <EditProfilePage />,
+      },
+      {
         path: "/admin",
         // element: <AdminRoute />,
         children: [
@@ -76,12 +88,32 @@ const routes = createBrowserRouter([
       },
       {
         path: "client",
-        element: (
-          <ClientDashboardLayout>
-            <ClientDashboard />
-          </ClientDashboardLayout>
-        ),
-        // element: <ClientDashboard />,
+        children: [
+          {
+            path: "",
+            element: (
+              <ClientDashboardLayout>
+                <ClientDashboard />
+              </ClientDashboardLayout>
+            ),
+          },
+          {
+            path: "chat",
+            element: (
+              // <ClientDashboardLayout>
+              <ClientChatPage />
+              // </ClientDashboardLayout>
+            ),
+          },
+          {
+            path: "cases",
+            element: (
+              // <ClientDashboardLayout>
+              <ClientCasesPage />
+              // </ClientDashboardLayout>
+            ),
+          },
+        ],
       },
     ],
   },

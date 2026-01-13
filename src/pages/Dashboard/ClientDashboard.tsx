@@ -1,4 +1,10 @@
-import { FileText, Calendar, AlertCircle } from "lucide-react";
+import { MoreVertical } from "lucide-react";
+import { cases, getStatusStyles } from "../clientDashboard/ClientCasesPage";
+import activeCaseIcon from "/public/images/activeCaseIcon.png";
+import icon1 from "/public/images/icon1.png";
+import icon2 from "/public/images/icon2.png";
+import icon3 from "/public/images/icon3.png";
+import { Link } from "react-router-dom";
 
 export default function ClientDashboard() {
   const activeCases = [
@@ -27,95 +33,103 @@ export default function ClientDashboard() {
       id: 1,
       title: "Accident Report Filed",
       date: "2024-01-15",
-      icon: <FileText className="w-5 h-5 text-blue-500" />,
+      icon: icon1, // <FileText className="w-5 h-5 text-blue-500" />,
       bg: "bg-blue-50",
     },
     {
       id: 2,
       title: "Court Date Scheduled",
       date: "2024-03-21",
-      icon: <Calendar className="w-5 h-5 text-blue-500" />,
+      icon: icon2, //<Calendar className="w-5 h-5 text-blue-500" />,
       bg: "bg-blue-50",
     },
     {
       id: 3,
       title: "Additional Documents Needed",
       date: "2024-01-12",
-      icon: <AlertCircle className="w-5 h-5 text-blue-500" />,
+      icon: icon3, //<AlertCircle className="w-5 h-5 text-blue-500" />,
       bg: "bg-blue-50",
     },
   ];
 
-  const allCases = [
-    {
-      no: "CASE-2024-001",
-      name: "Speeding Violation 85mph in 55mph",
-      type: "Reckless Driving",
-      created: "Jan 20, 2024",
-      courtDate: "Not Scheduled",
-      status: "In Progress",
-    },
-    {
-      no: "CASE-2024-001",
-      name: "Speeding Violation 85mph in 55mph",
-      type: "Reckless Driving",
-      created: "Jan 20, 2024",
-      courtDate: "Not Scheduled",
-      status: "In Progress",
-    },
-    {
-      no: "CASE-2024-001",
-      name: "Speeding Violation 85mph in 55mph",
-      type: "Reckless Driving",
-      created: "Jan 20, 2024",
-      courtDate: "Not Scheduled",
-      status: "In Progress",
-    },
-    {
-      no: "CASE-2024-001",
-      name: "Speeding Violation 85mph in 55mph",
-      type: "Reckless Driving",
-      created: "Jan 20, 2024",
-      courtDate: "Not Scheduled",
-      status: "In Progress",
-    },
-    {
-      no: "CASE-2024-001",
-      name: "Speeding Violation 85mph in 55mph",
-      type: "Reckless Driving",
-      created: "Jan 20, 2024",
-      courtDate: "Not Scheduled",
-      status: "In Progress",
-    },
-  ];
+  // const allCases = [
+  //   {
+  //     no: "CASE-2024-001",
+  //     name: "Speeding Violation 85mph in 55mph",
+  //     type: "Reckless Driving",
+  //     created: "Jan 20, 2024",
+  //     courtDate: "Not Scheduled",
+  //     status: "In Progress",
+  //   },
+  //   {
+  //     no: "CASE-2024-001",
+  //     name: "Speeding Violation 85mph in 55mph",
+  //     type: "Reckless Driving",
+  //     created: "Jan 20, 2024",
+  //     courtDate: "Not Scheduled",
+  //     status: "In Progress",
+  //   },
+  //   {
+  //     no: "CASE-2024-001",
+  //     name: "Speeding Violation 85mph in 55mph",
+  //     type: "Reckless Driving",
+  //     created: "Jan 20, 2024",
+  //     courtDate: "Not Scheduled",
+  //     status: "In Progress",
+  //   },
+  //   {
+  //     no: "CASE-2024-001",
+  //     name: "Speeding Violation 85mph in 55mph",
+  //     type: "Reckless Driving",
+  //     created: "Jan 20, 2024",
+  //     courtDate: "Not Scheduled",
+  //     status: "In Progress",
+  //   },
+  //   {
+  //     no: "CASE-2024-001",
+  //     name: "Speeding Violation 85mph in 55mph",
+  //     type: "Reckless Driving",
+  //     created: "Jan 20, 2024",
+  //     courtDate: "Not Scheduled",
+  //     status: "In Progress",
+  //   },
+  // ];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 font-inter">
       {/* Top Row: Active Cases & Recent Updates */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
         {/* Active Cases */}
-        <div className="lg:col-span-2 bg-white rounded-2xl shadow-sm p-6">
-          <h3 className="font-bold text-gray-900 mb-4">Active Cases</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div className="bg-white rounded-2xl p-6 shadow-sm">
+          <h3 className="text-lg font-semibold text-black mb-4">
+            Active Cases
+          </h3>
+
+          <div className="flex flex-wrap gap-4">
             {activeCases.map((item, index) => (
               <div
                 key={index}
-                className="bg-blue-50 rounded-xl p-4 flex flex-col items-center text-center"
+                className="bg-[#EAF4FB] rounded-xl p-4 max-w-[190px]"
               >
-                <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center mb-3 shadow-sm text-blue-500">
-                  <FileText className="w-6 h-6" />
-                </div>
-                <p className="text-xs text-gray-500 uppercase tracking-wide">
+                {/* <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center mb-4 shadow-sm"> */}
+                {/* <FileText className="w-5 h-5 text-[#1A73E8]" /> */}
+                <img src={activeCaseIcon} alt="" className="w-12 h-12 mb-8" />
+                {/* </div> */}
+
+                <p className="text-sm text-[#3C3B3B] font-normal mb-1">
                   CASE: {item.id}
                 </p>
-                <h4 className="font-bold text-gray-900 mt-1 mb-2 text-sm leading-tight">
+
+                <h4 className="text-lg font-semibold text-[#3C3B3B] leading-snug">
                   {item.title}
                 </h4>
-                <p className="text-[10px] text-gray-400 mb-3">
+
+                <p className="text-[11px] text-gray-600 font-normal">
                   Last Updated : {item.updated}
                 </p>
-                <span className="px-3 py-1 bg-[#1A73E8] text-white text-[10px] font-medium rounded-full">
-                  {item.status}
+
+                <span className="inline-block px-3 py-1 text-[11px] text-white bg-[#1878B5] font-normal rounded-full mt-8">
+                  in progress
                 </span>
               </div>
             ))}
@@ -123,26 +137,24 @@ export default function ClientDashboard() {
         </div>
 
         {/* Recent Updates */}
-        <div className="bg-white rounded-2xl shadow-sm p-6">
-          <div className="flex justify-between items-center mb-4">
-            <h3 className="font-bold text-gray-900">Recent Updates</h3>
-            <button className="text-blue-500 text-xs font-semibold hover:underline">
-              See all
-            </button>
+        <div className="bg-white rounded-2xl p-6 shadow-sm">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-semibold text-black">Recent Updates</h3>
           </div>
+
           <div className="space-y-3">
             {recentUpdates.map((update) => (
               <div
                 key={update.id}
-                className="flex items-start gap-3 p-3 border border-gray-100 rounded-xl hover:bg-gray-50 transition-colors"
+                className="flex items-start gap-3 p-3 rounded-xl bg-[#F6F6F6] border border-gray-100 hover:bg-gray-50 transition"
               >
-                <div
-                  className={`w-8 h-8 ${update.bg} rounded-lg flex items-center justify-center shrink-0`}
-                >
-                  {update.icon}
+                <div className="w-9 h-9 rounded-lg bg-blue-50 flex items-center justify-center shrink-0">
+                  {/* {update.icon} */}
+                  <img src={update.icon} alt="" />
                 </div>
+
                 <div>
-                  <p className="text-sm font-semibold text-gray-900 leading-tight">
+                  <p className="text-sm font-medium text-gray-900">
                     {update.title}
                   </p>
                   <p className="text-xs text-gray-400 mt-1">{update.date}</p>
@@ -154,7 +166,7 @@ export default function ClientDashboard() {
       </div>
 
       {/* All Cases Table */}
-      <div className="bg-white rounded-2xl shadow-sm p-6">
+      {/* <div className="bg-white rounded-2xl shadow-sm p-6">
         <div className="flex justify-between items-center mb-6">
           <h3 className="font-bold text-gray-900">All Cases</h3>
           <button className="text-blue-500 text-xs font-semibold hover:underline">
@@ -199,6 +211,80 @@ export default function ClientDashboard() {
               ))}
             </tbody>
           </table>
+        </div>
+      </div> */}
+      <div className="p-4 sm:p-6 bg-white rounded-[24px] font-inter">
+        <div className="flex justify-between items-center mb-6">
+          <h3 className="font-bold text-gray-900">All Cases</h3>
+          <Link to="/client/cases">
+            <button className="text-[#1878B5] cursor-pointer text-sm font-semibold hover:underline mr-2">
+              See all
+            </button>
+          </Link>
+        </div>
+
+        {/* Table Container */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+          <div className="overflow-x-auto">
+            <table className="min-w-[900px] w-full border-collapse">
+              <thead className="bg-[#FDFDFD]">
+                <tr className="text-left text-sm font-medium text-gray-500 ">
+                  <th className="px-6 py-4">Case No</th>
+                  <th className="px-6 py-4">Name</th>
+                  <th className="px-6 py-4">Type</th>
+                  <th className="px-6 py-4">Created</th>
+                  <th className="px-6 py-4">Court Date</th>
+                  <th className="px-6 py-4">Status</th>
+                  <th className="px-4 py-4 w-10"></th>
+                </tr>
+              </thead>
+
+              <tbody className="divide-y divide-gray-200 bg-[#F0FAFF] text-gray-900 font-inter">
+                {cases.map((item, index) => (
+                  <tr
+                    key={index}
+                    className="hover:bg-gray-50 transition-colors"
+                  >
+                    <td className="px-6 py-4 text-sm font-medium text-gray-900">
+                      {item.caseNo}
+                    </td>
+
+                    <td className="px-6 py-4 text-sm text-gray-700 max-w-[320px] truncate">
+                      {item.name}
+                    </td>
+
+                    <td className="px-6 py-4 text-sm text-gray-700">
+                      {item.type}
+                    </td>
+
+                    <td className="px-6 py-4 text-sm text-gray-700">
+                      {item.created}
+                    </td>
+
+                    <td className="px-6 py-4 text-sm text-gray-700">
+                      {item.courtDate}
+                    </td>
+
+                    <td className="px-6 py-4">
+                      <span
+                        className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${getStatusStyles(
+                          item.status
+                        )}`}
+                      >
+                        {item.status}
+                      </span>
+                    </td>
+
+                    <td className="px-4 py-4 text-right">
+                      <button className="text-gray-500 hover:text-gray-700">
+                        <MoreVertical className="w-4 h-4" />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>

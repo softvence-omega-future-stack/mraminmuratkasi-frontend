@@ -3,7 +3,7 @@ import { Outlet } from "react-router-dom";
 const Layout: React.FC = () => {
   return (
     <div>
-      <main>
+      <main className="font-inter">
         <Outlet />
       </main>
     </div>

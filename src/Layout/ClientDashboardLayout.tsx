@@ -5,10 +5,6 @@ import ClientTopNav from "@/pages/clientDashboard/ClientTopNav";
 import type React from "react";
 
 import { useState } from "react";
-// import { useLocation } from "react-router-dom";
-// import { useAuth } from "../../context/AuthContext";
-// import Sidebar from "./Sidebar";
-// import TopNav from "./TopNav";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -17,7 +13,7 @@ interface DashboardLayoutProps {
 export default function ClientDashboardLayout({
   children,
 }: DashboardLayoutProps) {
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   //   const { user } = useAuth();
   //   const location = useLocation();
@@ -32,12 +28,30 @@ export default function ClientDashboardLayout({
       />
 
       {/* Main Container - Flex Sidebar and Content */}
-      <div className="flex flex-1 gap-6 overflow-hidden px-6 pt-3">
+      <div className="flex flex-1 gap-6 overflow-hidden px-6 pt-6">
         {/* Mobile Sidebar overlay is inside ClientSidebar, but desktop persistent sidebar is here */}
-        <ClientSidebar
-          isOpen={sidebarOpen}
-          onClose={() => setSidebarOpen(false)}
-        />
+        <div className="hidden lg:block lg:flex-shrink-0">
+          <ClientSidebar
+            isOpen={sidebarOpen}
+            onClose={() => setSidebarOpen(false)}
+          />
+        </div>
+
+        {/* Mobile Sidebar Overlay */}
+        {sidebarOpen && (
+          <div className="fixed inset-0 z-40 lg:hidden">
+            <div
+              className="absolute inset-0 bg-black/50"
+              onClick={() => setSidebarOpen(false)}
+            />
+            <div className="absolute left-0 top-0 h-full w-80 max-w-full">
+              <ClientSidebar
+                isOpen={sidebarOpen}
+                onClose={() => setSidebarOpen(false)}
+              />
+            </div>
+          </div>
+        )}
 
         {/* Page Content */}
         <main className="flex-1 overflow-auto">

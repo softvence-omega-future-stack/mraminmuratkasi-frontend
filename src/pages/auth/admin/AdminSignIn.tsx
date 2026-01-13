@@ -158,7 +158,7 @@ export default function AdminSignIn() {
         <p className="text-center text-gray-600 text-sm mt-4">
           Don't have an account?{" "}
           <button
-            onClick={() => navigate("/admin/signup")}
+            onClick={() => navigate("/client/signup")}
             className="text-[#1878B5] hover:underline font-medium cursor-pointer"
           >
             Sign up

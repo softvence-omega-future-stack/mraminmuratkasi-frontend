@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { Mail, Phone, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+// import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 
 export default function ForgotPasswordEmail() {
   const navigate = useNavigate();
@@ -29,6 +29,7 @@ export default function ForgotPasswordEmail() {
     }, 800);
   };
 
+  console.log(setMethod)
   return (
     <div className="min-h-screen bg-[#1878B5] flex items-center justify-center p-4">
       <div className="bg-white rounded-lg shadow-2xl p-8 max-w-md w-full">
@@ -40,7 +41,7 @@ export default function ForgotPasswordEmail() {
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="flex items-center justify-self-center bg-[#E8F2F8] p-2 rounded-[12px]">
+          {/* <div className="flex items-center justify-self-center bg-[#E8F2F8] p-2 rounded-[12px]">
             <ToggleGroup
               type="single"
               value={method}
@@ -77,7 +78,7 @@ export default function ForgotPasswordEmail() {
                 Phone
               </ToggleGroupItem>
             </ToggleGroup>
-          </div>
+          </div> */}
 
           <div>
             <p className="text-gray-900 text-base font-semibold mb-2">
