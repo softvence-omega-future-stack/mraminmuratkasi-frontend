@@ -191,7 +191,8 @@ ClientTopNavProps) {
               className="flex items-center space-x-3 bg-[#E8F2F8] rounded-full pl-1 pr-2 py-2 hover:bg-gray-200 transition-colors cursor-pointer"
             >
               <img
-                src="/public/images/navProfile.png"
+                // src="/public/images/navProfile.png"
+                src="https://media.istockphoto.com/id/2235903620/photo/happy-50-years-old-business-man-in-suit-standing-in-office-headshot-portrait.webp?a=1&b=1&s=612x612&w=0&k=20&c=2say2ge83Ytw-k3YPSCweS8BcXoira3VoIiZjwGzghQ="
                 alt="Profile"
                 className="w-8 h-8 rounded-full bg-white"
               />

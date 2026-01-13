@@ -28,7 +28,9 @@ const chats: Chat[] = [
   {
     id: 1,
     name: "John Lieberman",
-    avatar: "/public/images/chatImg.png",
+    // avatar: "/public/images/chatImg.png",
+    avatar:
+      "https://plus.unsplash.com/premium_photo-1689977807477-a579eda91fa2?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OXx8cHJvZmlsZXxlbnwwfHwwfHx8MA%3D%3D",
     lastMessage: "How are you doing?",
     time: "2m",
     unread: 2,
@@ -36,7 +38,7 @@ const chats: Chat[] = [
   {
     id: 2,
     name: "Jane Smith",
-    avatar: "/public/images/chatImg2.png",
+    avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8cHJvZmlsZXxlbnwwfHwwfHx8MA%3D%3D",
     lastMessage: "Thanks for your help!",
     time: "1h",
     unread: 0,
@@ -47,7 +49,9 @@ const initialMessages: Message[] = [
   {
     id: 1,
     sender: "John Lieberman",
-    avatar: "/public/images/chatImg.png",
+    // avatar: "/public/images/chatImg.png",
+    avatar:
+      "https://plus.unsplash.com/premium_photo-1689977807477-a579eda91fa2?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OXx8cHJvZmlsZXxlbnwwfHwwfHx8MA%3D%3D",
     text: "Hey there!",
     time: "10:30 AM",
     isOwn: false,
@@ -55,7 +59,9 @@ const initialMessages: Message[] = [
   {
     id: 2,
     sender: "You",
-    avatar: "/public/images/chatImg2.png",
+    // avatar: "/public/images/chatImg2.png",
+    avatar:
+      "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTF8fHByb2ZpbGV8ZW58MHx8MHx8fDA%3D",
     text: "Hi! How are you?",
     time: "10:32 AM",
     isOwn: true,
@@ -63,7 +69,8 @@ const initialMessages: Message[] = [
   {
     id: 3,
     sender: "John Lieberman",
-    avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=john",
+    avatar:
+      "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTZ8fHByb2ZpbGV8ZW58MHx8MHx8fDA%3D",
     text: "How r u doing?",
     time: "10:35 AM",
     isOwn: false,
@@ -83,7 +90,9 @@ export default function ClientChatPage() {
     const message: Message = {
       id: messages.length + 1,
       sender: "You",
-      avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=you",
+      //   avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=you",
+      avatar:
+        "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTF8fHByb2ZpbGV8ZW58MHx8MHx8fDA%3D",
       text: newMessage,
       time: new Date().toLocaleTimeString("en-US", {
         hour: "2-digit",

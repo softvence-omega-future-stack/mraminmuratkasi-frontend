@@ -1,5 +1,6 @@
 import { Edit, PenLine, Home, FileText, MessageCircleMore } from "lucide-react";
 import Logo from "/public/images/authLogo.png";
+// import Logo from "../../../public/images/authLogo.png";
 
 interface SidebarProps {
   isOpen: boolean;
@@ -27,7 +28,11 @@ export default function ClientSidebar({ isOpen, onClose }: SidebarProps) {
           {/* Logo only on mobile for sidebar if needed, but usually redundant if TopNav has it. 
               However, the image shows it in top nav. Let's keep it clean. */}
           <div className="md:hidden self-start mb-6">
-            <img src={Logo} alt="Logo" className="h-8" />
+            <img
+              src={Logo}
+              alt="Logo"
+              className="h-8"
+            />
           </div>
 
           {/* Mobile Navigation */}
@@ -70,7 +75,8 @@ export default function ClientSidebar({ isOpen, onClose }: SidebarProps) {
           <div className="relative mb-4 mt-4">
             <div className="w-[150px] md:w-[340px] md:h-[340px] rounded-full p-1 border-2 border-[#E8F2F8] overflow-hidden">
               <img
-                src="/public/images/sidebarProfile.png"
+                // src="/public/images/sidebarProfile.png"
+                src="https://media.istockphoto.com/id/2235903620/photo/happy-50-years-old-business-man-in-suit-standing-in-office-headshot-portrait.webp?a=1&b=1&s=612x612&w=0&k=20&c=2say2ge83Ytw-k3YPSCweS8BcXoira3VoIiZjwGzghQ="
                 alt="Profile"
                 className="w-full h-full rounded-full object-cover"
               />
