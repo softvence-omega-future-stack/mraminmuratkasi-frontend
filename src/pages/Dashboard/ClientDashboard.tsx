@@ -4,9 +4,14 @@ import activeCaseIcon from "/public/images/activeCaseIcon.png";
 import icon1 from "/public/images/icon1.png";
 import icon2 from "/public/images/icon2.png";
 import icon3 from "/public/images/icon3.png";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function ClientDashboard() {
+  const navigate = useNavigate();
+
+  const handleCaseClick = (caseId: string) => {
+    navigate(`/client/case/${caseId}`, { state: { from: "/client" } });
+  };
   const activeCases = [
     {
       id: "2024-001",
@@ -109,7 +114,8 @@ export default function ClientDashboard() {
             {activeCases.map((item, index) => (
               <div
                 key={index}
-                className="bg-[#EAF4FB] rounded-xl p-4 max-w-[190px]"
+                className="bg-[#EAF4FB] rounded-xl p-4 max-w-[190px] cursor-pointer hover:bg-[#D4E8F8] transition-colors"
+                onClick={() => handleCaseClick(item.id)}
               >
                 {/* <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center mb-4 shadow-sm"> */}
                 {/* <FileText className="w-5 h-5 text-[#1A73E8]" /> */}
@@ -243,7 +249,8 @@ export default function ClientDashboard() {
                 {cases.map((item, index) => (
                   <tr
                     key={index}
-                    className="hover:bg-gray-50 transition-colors"
+                    className="hover:bg-gray-50 transition-colors cursor-pointer"
+                    onClick={() => handleCaseClick(item.caseNo)}
                   >
                     <td className="px-6 py-4 text-sm font-medium text-gray-900">
                       {item.caseNo}

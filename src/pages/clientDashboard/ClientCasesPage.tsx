@@ -147,6 +147,7 @@
 
 import ClientDashboardLayout from "@/Layout/ClientDashboardLayout";
 import { MoreVertical } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 interface CaseItem {
   caseNo: string;
@@ -176,6 +177,12 @@ export const getStatusStyles = (status: CaseItem["status"]) => {
 };
 
 export default function ClientCasesPage() {
+  const navigate = useNavigate();
+
+  const handleCaseClick = (caseNo: string) => {
+    navigate(`/client/case/${caseNo}`, { state: { from: "/client/cases" } });
+  };
+
   return (
     <ClientDashboardLayout>
       <div className="p-4 sm:p-6 bg-white rounded-[24px] font-inter">
@@ -204,7 +211,8 @@ export default function ClientCasesPage() {
                 {cases.map((item, index) => (
                   <tr
                     key={index}
-                    className="hover:bg-gray-50 transition-colors"
+                    className="hover:bg-gray-50 transition-colors cursor-pointer"
+                    onClick={() => handleCaseClick(item.caseNo)}
                   >
                     <td className="px-6 py-4 text-sm font-medium text-gray-900">
                       {item.caseNo}

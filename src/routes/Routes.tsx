@@ -16,6 +16,7 @@ import ResetPassword from "@/pages/auth/forgot-password/ResetPassword";
 import AdminSignIn from "@/pages/auth/admin/AdminSignIn";
 import ClientChatPage from "@/pages/clientDashboard/ClientChatPage";
 import ClientCasesPage from "@/pages/clientDashboard/ClientCasesPage";
+import ClientCaseDetails from "@/pages/clientDashboard/ClientCaseDetails";
 import ChangePasswordPage from "@/common/ChangePasswordPage";
 import EditProfilePage from "@/common/EditProfilePage";
 
@@ -112,6 +113,10 @@ const routes = createBrowserRouter([
               <ClientCasesPage />
               // </ClientDashboardLayout>
             ),
+          },
+          {
+            path: "case/:id",
+            element: <ClientCaseDetails />,
           },
         ],
       },

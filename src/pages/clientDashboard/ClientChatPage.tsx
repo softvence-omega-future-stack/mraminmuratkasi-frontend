@@ -118,8 +118,8 @@ export default function ClientChatPage() {
 
   return (
     <ClientDashboardLayout>
-      <div className=" bg-white rounded-[24px] p-6 font-inter">
-        <h2 className="text-lg font-semibold text-black mb-6 font-inter">
+      <div className=" bg-white rounded-[24px] p-6">
+        <h2 className="text-lg font-semibold text-black mb-6">
           Chats
         </h2>
         <div className="flex gap-6 h-[calc(100vh-250px)]">

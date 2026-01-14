@@ -1,4 +1,4 @@
-import { Edit, PenLine, Home, FileText, MessageCircleMore } from "lucide-react";
+import { Edit, PenLine, Home, FileText, MessageCircleMore, Sun } from "lucide-react";
 import Logo from "/public/images/authLogo.png";
 // import Logo from "../../../public/images/authLogo.png";
 
@@ -87,7 +87,7 @@ export default function ClientSidebar({ isOpen, onClose }: SidebarProps) {
             Hi, Wade Warren
           </h2>
           <p className="text-gray-700 flex items-center justify-center gap-1 mt-1 font-normal">
-            <span>☀️</span> Good Morning
+            <span><Sun className="w-5 h-5 text-[#F4B402]" /></span> Good Morning
           </p>
 
           <button className="mt-4 flex items-center gap-2 text-[#1878B5] bg-[#F6F6F6] px-7 py-3 rounded-[30px] text-sm font-semibold hover:bg-blue-100 transition-colors justify-center cursor-pointer">
