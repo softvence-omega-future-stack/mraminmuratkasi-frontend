@@ -1,6 +1,8 @@
-import { Edit, PenLine, Home, FileText, MessageCircleMore, Sun } from "lucide-react";
+import { Edit, PenLine, Home, FileText, MessageCircleMore, Sun, Moon } from "lucide-react";
 import Logo from "/public/images/authLogo.png";
-// import Logo from "../../../public/images/authLogo.png";
+import { useNavigate } from "react-router-dom";
+import { useGetProfileQuery } from "@/redux/api/authApi";
+import { useEffect, useState } from "react";
 
 interface SidebarProps {
   isOpen: boolean;
@@ -8,6 +10,23 @@ interface SidebarProps {
 }
 
 export default function ClientSidebar({ isOpen, onClose }: SidebarProps) {
+  const navigate = useNavigate();
+  const { data: profileData } = useGetProfileQuery(undefined);
+  const user = profileData?.data;
+
+  const [greeting, setGreeting] = useState({ text: "", icon: <Sun className="w-5 h-5 text-[#F4B402]" /> });
+
+  useEffect(() => {
+    const hour = new Date().getHours();
+    if (hour < 12) {
+      setGreeting({ text: "Good Morning", icon: <Sun className="w-5 h-5 text-[#F4B402]" /> });
+    } else if (hour < 18) {
+      setGreeting({ text: "Good Afternoon", icon: <Sun className="w-5 h-5 text-[#F4B402]" /> });
+    } else {
+      setGreeting({ text: "Good Evening", icon: <Moon className="w-5 h-5 text-[#1878B5]" /> });
+    }
+  }, []);
+
   return (
     <>
       {/* Mobile overlay */}
@@ -25,8 +44,7 @@ export default function ClientSidebar({ isOpen, onClose }: SidebarProps) {
         }`}
       >
         <div className="bg-white rounded-2xl shadow-sm p-6 text-center flex flex-col items-center border border-gray-100 md:border-none h-full overflow-y-auto">
-          {/* Logo only on mobile for sidebar if needed, but usually redundant if TopNav has it. 
-              However, the image shows it in top nav. Let's keep it clean. */}
+          {/* Logo only on mobile for sidebar if needed */}
           <div className="md:hidden self-start mb-6">
             <img
               src={Logo}
@@ -35,48 +53,11 @@ export default function ClientSidebar({ isOpen, onClose }: SidebarProps) {
             />
           </div>
 
-          {/* Mobile Navigation */}
-          <div className="md:hidden flex justify-around w-full border-t border-gray-200 bg-white">
-            <button
-              onClick={() => {
-                // Navigate to home
-                onClose();
-                window.location.href = "/client";
-              }}
-              className="flex flex-col items-center p-2 text-gray-600 hover:text-[#1878B5] transition-colors"
-            >
-              <Home className="w-5 h-5 mb-1" />
-              <span className="text-xs">Home</span>
-            </button>
-            <button
-              onClick={() => {
-                // Navigate to cases
-                onClose();
-                window.location.href = "/client/cases";
-              }}
-              className="flex flex-col items-center p-2 text-gray-600 hover:text-[#1878B5] transition-colors"
-            >
-              <FileText className="w-5 h-5 mb-1" />
-              <span className="text-xs">Cases</span>
-            </button>
-            <button
-              onClick={() => {
-                // Navigate to chat
-                onClose();
-                window.location.href = "/client/chat";
-              }}
-              className="flex flex-col items-center p-2 text-gray-600 hover:text-[#1878B5] transition-colors"
-            >
-              <MessageCircleMore className="w-5 h-5 mb-1" />
-              <span className="text-xs">Chat</span>
-            </button>
-          </div>
-
+          {/* Profile Section */}
           <div className="relative mb-4 mt-4">
             <div className="w-[150px] md:w-[340px] md:h-[340px] rounded-full p-1 border-2 border-[#E8F2F8] overflow-hidden">
               <img
-                // src="/public/images/sidebarProfile.png"
-                src="https://media.istockphoto.com/id/2235903620/photo/happy-50-years-old-business-man-in-suit-standing-in-office-headshot-portrait.webp?a=1&b=1&s=612x612&w=0&k=20&c=2say2ge83Ytw-k3YPSCweS8BcXoira3VoIiZjwGzghQ="
+                src={user?.img || "https://media.istockphoto.com/id/2235903620/photo/happy-50-years-old-business-man-in-suit-standing-in-office-headshot-portrait.webp?a=1&b=1&s=612x612&w=0&k=20&c=2say2ge83Ytw-k3YPSCweS8BcXoira3VoIiZjwGzghQ="}
                 alt="Profile"
                 className="w-full h-full rounded-full object-cover"
               />
@@ -84,13 +65,16 @@ export default function ClientSidebar({ isOpen, onClose }: SidebarProps) {
           </div>
 
           <h2 className="text-[22px] font-semibold text-gray-900">
-            Hi, Wade Warren
+            Hi, {user?.name || "User"}
           </h2>
           <p className="text-gray-700 flex items-center justify-center gap-1 mt-1 font-normal">
-            <span><Sun className="w-5 h-5 text-[#F4B402]" /></span> Good Morning
+            <span>{greeting.icon}</span> {greeting.text}
           </p>
 
-          <button className="mt-4 flex items-center gap-2 text-[#1878B5] bg-[#F6F6F6] px-7 py-3 rounded-[30px] text-sm font-semibold hover:bg-blue-100 transition-colors justify-center cursor-pointer">
+          <button 
+            onClick={() => navigate("/edit-profile")}
+            className="mt-4 flex items-center gap-2 text-[#1878B5] bg-[#F6F6F6] px-7 py-3 rounded-[30px] text-sm font-semibold hover:bg-blue-100 transition-colors justify-center cursor-pointer"
+          >
             <PenLine className="w-4 h-4 mb-1" />
             Edit Profile
           </button>

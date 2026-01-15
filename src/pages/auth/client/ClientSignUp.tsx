@@ -1,20 +1,20 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import type React from "react";
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Logo from "/public/images/authLogo.png";
-import { User, Mail, Lock, Eye, EyeOff, X } from "lucide-react";
+import { User, Mail, Lock, Eye, EyeOff, X, Phone } from "lucide-react";
+import { useCreateUserMutation } from "@/redux/api/authApi";
 
 export default function ClientSignUp() {
   const navigate = useNavigate();
+  const [createUser, { isLoading }] = useCreateUserMutation();
 
   const [formData, setFormData] = useState({
-    fullName: "",
+    name: "",
     phone: "",
     email: "",
-    licensePlate: "",
     password: "",
     confirmPassword: "",
   });
@@ -29,9 +29,9 @@ export default function ClientSignUp() {
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
 
-    if (!formData.fullName.trim()) newErrors.fullName = "required";
+    if (!formData.name.trim()) newErrors.name = "required";
     if (!formData.phone.trim()) newErrors.phone = "required";
-    if (!formData.licensePlate.trim()) newErrors.licensePlate = "required";
+    if (!formData.email.trim()) newErrors.email = "required";
     if (!formData.password) newErrors.password = "required";
     if (!formData.confirmPassword) newErrors.confirmPassword = "required";
 
@@ -59,19 +59,37 @@ export default function ClientSignUp() {
     setSubmitError("");
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validateForm()) return;
+
+    const dataObj = {
+      name: formData.name,
+      email: formData.email,
+      phone: formData.phone,
+      password: formData.password,
+      confirmPassword: formData.confirmPassword,
+    };
+
+    const payload = new FormData();
+    payload.append("data", JSON.stringify(dataObj));
+
+    try {
+      await createUser(payload).unwrap();
+      navigate("/client/signin");
+    } catch (err: any) {
+      setSubmitError(err?.data?.message || "Failed to sign up");
+    }
   };
 
   return (
     <div className="min-h-screen bg-[#1878B5] flex items-center justify-center p-4">
-      <div className="bg-white rounded-lg shadow-2xl max-w-[720px] w-full p-14">
+      <div className="bg-white rounded-lg shadow-2xl max-w-[720px] w-full p-10 md:p-14">
         <div className="flex justify-center">
-          <img src={Logo} alt="Logo" />
+          <img src={Logo} alt="Logo" className="h-12 w-auto" />
         </div>
 
-        <h1 className="text-3xl font-bold text-center text-[#1878B5] my-8">
+        <h1 className="text-3xl font-bold text-center text-[#1878B5] my-6 md:my-8 text-[32px]">
           Sign Up
         </h1>
 
@@ -85,12 +103,12 @@ export default function ClientSignUp() {
               <div className="relative">
                 <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-[#1878B5]" />
                 <Input
-                  name="fullName"
-                  value={formData.fullName}
+                  name="name"
+                  value={formData.name}
                   onChange={handleChange}
                   placeholder="Enter full name"
                   className={`pl-10 py-6 ${
-                    errors.fullName ? errorInputStyle : ""
+                    errors.name ? errorInputStyle : ""
                   }`}
                 />
               </div>
@@ -114,24 +132,22 @@ export default function ClientSignUp() {
               </div>
             </div>
 
-            {/* License Plate */}
-            {/* <div className="col-span-2 md:col-span-1">
-              <p className="font-semibold mb-2">
-                Car License Plate Number <span className="text-[#FE1B1B]">*</span>
-              </p>
+            {/* Phone */}
+            <div className="col-span-2">
+              <p className="font-semibold mb-2">Phone Number <span className="text-[#FE1B1B]">*</span></p>
               <div className="relative">
-                <Car className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-[#1878B5]" />
+                <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-[#1878B5]" />
                 <Input
-                  name="licensePlate"
-                  value={formData.licensePlate}
+                  name="phone"
+                  value={formData.phone}
                   onChange={handleChange}
-                  placeholder="Enter license plate number"
+                  placeholder="Enter phone number"
                   className={`pl-10 py-6 ${
-                    errors.licensePlate ? errorInputStyle : ""
+                    errors.phone ? errorInputStyle : ""
                   }`}
                 />
               </div>
-            </div> */}
+            </div>
 
             {/* Password */}
             <div className="col-span-2 md:col-span-1">
@@ -198,7 +214,7 @@ export default function ClientSignUp() {
 
           {/* Error Message */}
           {submitError && (
-            <div className="flex justify-between bg-[#FFECE6] rounded-md">
+            <div className="flex justify-between bg-[#FFECE6] rounded-md transition-all">
               <div className="px-4 py-3">
                 <p className="text-[#FE1B1B] font-semibold">
                   Failed to sign up
@@ -208,22 +224,25 @@ export default function ClientSignUp() {
               <button
                 type="button"
                 onClick={() => setSubmitError("")}
-                className="px-[18px] py-[12px]"
+                className="px-4 py-2 cursor-pointer"
               >
                 <X className="w-4 h-4 text-[#FE1B1B]" />
               </button>
             </div>
           )}
 
-          <Button className="w-full bg-[#1878B5] py-5 hover:bg-[#1878D9] cursor-pointer">
-            Sign Up
+          <Button 
+            disabled={isLoading}
+            className="w-full bg-[#1878B5] py-5 hover:bg-[#1878D9] cursor-pointer text-base font-semibold"
+          >
+            {isLoading ? "Signing Up..." : "Sign Up"}
           </Button>
         </form>
 
-        <p className="text-center text-[#90969A] text-sm mt-4">
+        <p className="text-center text-[#90969A] text-sm mt-6">
           I have an account.{" "}
           <button
-            onClick={() => navigate("/admin/signin")}
+            onClick={() => navigate("/client/signin")}
             className="text-[#1878B5] hover:underline font-medium cursor-pointer"
           >
             Sign in

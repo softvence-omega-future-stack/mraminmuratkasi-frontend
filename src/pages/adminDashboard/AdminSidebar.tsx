@@ -1,7 +1,10 @@
 "use client";
 
-import { Edit } from "lucide-react";
+import { Edit, Sun, Moon, PenLine } from "lucide-react";
 import Logo from "/public/images/authLogo.png";
+import { useGetProfileQuery } from "@/redux/api/authApi";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 interface SidebarProps {
   isOpen: boolean;
@@ -9,6 +12,23 @@ interface SidebarProps {
 }
 
 export default function AdminSidebar({ isOpen, onClose }: SidebarProps) {
+  const navigate = useNavigate();
+  const { data: profileData } = useGetProfileQuery(undefined);
+  const user = profileData?.data;
+
+  const [greeting, setGreeting] = useState({ text: "", icon: <Sun className="w-5 h-5 text-[#F4B402]" /> });
+
+  useEffect(() => {
+    const hour = new Date().getHours();
+    if (hour < 12) {
+      setGreeting({ text: "Good Morning", icon: <Sun className="w-5 h-5 text-[#F4B402]" /> });
+    } else if (hour < 18) {
+      setGreeting({ text: "Good Afternoon", icon: <Sun className="w-5 h-5 text-[#F4B402]" /> });
+    } else {
+      setGreeting({ text: "Good Evening", icon: <Moon className="w-5 h-5 text-[#1878B5]" /> });
+    }
+  }, []);
+
   return (
     <>
       {/* Mobile overlay */}
@@ -25,7 +45,7 @@ export default function AdminSidebar({ isOpen, onClose }: SidebarProps) {
           isOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
         }`}
       >
-        <div className="bg-white rounded-2xl shadow-sm p-6 text-center h-full flex flex-col items-center border border-gray-100 md:border-none">
+        <div className="bg-white rounded-2xl shadow-sm p-6 text-center h-full flex flex-col items-center border border-gray-100 md:border-none overflow-y-auto">
           <div className="md:hidden self-start mb-6">
             <img src={Logo} alt="Logo" className="h-8" />
           </div>
@@ -33,21 +53,26 @@ export default function AdminSidebar({ isOpen, onClose }: SidebarProps) {
           <div className="relative mb-4 mt-4">
             <div className="w-32 h-32 rounded-full p-1 border-2 border-blue-100 overflow-hidden">
               <img
-                src="https://api.dicebear.com/7.x/avataaars/svg?seed=Admin"
+                src={user?.img || "https://api.dicebear.com/7.x/avataaars/svg?seed=Admin"}
                 alt="Profile"
                 className="w-full h-full rounded-full object-cover"
               />
             </div>
           </div>
 
-          <h2 className="text-xl font-bold text-gray-900">Admin Panel</h2>
-          <p className="text-blue-500 flex items-center justify-center gap-1 mt-1 text-sm font-medium">
-            Active System
+          <h2 className="text-xl font-bold text-gray-900">
+            Hi, {user?.name || "Admin"}
+          </h2>
+          <p className="text-[#1878B5] flex items-center justify-center gap-1 mt-1 text-sm font-medium">
+            <span>{greeting.icon}</span> {greeting.text}
           </p>
 
-          <button className="mt-4 flex items-center gap-2 text-blue-500 bg-blue-50 px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-100 transition-colors w-full justify-center">
-            <Edit className="w-4 h-4" />
-            Admin Settings
+          <button 
+            onClick={() => navigate("/edit-profile")}
+            className="mt-4 flex items-center gap-2 text-[#1878B5] bg-blue-50 px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-100 transition-colors w-full justify-center cursor-pointer"
+          >
+            <PenLine className="w-4 h-4" />
+            Edit Profile
           </button>
 
           <div className="mt-8 w-full bg-[#1A73E8] rounded-2xl p-6 text-white text-left overflow-hidden relative">
