@@ -21,11 +21,9 @@ import HomePage from "@/pages/adminDashboard/HomePage";
 import Login from "@/pages/Login";
 import RoleSelection from "@/pages/RoleSelection";
 import Signup from "@/pages/Signup";
-import { createBrowserRouter } from "react-router-dom";
+import { createBrowserRouter, Outlet } from "react-router-dom";
 import App from "../App";
 import NotFound from "../pages/NotFound";
-
-import { Outlet } from "react-router-dom";
 import ProtectedRoute from "./ProtectedRoute";
 
 const routes = createBrowserRouter([
@@ -62,7 +60,7 @@ const routes = createBrowserRouter([
         element: <ForgotPasswordOTP />,
       },
       {
-        path: "/reset-password",
+        path: "reset-password",
         element: <ResetPassword />,
       },
       {
@@ -84,10 +82,28 @@ const routes = createBrowserRouter([
       {
         path: "/admin",
         element: <AdminDashboardLayout />,
+
         children: [
           {
             path: "",
             element: <HomePage />,
+          },
+
+          {
+            path: "cases",
+            element: <AdminCasesPage />,
+          },
+          {
+            path: "cases/:id",
+            element: <AdminCaseDetails />,
+          },
+          {
+            path: "client",
+            element: <AllClients />,
+          },
+          {
+            path: "chat",
+            element: <AdminChatPage />,
           },
 
           {
