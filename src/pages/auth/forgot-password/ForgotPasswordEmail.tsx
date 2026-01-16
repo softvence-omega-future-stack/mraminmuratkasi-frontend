@@ -21,8 +21,9 @@ export default function ForgotPasswordEmail() {
 
     try {
       const response = await forgotPassword({ email }).unwrap();
-      // Assuming response contains a token for the next steps
-      const token = response?.data?.approvalToken || response?.approvalToken;
+      // Supporting multiple possible token field names from backend
+      // Added response?.body?.token based on provided API response structure
+      const token = response?.body?.token || response?.token || response?.data?.token || response?.data?.approvalToken || response?.approvalToken;
       navigate("/forgot-password/verify", { state: { email, token } });
     } catch (err: any) {
       setError(err?.data?.message || "Something went wrong. Please try again.");

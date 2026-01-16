@@ -20,6 +20,9 @@ import ClientCaseDetails from "@/pages/clientDashboard/CaseDetails";
 import ChangePasswordPage from "@/common/ChangePasswordPage";
 import EditProfilePage from "@/common/EditProfilePage";
 
+import ProtectedRoute from "./ProtectedRoute";
+import { Outlet } from "react-router-dom";
+
 const routes = createBrowserRouter([
   {
     path: "/",
@@ -75,7 +78,11 @@ const routes = createBrowserRouter([
       },
       {
         path: "/admin",
-        // element: <AdminRoute />,
+        element: (
+          <ProtectedRoute role="admin">
+            <Outlet />
+          </ProtectedRoute>
+        ),
         children: [
           {
             path: "",
@@ -89,6 +96,11 @@ const routes = createBrowserRouter([
       },
       {
         path: "client",
+        element: (
+          <ProtectedRoute role="user">
+            <Outlet />
+          </ProtectedRoute>
+        ),
         children: [
           {
             path: "",

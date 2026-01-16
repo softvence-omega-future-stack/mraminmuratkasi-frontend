@@ -2,9 +2,11 @@
 
 import { Edit, Sun, Moon, PenLine } from "lucide-react";
 import Logo from "/public/images/authLogo.png";
-import { useGetProfileQuery } from "@/redux/api/authApi";
+import { useGetProfileQuery, useLogOutMutation } from "@/redux/api/authApi";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAppDispatch } from "@/redux/hooks";
+import { logout } from "@/redux/features/auth/authSlice";
 
 interface SidebarProps {
   isOpen: boolean;
@@ -13,6 +15,8 @@ interface SidebarProps {
 
 export default function AdminSidebar({ isOpen, onClose }: SidebarProps) {
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+  const [logOut] = useLogOutMutation();
   const { data: profileData } = useGetProfileQuery(undefined);
   const user = profileData?.data;
 
@@ -28,6 +32,18 @@ export default function AdminSidebar({ isOpen, onClose }: SidebarProps) {
       setGreeting({ text: "Good Evening", icon: <Moon className="w-5 h-5 text-[#1878B5]" /> });
     }
   }, []);
+
+  const handleLogout = async () => {
+    try {
+      await logOut(undefined).unwrap();
+    } catch (err) {
+      console.error("Logout failed:", err);
+    } finally {
+      dispatch(logout());
+      localStorage.removeItem("token");
+      navigate("/");
+    }
+  };
 
   return (
     <>
@@ -94,7 +110,10 @@ export default function AdminSidebar({ isOpen, onClose }: SidebarProps) {
           </div>
 
           <div className="mt-auto w-full pt-6">
-            <button className="w-full py-3 bg-gray-50 text-gray-600 font-medium rounded-xl hover:bg-gray-100 transition-colors">
+            <button 
+              onClick={handleLogout}
+              className="w-full py-3 bg-gray-50 text-gray-600 font-medium rounded-xl hover:bg-gray-100 transition-colors cursor-pointer"
+            >
               Log Out
             </button>
           </div>

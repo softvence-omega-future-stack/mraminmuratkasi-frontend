@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { useGetProfileQuery } from "@/redux/api/authApi";
+import { useGetProfileQuery, useLogOutMutation } from "@/redux/api/authApi";
 import { useAppDispatch } from "@/redux/hooks";
 import { logout } from "@/redux/features/auth/authSlice";
 import { useState } from "react";
@@ -14,16 +14,23 @@ interface AdminTopNavProps {
 export default function AdminTopNav({ onMenuClick }: AdminTopNavProps) {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
+  const [logOut] = useLogOutMutation();
   const { data: profileData } = useGetProfileQuery(undefined);
   const user = profileData?.data;
 
   const [showNotifications, setShowNotifications] = useState(false);
   const [showAccountMenu, setShowAccountMenu] = useState(false);
 
-  const handleLogout = () => {
-    dispatch(logout());
-    localStorage.removeItem("token");
-    navigate("/");
+  const handleLogout = async () => {
+    try {
+      await logOut(undefined).unwrap();
+    } catch (err) {
+      console.error("Logout failed:", err);
+    } finally {
+      dispatch(logout());
+      localStorage.removeItem("token");
+      navigate("/");
+    }
   };
 
   const notifications = [

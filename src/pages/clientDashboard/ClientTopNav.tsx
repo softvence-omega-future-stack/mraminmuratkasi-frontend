@@ -1,5 +1,5 @@
 import { useNavigate, useLocation } from "react-router-dom";
-import { useGetProfileQuery } from "@/redux/api/authApi";
+import { useGetProfileQuery, useLogOutMutation } from "@/redux/api/authApi";
 import { useAppDispatch } from "@/redux/hooks";
 import { logout } from "@/redux/features/auth/authSlice";
 import { useState } from "react";
@@ -12,7 +12,7 @@ import {
   SquarePen,
   LockKeyhole,
   MessageSquareDot,
-  User,
+  LogOut,
 } from "lucide-react";
 import NotificationModal from "@/common/NotificationModal";
 
@@ -38,10 +38,18 @@ export default function ClientTopNav({
     return location.pathname === path;
   };
 
-  const handleLogout = () => {
-    dispatch(logout());
-    localStorage.removeItem("token");
-    navigate("/");
+  const [logOut] = useLogOutMutation();
+
+  const handleLogout = async () => {
+    try {
+      await logOut(undefined).unwrap();
+    } catch (err) {
+      console.error("Logout failed:", err);
+    } finally {
+      dispatch(logout());
+      localStorage.removeItem("token");
+      navigate("/");
+    }
   };
 
   // const notifications = [
@@ -239,10 +247,10 @@ export default function ClientTopNav({
                     </div>
                     <button
                       onClick={handleLogout}
-                      className="w-full flex items-center space-x-2 px-3 py-4 text-sm text-[#FE1B1B] hover:bg-gray-50 rounded transition-colors border-t border-t-gray-50 cursor-pointer"
+                      className="w-full flex items-center space-x-2 px-3 py-4 text-sm text-[#FE1B1B] hover:bg-gray-50 rounded transition-colors border-t border-t-gray-50 cursor-pointer font-medium"
                     >
-                      <User className="w-4 h-4" />
-                      <span>Delete Account</span>
+                      <LogOut className="w-4 h-4" />
+                      <span>Log Out</span>
                     </button>
                   </div>
                 </div>

@@ -1,6 +1,6 @@
 import type React from "react";
-import { useState } from "react";
-import { useNavigate, useLocation, Navigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import OTPInput from "@/components/ui/OTPInput";
@@ -15,8 +15,14 @@ export default function ForgotPasswordOTP() {
   const [verifyOTP, { isLoading: isVerifying }] = useVerifyOTPMutation();
   const [resendOTP, { isLoading: isResending }] = useResendOTPMutation();
 
+  useEffect(() => {
+    if (!email || !token) {
+      navigate("/forgot-password", { replace: true });
+    }
+  }, [email, token, navigate]);
+
   if (!email || !token) {
-    return <Navigate to="/forgot-password" replace />;
+    return null;
   }
 
   const handleSubmit = async (e: React.FormEvent) => {

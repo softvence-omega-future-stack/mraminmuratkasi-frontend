@@ -63,9 +63,9 @@ export default function ClientSignIn() {
       // Redirect based on role after 1.5 seconds
       setTimeout(() => {
         if (res.user.role === "admin") {
-          navigate("/admin/dashboard");
+          navigate("/admin");
         } else {
-          navigate("/client/dashboard");
+          navigate("/client");
         }
       }, 1500);
 

@@ -4,7 +4,7 @@ import type React from "react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Logo from "/public/images/authLogo.png";
-import { User, Mail, Lock, Eye, EyeOff, X, Phone } from "lucide-react";
+import { User, Mail, Lock, Eye, EyeOff, X } from "lucide-react";
 import { useCreateUserMutation } from "@/redux/api/authApi";
 
 export default function ClientSignUp() {
@@ -30,7 +30,7 @@ export default function ClientSignUp() {
     const newErrors: Record<string, string> = {};
 
     if (!formData.name.trim()) newErrors.name = "required";
-    if (!formData.phone.trim()) newErrors.phone = "required";
+    // if (!formData.phone.trim()) newErrors.phone = "required";
     if (!formData.email.trim()) newErrors.email = "required";
     if (!formData.password) newErrors.password = "required";
     if (!formData.confirmPassword) newErrors.confirmPassword = "required";
@@ -66,9 +66,10 @@ export default function ClientSignUp() {
     const dataObj = {
       name: formData.name,
       email: formData.email,
-      phone: formData.phone,
+      // phone: formData.phone,
       password: formData.password,
       confirmPassword: formData.confirmPassword,
+      agreedToTerms: true,
     };
 
     const payload = new FormData();
@@ -133,7 +134,7 @@ export default function ClientSignUp() {
             </div>
 
             {/* Phone */}
-            <div className="col-span-2">
+            {/* <div className="col-span-2">
               <p className="font-semibold mb-2">Phone Number <span className="text-[#FE1B1B]">*</span></p>
               <div className="relative">
                 <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-[#1878B5]" />
@@ -147,7 +148,7 @@ export default function ClientSignUp() {
                   }`}
                 />
               </div>
-            </div>
+            </div> */}
 
             {/* Password */}
             <div className="col-span-2 md:col-span-1">

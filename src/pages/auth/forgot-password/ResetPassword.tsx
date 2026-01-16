@@ -1,6 +1,6 @@
 import type React from "react";
-import { useState } from "react";
-import { useNavigate, useLocation, Navigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Lock, Eye, EyeOff, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -21,8 +21,14 @@ export default function ResetPassword() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
 
+  useEffect(() => {
+    if (!email || !token) {
+      navigate("/forgot-password", { replace: true });
+    }
+  }, [email, token, navigate]);
+
   if (!email || !token) {
-    return <Navigate to="/forgot-password" replace />;
+    return null;
   }
 
   const validateForm = () => {

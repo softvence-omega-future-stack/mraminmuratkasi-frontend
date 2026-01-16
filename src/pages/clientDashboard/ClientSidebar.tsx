@@ -1,8 +1,10 @@
-import { Edit, PenLine, Home, FileText, MessageCircleMore, Sun, Moon } from "lucide-react";
+import { Edit, PenLine, Sun, Moon } from "lucide-react";
 import Logo from "/public/images/authLogo.png";
 import { useNavigate } from "react-router-dom";
-import { useGetProfileQuery } from "@/redux/api/authApi";
+import { useGetProfileQuery, useLogOutMutation } from "@/redux/api/authApi";
 import { useEffect, useState } from "react";
+import { useAppDispatch } from "@/redux/hooks";
+import { logout } from "@/redux/features/auth/authSlice";
 
 interface SidebarProps {
   isOpen: boolean;
@@ -11,6 +13,8 @@ interface SidebarProps {
 
 export default function ClientSidebar({ isOpen, onClose }: SidebarProps) {
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+  const [logOut] = useLogOutMutation();
   const { data: profileData } = useGetProfileQuery(undefined);
   const user = profileData?.data;
 
@@ -26,6 +30,18 @@ export default function ClientSidebar({ isOpen, onClose }: SidebarProps) {
       setGreeting({ text: "Good Evening", icon: <Moon className="w-5 h-5 text-[#1878B5]" /> });
     }
   }, []);
+
+  const handleLogout = async () => {
+    try {
+      await logOut(undefined).unwrap();
+    } catch (err) {
+      console.error("Logout failed:", err);
+    } finally {
+      dispatch(logout());
+      localStorage.removeItem("token");
+      navigate("/");
+    }
+  };
 
   return (
     <>
@@ -151,7 +167,10 @@ export default function ClientSidebar({ isOpen, onClose }: SidebarProps) {
           </div>
 
           <div className="mt-auto w-full pt-6">
-            <button className="w-full py-3 bg-[#E8F2F8] text-[#1878B5] text-lg font-semibold rounded-[40px] hover:bg-gray-100 transition-colors cursor-pointer">
+            <button 
+              onClick={handleLogout}
+              className="w-full py-3 bg-[#E8F2F8] text-[#1878B5] text-lg font-semibold rounded-[40px] hover:bg-gray-100 transition-colors cursor-pointer"
+            >
               Log Out
             </button>
           </div>
