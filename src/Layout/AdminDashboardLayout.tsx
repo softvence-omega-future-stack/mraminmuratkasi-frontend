@@ -1,40 +1,52 @@
-"use client";
+import AdminNavBar from "@/components/admin/AdminNavBar";
+import AdminSidebar from "@/components/admin/AdminSidebar";
 
-import React, { useState } from "react";
-import AdminSidebar from "@/pages/adminDashboard/AdminSidebar";
-import AdminTopNav from "@/pages/adminDashboard/AdminTopNav";
+import { useState } from "react";
+import { Outlet } from "react-router-dom";
 
-interface DashboardLayoutProps {
-  children: React.ReactNode;
-}
-
-export default function AdminDashboardLayout({
-  children,
-}: DashboardLayoutProps) {
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+const AdminDashboardLayout = () => {
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
 
   return (
-    <div className="flex flex-col h-screen bg-gray-50 overflow-hidden">
-      {/* Top Navigation - Full Width */}
-      <AdminTopNav
+    <div className="flex flex-col h-screen bg-gray-50 overflow-hidden px-6 pt-3">
+      <AdminNavBar
         onMenuClick={() => setSidebarOpen(true)}
         showProfileMenu={showProfileMenu}
         setShowProfileMenu={setShowProfileMenu}
       />
 
-      {/* Main Container - Flex Sidebar and Content */}
-      <div className="flex flex-1 overflow-hidden px-6 pt-3">
-        <AdminSidebar
-          isOpen={sidebarOpen}
-          onClose={() => setSidebarOpen(false)}
-        />
+      <div className="flex flex-1 gap-6 overflow-hidden px-6 pt-6">
+        <div className="hidden lg:block lg:shrink-0">
+          <AdminSidebar
+            isOpen={sidebarOpen}
+            onClose={() => setSidebarOpen(false)}
+          />
+        </div>
 
-        {/* Page Content */}
-        <main className="flex-1 overflow-auto p-6">
-          <div className="max-w-7xl mx-auto">{children}</div>
+        {sidebarOpen && (
+          <div className="fixed inset-0 z-40 lg:hidden">
+            <div
+              className="absolute inset-0 bg-black/50"
+              onClick={() => setSidebarOpen(false)}
+            />
+            <div className="absolute left-0 top-0 h-full w-80 max-w-full">
+              <AdminSidebar
+                isOpen={sidebarOpen}
+                onClose={() => setSidebarOpen(false)}
+              />
+            </div>
+          </div>
+        )}
+
+        <main className="flex-1 overflow-auto">
+          <div className="max-w-7x mx-auto">
+            <Outlet />
+          </div>
         </main>
       </div>
     </div>
   );
-}
+};
+
+export default AdminDashboardLayout;

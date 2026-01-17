@@ -1,24 +1,29 @@
-import { createBrowserRouter } from "react-router-dom";
-import App from "../App";
-import NotFound from "../pages/NotFound";
-import Login from "@/pages/Login";
-import Signup from "@/pages/Signup";
-import AdminDashboard from "@/pages/Dashboard/AdminDashboard";
-import ClientDashboard from "@/pages/Dashboard/ClientDashboard";
-import RoleSelection from "@/pages/RoleSelection";
-import ClientDashboardLayout from "@/Layout/ClientDashboardLayout";
+import ChangePasswordPage from "@/common/ChangePasswordPage";
+import EditProfilePage from "@/common/EditProfilePage";
 import AdminDashboardLayout from "@/Layout/AdminDashboardLayout";
+import ClientDashboardLayout from "@/Layout/ClientDashboardLayout";
+import AdminSignIn from "@/pages/auth/admin/AdminSignIn";
 import ClientSignIn from "@/pages/auth/client/ClientSignIn";
 import ClientSignUp from "@/pages/auth/client/ClientSignUp";
 import ForgotPasswordEmail from "@/pages/auth/forgot-password/ForgotPasswordEmail";
 import ForgotPasswordOTP from "@/pages/auth/forgot-password/ForgotPasswordOTP";
 import ResetPassword from "@/pages/auth/forgot-password/ResetPassword";
-import AdminSignIn from "@/pages/auth/admin/AdminSignIn";
-import ClientChatPage from "@/pages/clientDashboard/ClientChatPage";
-import ClientCasesPage from "@/pages/clientDashboard/ClientCasesPage";
 import ClientCaseDetails from "@/pages/clientDashboard/CaseDetails";
-import ChangePasswordPage from "@/common/ChangePasswordPage";
-import EditProfilePage from "@/common/EditProfilePage";
+import ClientCasesPage from "@/pages/clientDashboard/ClientCasesPage";
+import ClientChatPage from "@/pages/clientDashboard/ClientChatPage";
+import ClientDashboard from "@/pages/Dashboard/ClientDashboard";
+
+import AdminCaseDetails from "@/components/admin/case/AdminCaseDetails";
+import AdminCasesPage from "@/components/admin/case/AdminCasesPage";
+import AdminChatPage from "@/components/admin/chat/AdminChatPage";
+import AllClients from "@/components/admin/client/AllClients";
+import HomePage from "@/pages/adminDashboard/HomePage";
+import Login from "@/pages/Login";
+import RoleSelection from "@/pages/RoleSelection";
+import Signup from "@/pages/Signup";
+import { createBrowserRouter } from "react-router-dom";
+import App from "../App";
+import NotFound from "../pages/NotFound";
 
 const routes = createBrowserRouter([
   {
@@ -75,15 +80,28 @@ const routes = createBrowserRouter([
       },
       {
         path: "/admin",
-        // element: <AdminRoute />,
+        element: <AdminDashboardLayout />,
         children: [
           {
             path: "",
-            element: (
-              <AdminDashboardLayout>
-                <AdminDashboard />
-              </AdminDashboardLayout>
-            ),
+            element: <HomePage />,
+          },
+
+          {
+            path: "cases",
+            element: <AdminCasesPage />,
+          },
+          {
+            path: "cases/:id",
+            element: <AdminCaseDetails />,
+          },
+          {
+            path: "client",
+            element: <AllClients />,
+          },
+          {
+            path: "chat",
+            element: <AdminChatPage />,
           },
         ],
       },
@@ -98,6 +116,7 @@ const routes = createBrowserRouter([
               </ClientDashboardLayout>
             ),
           },
+
           {
             path: "chat",
             element: (
