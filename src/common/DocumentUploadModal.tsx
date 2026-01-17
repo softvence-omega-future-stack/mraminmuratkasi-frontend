@@ -1,7 +1,5 @@
-"use client";
-
 import { useState, useRef } from "react";
-import { X, Upload, FileText, AlertCircle, CheckCircle } from "lucide-react";
+import { X, CloudUpload, Trash2, PauseCircle, XCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface DocumentUploadModalProps {
@@ -11,69 +9,46 @@ interface DocumentUploadModalProps {
 }
 
 interface UploadedFile {
-  file: File;
+  file?: File;
   name: string;
   type: string;
   size: string;
-  status: "uploading" | "success" | "error";
+  status: "uploading" | "completed" | "error";
+  progress: number;
 }
 
 export default function DocumentUploadModal({ open, onClose, onUpload }: DocumentUploadModalProps) {
-  const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
+  const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([
+    {
+      name: "Evidence.jpg",
+      type: "JPG",
+      size: "2.4 MB",
+      status: "completed",
+      progress: 100,
+    },
+    {
+      name: "Uploading...",
+      type: "FILE",
+      size: "0 MB",
+      status: "uploading",
+      progress: 65,
+    }
+  ]);
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const formatFileSize = (bytes: number): string => {
-    if (bytes === 0) return "0 Bytes";
-    const k = 1024;
-    const sizes = ["Bytes", "KB", "MB", "GB"];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return Math.round(bytes / Math.pow(k, i) * 100) / 100 + " " + sizes[i];
-  };
-
-  const getFileType = (filename: string): string => {
-    const extension = filename.split('.').pop()?.toLowerCase();
-    const typeMap: { [key: string]: string } = {
-      'pdf': 'PDF',
-      'doc': 'DOC',
-      'docx': 'DOCX',
-      'jpg': 'JPG',
-      'jpeg': 'JPEG',
-      'png': 'PNG',
-      'txt': 'TXT'
-    };
-    return typeMap[extension || ''] || 'FILE';
-  };
-
   const handleFileSelect = (files: FileList | null) => {
     if (!files) return;
-
     const newFiles: UploadedFile[] = Array.from(files).map(file => ({
       file,
       name: file.name,
-      type: getFileType(file.name),
-      size: formatFileSize(file.size),
-      status: "uploading"
+      type: file.name.split('.').pop()?.toUpperCase() || 'FILE',
+      size: (file.size / (1024 * 1024)).toFixed(1) + " MB",
+      status: "uploading",
+      progress: 0
     }));
-
     setUploadedFiles(prev => [...prev, ...newFiles]);
-
-    // Simulate upload process
-    newFiles.forEach((fileObj, index) => {
-      setTimeout(() => {
-        setUploadedFiles(prev => {
-          const updated = [...prev];
-          const fileIndex = prev.findIndex(f => f.name === fileObj.name);
-          if (fileIndex !== -1) {
-            updated[fileIndex] = {
-              ...fileObj,
-              status: Math.random() > 0.1 ? "success" : "error"
-            };
-          }
-          return updated;
-        });
-      }, 1000 + index * 500);
-    });
+    // Mock upload progress
   };
 
   const handleDrop = (e: React.DragEvent) => {
@@ -82,183 +57,137 @@ export default function DocumentUploadModal({ open, onClose, onUpload }: Documen
     handleFileSelect(e.dataTransfer.files);
   };
 
-  const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragging(true);
-  };
-
-  const handleDragLeave = () => {
-    setIsDragging(false);
-  };
-
-  const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    handleFileSelect(e.target.files);
-  };
-
-  const handleUpload = () => {
-    const successfulFiles = uploadedFiles.filter(f => f.status === "success");
-    successfulFiles.forEach(file => {
-      onUpload({
-        name: file.name,
-        type: file.type,
-        size: file.size
-      });
-    });
-    setUploadedFiles([]);
-    onClose();
-  };
-
-  const removeFile = (index: number) => {
-    setUploadedFiles(prev => prev.filter((_, i) => i !== index));
-  };
-
-  const getFileIcon = () => {
-    return <FileText className="w-5 h-5 text-blue-600" />;
-  };
-
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case "success":
-        return <CheckCircle className="w-5 h-5 text-green-500" />;
-      case "error":
-        return <AlertCircle className="w-5 h-5 text-red-500" />;
-      case "uploading":
-        return <div className="w-5 h-5 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />;
-      default:
-        return null;
+  const handleBackdropClick = (e: React.MouseEvent) => {
+    if (e.target === e.currentTarget) {
+      onClose();
     }
   };
 
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-2xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-hidden">
+    <div 
+      className="fixed inset-0 bg-black/20 flex items-center justify-center p-4 z-[999]"
+      onClick={handleBackdropClick}
+    >
+      <div className="bg-white rounded-[40px] shadow-2xl w-full max-w-[560px] overflow-hidden p-10 animate-in fade-in zoom-in duration-200">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-200">
-          <h2 className="text-xl font-semibold text-gray-900">Upload Documents</h2>
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h2 className="text-2xl font-bold text-gray-900 leading-tight">Upload Document</h2>
+            <p className="text-gray-400 text-base mt-1">Add your documents here</p>
+          </div>
           <button
             onClick={onClose}
-            className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+            className="p-1 hover:bg-gray-100 rounded-full transition-colors"
           >
-            <X className="w-5 h-5" />
+            <X className="w-6 h-6 text-gray-900" />
           </button>
         </div>
 
-        {/* Content */}
-        <div className="p-6 overflow-y-auto max-h-[calc(90vh-200px)]">
-          {/* Upload Area */}
-          <div
-            className={`border-2 border-dashed rounded-xl p-8 text-center transition-colors ${
-              isDragging
-                ? "border-blue-500 bg-blue-50"
-                : "border-gray-300 hover:border-gray-400"
-            }`}
-            onDrop={handleDrop}
-            onDragOver={handleDragOver}
-            onDragLeave={handleDragLeave}
-          >
-            <div className="w-12 h-12 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Upload className="w-6 h-6 text-blue-600" />
-            </div>
-            
-            <p className="text-gray-900 font-medium mb-2">
-              Drag and drop your files here
-            </p>
-            <p className="text-gray-500 text-sm mb-4">
-              or click to browse from your computer
-            </p>
-            
-            <Button
-              onClick={() => fileInputRef.current?.click()}
-              variant="outline"
-              className="text-[#1878B5] border-[#1878B5] hover:bg-[#1878B5] hover:text-white"
-            >
-              Choose Files
-            </Button>
-            
-            <input
-              ref={fileInputRef}
-              type="file"
-              multiple
-              onChange={handleFileInputChange}
-              className="hidden"
-              accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.txt"
-            />
-            
-            <p className="text-xs text-gray-400 mt-4">
-              Supported formats: PDF, DOC, DOCX, JPG, PNG, TXT (Max 10MB per file)
-            </p>
+        {/* Drag & Drop Area */}
+        <div
+          onDrop={handleDrop}
+          onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
+          onDragLeave={() => setIsDragging(false)}
+          className={`
+            relative border-2 border-dashed rounded-[20px] p-10 flex flex-col items-center justify-center transition-all cursor-pointer
+            ${isDragging ? "border-[#1878B5] bg-blue-50/50" : "border-[#B7D5E8] bg-white"}
+          `}
+          onClick={() => fileInputRef.current?.click()}
+        >
+          <div className="mb-4">
+            <CloudUpload className="w-12 h-12 text-[#1878B5]" strokeWidth={1.5} />
           </div>
+          
+          <p className="text-lg font-semibold text-gray-700">
+            Drag your file(s) or <span className="text-[#1878B5] cursor-pointer">Browse</span>
+          </p>
+          <p className="text-xs text-gray-400 mt-2">Max 10 MB files are allowed</p>
+          
+          <input
+            ref={fileInputRef}
+            type="file"
+            multiple
+            className="hidden"
+            onChange={(e) => handleFileSelect(e.target.files)}
+            accept=".jpg,.jpeg,.png,.pdf"
+          />
+        </div>
 
-          {/* Uploaded Files */}
-          {uploadedFiles.length > 0 && (
-            <div className="mt-6">
-              <h3 className="text-sm font-semibold text-gray-900 mb-3">
-                Uploaded Files ({uploadedFiles.length})
-              </h3>
-              
-              <div className="space-y-3">
-                {uploadedFiles.map((file, index) => (
-                  <div
-                    key={index}
-                    className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
-                  >
-                    <div className="flex items-center space-x-3">
-                      {getFileIcon()}
-                      <div>
-                        <p className="text-sm font-medium text-gray-900">{file.name}</p>
-                        <p className="text-xs text-gray-500">
-                          {file.type} • {file.size}
-                        </p>
-                      </div>
-                    </div>
-                    
-                    <div className="flex items-center space-x-2">
-                      {getStatusIcon(file.status)}
-                      {file.status !== "uploading" && (
-                        <button
-                          onClick={() => removeFile(index)}
-                          className="p-1 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded transition-colors"
-                        >
-                          <X className="w-4 h-4" />
-                        </button>
+        <p className="text-[13px] text-gray-400 mt-5 mb-8">
+          Only support .jpg, .png and .pdf
+        </p>
+
+        {/* Files List */}
+        <div className="space-y-4 mb-10 max-h-[300px] overflow-y-auto no-scrollbar">
+          {uploadedFiles.map((file, idx) => (
+            <div key={idx} className="border border-gray-100 rounded-[20px] p-5 bg-white shadow-sm relative overflow-hidden">
+              <div className="flex items-start justify-between">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 bg-[#E8F2F8] rounded-xl flex items-center justify-center relative overflow-hidden">
+                     <span className="text-[10px] font-black text-[#1878B5] bg-white absolute bottom-1 px-1 rounded-[2px] shadow-sm">{file.type}</span>
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-base font-bold text-gray-900 leading-tight">{file.name}</span>
+                    <div className="flex items-center gap-2 mt-1">
+                      {file.status === "completed" ? (
+                        <span className="text-[13px] font-medium text-[#22C55E]">Completed</span>
+                      ) : (
+                        <span className="text-[13px] font-normal text-gray-500">
+                          {file.progress}% • 30 seconds remaining
+                        </span>
                       )}
                     </div>
                   </div>
-                ))}
+                </div>
+
+                <div className="flex items-center gap-2">
+                  {file.status === "completed" ? (
+                    <button className="text-gray-400 hover:text-red-500 transition-colors">
+                      <Trash2 className="w-5 h-5" />
+                    </button>
+                  ) : (
+                    <div className="flex items-center gap-2">
+                      <button className="text-gray-400">
+                        <PauseCircle className="w-5 h-5" />
+                      </button>
+                      <button className="text-[#FE4F4F]">
+                        <XCircle className="w-5 h-5 fill-[#FE4F4F] text-white" />
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </div>
+              
+              {/* Progress Bar */}
+              <div className="mt-4 w-full bg-gray-100 h-1.5 rounded-full overflow-hidden">
+                <div 
+                  className={`h-full transition-all duration-300 ${file.status === "completed" ? "bg-[#1878B5]" : "bg-[#1878B5]"}`}
+                  style={{ width: `${file.progress}%` }}
+                ></div>
               </div>
             </div>
-          )}
+          ))}
         </div>
 
-        {/* Footer */}
-        <div className="flex items-center justify-between p-6 border-t border-gray-200 bg-gray-50">
-          <div className="text-sm text-gray-600">
-            {uploadedFiles.length > 0 && (
-              <>
-                {uploadedFiles.filter(f => f.status === "success").length} of {uploadedFiles.length} files ready
-              </>
-            )}
-          </div>
-          
-          <div className="flex space-x-3">
-            <Button
-              onClick={onClose}
-              variant="outline"
-              className="border-gray-300 text-gray-700 hover:bg-gray-50"
-            >
-              Cancel
-            </Button>
-            
-            <Button
-              onClick={handleUpload}
-              disabled={uploadedFiles.filter(f => f.status === "success").length === 0}
-              className="bg-[#1878B5] hover:bg-[#1878D9] text-white disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              Upload {uploadedFiles.filter(f => f.status === "success").length} Files
-            </Button>
-          </div>
+        {/* Footer Buttons */}
+        <div className="flex gap-4">
+          <Button
+            onClick={onClose}
+            className="flex-1 h-14 rounded-full bg-[#EEEEEE] hover:bg-gray-200 text-gray-600 font-bold text-lg"
+          >
+            Cancel
+          </Button>
+          <Button
+            onClick={() => {
+                onUpload({ name: "Document.pdf", type: "PDF", size: "2.5 MB" });
+                onClose();
+            }}
+            className="flex-1 h-14 rounded-full bg-[#1878B5] hover:bg-[#146499] text-white font-bold text-lg"
+          >
+            Next
+          </Button>
         </div>
       </div>
     </div>

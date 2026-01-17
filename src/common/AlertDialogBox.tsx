@@ -10,7 +10,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { type ReactNode, useState } from "react";
-import CommonButton from "../button/CommonButton";
+import { Button } from "@/components/ui/button";
 
 interface IAlertDialogBoxProps {
   action: () => Promise<void>;
@@ -42,9 +42,9 @@ const AlertDialogBox: React.FC<IAlertDialogBoxProps> = ({
     <AlertDialog open={open} onOpenChange={setOpen}>
       <AlertDialogTrigger asChild>
         {trigger ?? (
-          <CommonButton className="bg-red-500 !text-white cursor-pointer">
+          <Button className="bg-red-500 !text-white cursor-pointer">
             Delete
-          </CommonButton>
+          </Button>
         )}
       </AlertDialogTrigger>
 

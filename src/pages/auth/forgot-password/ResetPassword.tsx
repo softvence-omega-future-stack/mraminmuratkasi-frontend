@@ -1,38 +1,60 @@
 import type React from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Lock, Eye, EyeOff, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { useResetPasswordMutation } from "@/redux/api/authApi";
 
 export default function ResetPassword() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { method, value, otp } = location.state || {};
+  const { email, token } = location.state || {};
+  const [resetPassword, { isLoading }] = useResetPasswordMutation();
 
   const [formData, setFormData] = useState({
     password: "",
     confirmPassword: "",
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [submitError, setSubmitError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
 
-  if (!method || !value || !otp) navigate("/forgot-password");
+  useEffect(() => {
+    if (!email || !token) {
+      navigate("/forgot-password", { replace: true });
+    }
+  }, [email, token, navigate]);
+
+  if (!email || !token) {
+    return null;
+  }
 
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
     if (!formData.password) newErrors.password = "required";
+    if (formData.password.length < 6) newErrors.password = "too short";
     if (formData.password !== formData.confirmPassword)
       newErrors.confirmPassword = "mismatch";
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validateForm()) return;
-    navigate("/");
+
+    try {
+      await resetPassword({
+        token: token,
+        newPassword: formData.password
+      }).unwrap();
+      alert("Password reset successfully! Please login with your new password.");
+      navigate("/client/signin");
+    } catch (err: any) {
+      setSubmitError(err?.data?.message || "Failed to reset password. Please try again.");
+    }
   };
 
   return (
@@ -43,6 +65,15 @@ export default function ResetPassword() {
         </h1>
 
         <form onSubmit={handleSubmit} className="space-y-5">
+          {/* Email (Readonly) */}
+          <div className="relative opacity-70">
+            <Input
+              value={email}
+              disabled
+              className="py-6 bg-gray-50 border-gray-200"
+            />
+          </div>
+
           {/* Password */}
           <div className="relative">
             <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
@@ -59,9 +90,9 @@ export default function ResetPassword() {
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-1/2 -translate-y-1/2"
+              className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer"
             >
-              {showPassword ? <EyeOff /> : <Eye />}
+              {showPassword ? <EyeOff className="w-5 h-5 text-gray-400" /> : <Eye className="w-5 h-5 text-gray-400" />}
             </button>
           </div>
 
@@ -86,33 +117,41 @@ export default function ResetPassword() {
             <button
               type="button"
               onClick={() => setShowConfirm(!showConfirm)}
-              className="absolute right-3 top-1/2 -translate-y-1/2"
+              className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer"
             >
-              {showConfirm ? <EyeOff /> : <Eye />}
+              {showConfirm ? <EyeOff className="w-5 h-5 text-gray-400" /> : <Eye className="w-5 h-5 text-gray-400" />}
             </button>
           </div>
 
-          {errors.confirmPassword && (
-            <div className="flex justify-between bg-[#FFECE6] rounded-md">
+          {(errors.confirmPassword || submitError) && (
+            <div className="flex justify-between bg-[#FFECE6] rounded-md transition-all">
               <div className="px-4 py-3">
                 <p className="text-[#FE1B1B] font-semibold">
-                  Passwords do not match
+                  Error
                 </p>
                 <p className="text-[#FE1B1B] text-sm">
-                  Please check and try again.
+                  {errors.confirmPassword === "mismatch" ? "Passwords do not match." : submitError}
                 </p>
               </div>
               <button
                 type="button"
-                onClick={() => setErrors({})}
-                className="px-[18px] py-[12px]"
+                onClick={() => {
+                  setErrors({});
+                  setSubmitError("");
+                }}
+                className="px-4 py-2 cursor-pointer"
               >
                 <X className="w-4 h-4 text-[#FE1B1B]" />
               </button>
             </div>
           )}
 
-          <Button className="w-full bg-[#1878B5] py-5">Reset Password</Button>
+          <Button 
+            disabled={isLoading}
+            className="w-full bg-[#1878B5] py-6 hover:bg-[#1878D9] font-semibold cursor-pointer"
+          >
+            {isLoading ? "Resetting..." : "Reset Password"}
+          </Button>
         </form>
       </div>
     </div>

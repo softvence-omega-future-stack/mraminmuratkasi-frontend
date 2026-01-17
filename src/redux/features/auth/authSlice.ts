@@ -2,11 +2,13 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "../../store";
 
 export type User = {
+  _id?: string;
   email: string;
+  name?: string;
   fullName?: string;
   profilePhoto?: string;
   role?: string;
-  // Add other properties as needed
+  [key: string]: any; // Allow other backend properties
 };
 
 type AuthState = {
@@ -26,6 +28,14 @@ const authSlice = createSlice({
     setUser: (state, action: PayloadAction<User>) => {
       state.user = action.payload;
     },
+    setCredentials: (
+      state,
+      action: PayloadAction<{ user: User; token: string }>
+    ) => {
+      const { user, token } = action.payload;
+      state.user = user;
+      state.token = token;
+    },
     logout: (state) => {
       state.user = null;
       state.token = null;
@@ -33,6 +43,7 @@ const authSlice = createSlice({
   },
 });
 
-export const { setUser, logout } = authSlice.actions;
+export const { setUser, setCredentials, logout } = authSlice.actions;
 export const selectUser = (state: RootState) => state.auth.user;
+export const selectToken = (state: RootState) => state.auth.token;
 export default authSlice.reducer;

@@ -6,16 +6,23 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import Logo from "/public/images/authLogo.png";
 import { Lock, Mail, Eye, EyeOff, X } from "lucide-react";
+import { useLoginMutation } from "@/redux/api/authApi";
+import { useAppDispatch } from "@/redux/hooks";
+import { setCredentials } from "@/redux/features/auth/authSlice";
 
 export default function AdminSignIn() {
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+  const [login, { isLoading: isLoginLoading }] = useLoginMutation();
+
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
+
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [submitError, setSubmitError] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
   const validateForm = () => {
@@ -27,7 +34,9 @@ export default function AdminSignIn() {
     if (!formData.password) newErrors.password = "Password is required";
 
     setErrors(newErrors);
-    setSubmitError(Object.keys(newErrors).length > 0);
+    if (Object.keys(newErrors).length > 0) {
+      setErrorMessage("Please check the form for errors.");
+    }
     return Object.keys(newErrors).length === 0;
   };
 
@@ -39,17 +48,34 @@ export default function AdminSignIn() {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validateForm()) return;
 
-    setLoading(true);
+    try {
+      const res = await login(formData).unwrap();
+      
+      // Fixed: Access user and approvalToken directly from response
+      dispatch(setCredentials({ user: res.user, token: res.approvalToken }));
+      localStorage.setItem("token", res.approvalToken);
+      
+      setSuccessMessage(res.message || "Sign in successful!");
 
-    // Simulate login failure for demonstration
-    setTimeout(() => {
-      setSubmitError(true);
-      setLoading(false);
-    }, 800);
+      // Redirect based on role after 1.5 seconds
+      setTimeout(() => {
+        if (res.user.role === "admin") {
+          navigate("/admin");
+        } else {
+          navigate("/client");
+        }
+      }, 1500);
+
+    } catch (err: any) {
+      setErrorMessage(
+        err?.data?.message || err?.message || "Failed to sign in. Please try again."
+      );
+      console.error("Failed to sign in:", err);
+    }
   };
 
   const errorInputStyle = "border border-[#FE1B1B] bg-[#FFECE6]";
@@ -66,18 +92,33 @@ export default function AdminSignIn() {
           Sign In
         </h1>
 
-        {/* Submit Error */}
-        {submitError && (
-          <div className="flex justify-between items-start bg-[#FFECE6] rounded-md mb-6">
+        {/* Success Section */}
+        {successMessage && (
+          <div className="flex justify-between items-start bg-[#E6FFF1] rounded-md mb-6 border border-[#18B558]">
             <div className="px-4 py-3">
-              <p className="text-[#FE1B1B] font-semibold">Failed to sign in</p>
-              <p className="text-[#FE1B1B] text-sm">
-                Please check your credentials & try again.
-              </p>
+              <p className="text-[#18B558] font-semibold">Success</p>
+              <p className="text-[#18B558] text-sm">{successMessage}</p>
             </div>
             <button
               type="button"
-              onClick={() => setSubmitError(false)}
+              onClick={() => setSuccessMessage("")}
+              className="px-[18px] py-[12px] cursor-pointer"
+            >
+              <X className="w-4 h-4 text-[#18B558]" />
+            </button>
+          </div>
+        )}
+
+        {/* Submit Error */}
+        {errorMessage && (
+          <div className="flex justify-between items-start bg-[#FFECE6] rounded-md mb-6">
+            <div className="px-4 py-3">
+              <p className="text-[#FE1B1B] font-semibold">Sign in Error</p>
+              <p className="text-[#FE1B1B] text-sm">{errorMessage}</p>
+            </div>
+            <button
+              type="button"
+              onClick={() => setErrorMessage("")}
               className="px-[18px] py-[12px] cursor-pointer"
             >
               <X className="w-4 h-4 text-[#FE1B1B]" />
@@ -147,10 +188,10 @@ export default function AdminSignIn() {
           {/* Submit button */}
           <Button
             type="submit"
-            disabled={loading}
+            disabled={isLoginLoading}
             className="w-full bg-[#1878B5] py-5 rounded-[6px] hover:bg-[#1878D9] cursor-pointer"
           >
-            {loading ? "Signing In..." : "Sign In"}
+            {isLoginLoading ? "Signing In..." : "Sign In"}
           </Button>
         </form>
 
