@@ -113,7 +113,7 @@ const AdminChatPage = () => {
   };
 
   const filteredChats = chats.filter((chat) =>
-    chat.name.toLowerCase().includes(searchQuery.toLowerCase())
+    chat.name.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
   return (
@@ -301,7 +301,7 @@ const AdminChatPage = () => {
               <button
                 onClick={handleSendMessage}
                 disabled={!newMessage.trim()}
-                className={`text-blue-600 hover:text-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
+                className={`text-blue-600 cursor-pointer hover:text-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
                   newMessage.trim() ? "hover:scale-105" : ""
                 }`}
               >

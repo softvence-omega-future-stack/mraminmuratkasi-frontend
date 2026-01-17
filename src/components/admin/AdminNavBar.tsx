@@ -13,6 +13,7 @@ import {
   SquarePen,
   User,
 } from "lucide-react";
+import { FaUserFriends } from "react-icons/fa";
 
 interface ClientTopNavProps {
   onMenuClick: () => void;
@@ -114,7 +115,7 @@ ClientTopNavProps) => {
                 : "text-gray-500 hover:bg-[#1878B5] hover:text-white"
             }`}
           >
-            <MessageCircleMore className="w-4 h-4" />
+            <FaUserFriends className="w-4 h-4" />
             <span className="font-medium">Clients</span>
           </button>
           <button
@@ -168,7 +169,7 @@ ClientTopNavProps) => {
                   <div className="space-y-2">
                     <button
                       onClick={() => {
-                        navigate("/edit-profile");
+                        navigate("/admin/edit-profile");
                         setShowAccountMenu(false);
                       }}
                       className="w-full flex items-center space-x-2 px-3 py-2 text-sm font-normal text-gray-900 hover:bg-gray-50 rounded transition-colors cursor-pointer"
@@ -177,7 +178,7 @@ ClientTopNavProps) => {
                       <span>Edit Profile</span>
                     </button>
                     <button
-                      onClick={() => navigate("/change-password")}
+                      onClick={() => navigate("/admin/change-password")}
                       className="w-full flex items-center space-x-2 px-3 py-4 text-sm text-gray-900 hover:bg-gray-50 rounded transition-colors border-t border-t-gray-50 cursor-pointer"
                     >
                       <LockKeyhole className="w-4 h-4" />

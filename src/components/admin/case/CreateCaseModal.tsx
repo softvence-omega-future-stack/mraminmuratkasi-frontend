@@ -1,4 +1,7 @@
 // CreateCaseModal.tsx
+import CommonButton from "@/common/CommonButton";
+import CommonHeader from "@/common/CommonHeader";
+import CommonSelect from "@/common/CommonSelect";
 import { Pause, SquareX, Trash2, UploadCloud, X } from "lucide-react";
 import { ChangeEvent, FormEvent, useState } from "react";
 
@@ -38,7 +41,7 @@ const CreateCaseModal: React.FC<CreateCaseModalProps> = ({ onClose }) => {
   ]);
 
   const handleInputChange = (
-    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>,
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -60,15 +63,22 @@ const CreateCaseModal: React.FC<CreateCaseModalProps> = ({ onClose }) => {
     console.log("Submitting case:", formData, files);
     // API call here
   };
+  const inputClass = {
+    input:
+      "w-full rounded-[10px] border border-[#D4D6D8] px-3 py-2 text-base text-[#BFC3C5] outline-none ",
+    label: "block text-base font-medium text-[#313436] mb-2",
+    error: "text-red-500 text-sm mt-1",
+  };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4  ">
       <div className="w-full max-w-2xl rounded-xl bg-white shadow-2xl overflow-y-auto max-h-[90vh]">
         {/* Header */}
-        <div className="flex items-center justify-between border-b px-6 py-4">
-          <h2 className="text-xl font-semibold text-gray-900">
+
+        <div className="flex items-center justify-between border-b px-6 py-4 ">
+          <CommonHeader size="xl" className="text-[#0F1010]">
             Create New Case
-          </h2>
+          </CommonHeader>
           <button
             onClick={onClose}
             className="rounded-full p-1.5 hover:bg-gray-100 cursor-pointer"
@@ -82,100 +92,93 @@ const CreateCaseModal: React.FC<CreateCaseModalProps> = ({ onClose }) => {
           {/* Two column fields */}
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
             <div>
-              <label className="mb-1.5 block text-sm font-medium text-gray-700">
-                Case Title
-              </label>
+              <label className={inputClass.label}>Case Title</label>
               <input
                 type="text"
                 name="title"
                 value={formData.title}
                 onChange={handleInputChange}
                 placeholder="Enter case title"
-                className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition"
+                className={inputClass.input}
               />
             </div>
 
             <div>
-              <label className="mb-1.5 block text-sm font-medium text-gray-700">
-                Client Name
-              </label>
+              <label className={inputClass.label}>Client Name</label>
               <input
                 type="text"
                 name="clientName"
                 value={formData.clientName}
                 onChange={handleInputChange}
                 placeholder="Enter client name"
-                className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition"
+                className={inputClass.input}
               />
             </div>
           </div>
 
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
             <div>
-              <label className="mb-1.5 block text-sm font-medium text-gray-700">
-                Case Type
-              </label>
-              <select
-                name="caseType"
+              <label className={inputClass.label}>Case Type</label>
+              <CommonSelect
                 value={formData.caseType}
-                onChange={handleInputChange}
-                className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition bg-white"
-              >
-                <option value="" disabled>
-                  Select case type
-                </option>
-                <option value="civil">Civil</option>
-                <option value="criminal">Criminal</option>
-                <option value="family">Family</option>
-                <option value="corporate">Corporate</option>
-              </select>
+                onValueChange={(val) =>
+                  setFormData((prev) => ({ ...prev, caseType: val }))
+                }
+                item={[
+                  { label: "InProgress", value: "InProgress" },
+                  {
+                    label: "Letter sent to insurance",
+                    value: "Letter sent to insurance",
+                  },
+                  { label: "Set Court Date", value: "Set Court Date" },
+                ]}
+                className="w-full"
+              />
             </div>
 
             <div>
-              <label className="mb-1.5 block text-sm font-medium text-gray-700">
-                Case Status
-              </label>
-              <select
-                name="status"
+              <label className={inputClass.label}>Case Status</label>
+              <CommonSelect
                 value={formData.status}
-                onChange={handleInputChange}
-                className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition bg-white"
-              >
-                <option value="" disabled>
-                  Select status
-                </option>
-                <option value="new">New</option>
-                <option value="in-progress">In Progress</option>
-                <option value="pending">Pending</option>
-                <option value="closed">Closed</option>
-              </select>
+                onValueChange={(val) =>
+                  setFormData((prev) => ({ ...prev, status: val }))
+                }
+                item={[
+                  { label: "Traffic Violation", value: "Traffic Violation" },
+                  { label: "license Suspension", value: "License Suspension" },
+                  { label: "Reckless Driving", value: "Reckless Driving" },
+                  { label: "Hit and Run", value: "Hit and Run" },
+                  {
+                    label: "Driving without license",
+                    value: "Parking Violation ",
+                  },
+                  { label: "Hit and Run", value: "Hit and Run" },
+                ]}
+                className="w-full"
+              />
             </div>
           </div>
 
           {/* Date */}
           <div>
-            <label className="mb-1.5 block text-sm font-medium text-gray-700">
-              Date
-            </label>
+            <label className={inputClass.label}>Date</label>
             <input
               type="date"
               name="date"
               value={formData.date}
               onChange={handleInputChange}
-              className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition"
+              className={inputClass.input}
             />
           </div>
 
           {/* File Upload */}
           <div>
-            <label className="mb-1.5 block text-sm font-medium text-gray-700">
-              Upload Documents
-            </label>
+            <label className={inputClass.label}>Upload Documents</label>
 
-            <div className="rounded-lg border-2 border-dashed border-gray-300 p-8 text-center hover:border-indigo-400 transition-colors">
+            <div className="rounded-lg border-2 border-dashed border-[#1878B5] p-8 text-center  transition-colors cursor-pointer">
               <UploadCloud className="mx-auto h-10 w-10 text-gray-400" />
               <p className="mt-3 text-sm text-gray-600">
-                <span className="font-medium text-indigo-600 hover:text-indigo-500 cursor-pointer">
+                <span className="font-medium text-[#1878B5] cursor-pointer">
                   Browse
                 </span>{" "}
                 or drag your file(s) here
@@ -193,7 +196,7 @@ const CreateCaseModal: React.FC<CreateCaseModalProps> = ({ onClose }) => {
               />
               <label
                 htmlFor="file-upload"
-                className="mt-4 inline-flex cursor-pointer rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700"
+                className="mt-4 inline-flex cursor-pointer rounded-md bg-[#1878B5] px-4 py-2 text-sm font-medium text-white "
               >
                 Select Files
               </label>
@@ -224,7 +227,7 @@ const CreateCaseModal: React.FC<CreateCaseModalProps> = ({ onClose }) => {
                           <div className="mt-2">
                             <div className="h-2 w-full overflow-hidden rounded-full bg-gray-200">
                               <div
-                                className="h-full bg-indigo-600 transition-all duration-300"
+                                className="h-full bg-[#1878B5] transition-all duration-300"
                                 style={{ width: `${file.progress}%` }}
                               />
                             </div>
@@ -269,33 +272,23 @@ const CreateCaseModal: React.FC<CreateCaseModalProps> = ({ onClose }) => {
 
           {/* Note */}
           <div>
-            <label className="mb-1.5 block text-sm font-medium text-gray-700">
-              Note
-            </label>
+            <label className={inputClass.label}>Note</label>
             <textarea
               name="note"
               value={formData.note}
               onChange={handleInputChange}
               rows={4}
               placeholder="Add note"
-              className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition resize-none"
+              className={inputClass.input}
             />
           </div>
 
           {/* Footer */}
-          <div className="flex justify-end gap-3 pt-4 border-t">
-            <button
-              type="button"
-              className="rounded-lg border border-gray-300 px-5 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50"
-            >
+          <div className="flex justify-end gap-3 pt-4 ">
+            <CommonButton variant="secondary" type="button">
               Cancel
-            </button>
-            <button
-              type="submit"
-              className="rounded-lg bg-indigo-600 px-6 py-2.5 text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-            >
-              Submit
-            </button>
+            </CommonButton>
+            <CommonButton type="submit">Submit</CommonButton>
           </div>
         </form>
       </div>

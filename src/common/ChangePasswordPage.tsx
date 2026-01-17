@@ -1,17 +1,20 @@
-import { useNavigate } from "react-router-dom";
-import { useChangePasswordMutation, useGetProfileQuery } from "@/redux/api/authApi";
-import { useState } from "react";
-import { Lock, Eye, EyeOff, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import ClientDashboardLayout from "@/Layout/ClientDashboardLayout";
 import AdminDashboardLayout from "@/Layout/AdminDashboardLayout";
+import ClientDashboardLayout from "@/Layout/ClientDashboardLayout";
+import {
+  useChangePasswordMutation,
+  useGetProfileQuery,
+} from "@/redux/api/authApi";
+import { Eye, EyeOff, Lock, X } from "lucide-react";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function ChangePasswordPage() {
   const navigate = useNavigate();
   const [changePassword, { isLoading }] = useChangePasswordMutation();
   const { data: profileData } = useGetProfileQuery(undefined);
-  
+
   const user = profileData?.data;
   const isAdmin = user?.role === "admin";
   const Layout = isAdmin ? AdminDashboardLayout : ClientDashboardLayout;
@@ -72,7 +75,7 @@ export default function ChangePasswordPage() {
         oldPassword: formData.oldPassword,
         newPassword: formData.newPassword,
       }).unwrap();
-      
+
       setSuccess("Password changed successfully!");
       setFormData({
         oldPassword: "",
@@ -98,10 +101,15 @@ export default function ChangePasswordPage() {
           {submitError && (
             <div className="flex justify-between items-start bg-[#FFECE6] rounded-md mb-6 p-4">
               <div className="">
-                <p className="text-[#FE1B1B] font-semibold">Failed to change password</p>
+                <p className="text-[#FE1B1B] font-semibold">
+                  Failed to change password
+                </p>
                 <p className="text-[#FE1B1B] text-sm">{submitError}</p>
               </div>
-              <button onClick={() => setSubmitError("")} className="cursor-pointer">
+              <button
+                onClick={() => setSubmitError("")}
+                className="cursor-pointer"
+              >
                 <X className="w-4 h-4 text-[#FE1B1B]" />
               </button>
             </div>
@@ -122,7 +130,9 @@ export default function ChangePasswordPage() {
           <form onSubmit={handleSubmit} className="space-y-5">
             {/* Current Password */}
             <div>
-              <p className="text-gray-900 text-base font-medium mb-2">Current Password</p>
+              <p className="text-gray-900 text-base font-medium mb-2">
+                Current Password
+              </p>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-[#1878B5] w-5 h-5" />
                 <Input
@@ -138,15 +148,25 @@ export default function ChangePasswordPage() {
                   onClick={() => setShowOldPassword(!showOldPassword)}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 cursor-pointer"
                 >
-                  {showOldPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                  {showOldPassword ? (
+                    <EyeOff className="w-5 h-5" />
+                  ) : (
+                    <Eye className="w-5 h-5" />
+                  )}
                 </button>
               </div>
-              {errors.oldPassword && <p className="text-[#FE1B1B] text-sm mt-1">{errors.oldPassword}</p>}
+              {errors.oldPassword && (
+                <p className="text-[#FE1B1B] text-sm mt-1">
+                  {errors.oldPassword}
+                </p>
+              )}
             </div>
 
             {/* New Password */}
             <div>
-              <p className="text-gray-900 text-base font-medium mb-2">New Password</p>
+              <p className="text-gray-900 text-base font-medium mb-2">
+                New Password
+              </p>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-[#1878B5] w-5 h-5" />
                 <Input
@@ -162,15 +182,25 @@ export default function ChangePasswordPage() {
                   onClick={() => setShowNewPassword(!showNewPassword)}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 cursor-pointer"
                 >
-                  {showNewPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                  {showNewPassword ? (
+                    <EyeOff className="w-5 h-5" />
+                  ) : (
+                    <Eye className="w-5 h-5" />
+                  )}
                 </button>
               </div>
-              {errors.newPassword && <p className="text-[#FE1B1B] text-sm mt-1">{errors.newPassword}</p>}
+              {errors.newPassword && (
+                <p className="text-[#FE1B1B] text-sm mt-1">
+                  {errors.newPassword}
+                </p>
+              )}
             </div>
 
             {/* Confirm Password */}
             <div>
-              <p className="text-gray-900 text-base font-medium mb-2">Confirm Password</p>
+              <p className="text-gray-900 text-base font-medium mb-2">
+                Confirm Password
+              </p>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-[#1878B5] w-5 h-5" />
                 <Input
@@ -186,10 +216,18 @@ export default function ChangePasswordPage() {
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 cursor-pointer"
                 >
-                  {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                  {showConfirmPassword ? (
+                    <EyeOff className="w-5 h-5" />
+                  ) : (
+                    <Eye className="w-5 h-5" />
+                  )}
                 </button>
               </div>
-              {errors.confirmPassword && <p className="text-[#FE1B1B] text-sm mt-1">{errors.confirmPassword}</p>}
+              {errors.confirmPassword && (
+                <p className="text-[#FE1B1B] text-sm mt-1">
+                  {errors.confirmPassword}
+                </p>
+              )}
             </div>
 
             <div className="flex space-x-4 pt-4">

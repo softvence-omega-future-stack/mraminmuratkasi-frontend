@@ -6,6 +6,7 @@ import {
   PenLine,
   Sun,
 } from "lucide-react";
+import { Link } from "react-router-dom";
 import Logo from "/public/images/authLogo.png";
 // import Logo from "../../../public/images/authLogo.png";
 
@@ -76,7 +77,7 @@ const AdminSidebar = ({ isOpen, onClose }: SidebarProps) => {
                 className="w-full h-full rounded-full object-cover"
               />
             </div>
-            <span className="inline-block px-3 py-1 bg-blue-900 text-white text-xs rounded-full mb-2">
+            <span className="inline-block px-3 py-1 bg-[#0A324C] text-white text-xs rounded-full mt-4 mb-2">
               Admin
             </span>
           </div>
@@ -91,10 +92,13 @@ const AdminSidebar = ({ isOpen, onClose }: SidebarProps) => {
             Good Morning
           </p>
 
-          <button className="mt-4 flex items-center gap-2 text-[#1878B5] bg-[#F6F6F6] px-7 py-3 rounded-[30px] text-sm font-semibold hover:bg-blue-100 transition-colors justify-center cursor-pointer">
+          <Link
+            to="/admin/edit-profile"
+            className="mt-4 flex items-center gap-2 text-[#1878B5] bg-[#F6F6F6] px-7 py-3 rounded-[30px] text-sm font-semibold hover:bg-blue-100 transition-colors justify-center cursor-pointer"
+          >
             <PenLine className="w-4 h-4 mb-1" />
             Edit Profile
-          </button>
+          </Link>
 
           <div className="mt-auto w-full pt-6">
             <button className="w-full py-3 bg-[#E8F2F8] text-[#1878B5] text-lg font-semibold rounded-[40px] hover:bg-gray-100 transition-colors cursor-pointer">

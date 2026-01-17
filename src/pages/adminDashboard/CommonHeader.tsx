@@ -1,13 +1,12 @@
 import CommonBorderWrapper from "@/common/CommonBorderWrapper";
+import CommonHeader from "@/common/CommonHeader";
 import CreateCaseModal from "@/components/admin/case/CreateCaseModal";
-import {
-  ChevronRight,
-  MoreVertical,
-  Plus,
-  Settings,
-  UserCog,
-} from "lucide-react";
+import { MoreVertical, Settings } from "lucide-react";
 import React, { useState } from "react";
+import { AiOutlineFileAdd } from "react-icons/ai";
+import { BsArrowRight, BsFileEarmarkCheck } from "react-icons/bs";
+import { FiUsers } from "react-icons/fi";
+import { TbFileText } from "react-icons/tb";
 
 interface Case {
   caseNo: string;
@@ -26,9 +25,9 @@ interface Activity {
 
 const HomePage: React.FC = () => {
   const stats = [
-    { label: "Total Clients", count: 18, icon: "👥" },
-    { label: "Total Cases", count: 59, icon: "📋" },
-    { label: "Active Cases", count: 8, icon: "⚖️" },
+    { label: "Total Clients", count: 18, icon: <FiUsers /> },
+    { label: "Total Cases", count: 59, icon: <TbFileText /> },
+    { label: "Active Cases", count: 8, icon: <BsFileEarmarkCheck /> },
   ];
 
   const activities: Activity[] = [
@@ -114,7 +113,11 @@ const HomePage: React.FC = () => {
       status: "InProgress",
     },
   ];
-
+  const clients = [
+    { id: 1, name: "Client 1", avatar: "https://i.pravatar.cc/150?img=12" },
+    { id: 2, name: "Client 2", avatar: "https://i.pravatar.cc/150?img=45" },
+    { id: 3, name: "Client 3", avatar: "https://i.pravatar.cc/150?img=33" },
+  ];
   const getStatusColor = (status: string): string => {
     switch (status) {
       case "Created":
@@ -128,26 +131,66 @@ const HomePage: React.FC = () => {
     }
   };
   const [isCaseModalOpen, setIsCaseModalOpen] = useState(false);
+  const buttons = [
+    {
+      title: "Create New Case",
+      icon: <AiOutlineFileAdd size={20} className="text-white" />,
+      bgColor: "bg-blue-600",
+      onClick: (setIsCaseModalOpen: (val: boolean) => void) =>
+        setIsCaseModalOpen(true),
+      bgButton: "bg-blue-50 hover:bg-blue-100",
+    },
+    {
+      title: "Client Management",
+      icon: <FiUsers size={20} className="text-white" />,
+      bgColor: "bg-blue-600",
+      onClick: undefined, // no click handler
+      bgButton: "bg-gray-50 hover:bg-gray-100",
+    },
+    {
+      title: "Settings",
+      icon: <Settings size={20} className="text-white" />,
+      bgColor: "bg-blue-600",
+      onClick: undefined, // no click handler
+      bgButton: "bg-gray-50 hover:bg-gray-100",
+    },
+  ];
   return (
-    <div className=" space-y-5 pb-5">
+    <div className=" space-y-5 pb-5 ">
       <div className="flex  gap-5 w-full">
         <CommonBorderWrapper>
-          <p className="text-blue-600 text-sm mb-4">
+          <p className="text-main text-base mb-4  ">
             Welcome to your admin control center. Here's an overview of your
             system.
           </p>
+
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
             {stats.map((stat, index) => (
               <div
                 key={index}
-                className="bg-[#0D4264] rounded-2xl p-6 text-white"
+                className="bg-[#0D4264] rounded-2xl p-6 text-white flex flex-col items-center justify-between gap-2"
               >
-                <div className="text-5xl font-bold mb-2">{stat.count}</div>
+                <div className="text-6xl font-bold mb-2">{stat.count}</div>
                 <div className="flex items-center justify-between">
                   <div className="text-3xl">{stat.icon}</div>
                 </div>
-                <div className="flex items-center space-x-2 mt-4">
-                  <span className="text-xs opacity-90">{stat.label}</span>
+                <div className="flex -space-x-3">
+                  {clients.map((client, index) => (
+                    <div
+                      key={client.id}
+                      className="relative"
+                      style={{ zIndex: clients.length - index }}
+                    >
+                      <img
+                        src={client.avatar}
+                        alt={client.name}
+                        className="w-8 h-8 rounded-full border-4 border-[#124e66] object-cover"
+                      />
+                    </div>
+                  ))}
+                </div>
+                <div className="flex items-center justify-center  py-2 px-4 mt-4 bg-[#1878B5] rounded-full">
+                  <span className="text-sm text-white">{stat.label}</span>
                 </div>
               </div>
             ))}
@@ -155,78 +198,59 @@ const HomePage: React.FC = () => {
         </CommonBorderWrapper>
 
         <CommonBorderWrapper>
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">
-            Quick Actions
-          </h3>
-          <div className="space-y-3">
-            <button className="w-full flex items-center justify-between p-4 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors group">
-              <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
-                  <Plus size={20} className="text-white" />
+          <CommonHeader>Quick Actions</CommonHeader>
+
+          <div className="space-y-4 pt-4">
+            {buttons.map((btn, index) => (
+              <button
+                key={index}
+                className={`w-full flex items-center justify-between p-4 bg-[#E8F2F8] rounded-lg transition-colors group cursor-pointer`}
+                onClick={() => btn.onClick?.(setIsCaseModalOpen)}
+              >
+                <div className="flex items-center space-x-3">
+                  <div
+                    className={`w-10 h-10 bg-[#1878B5] rounded-lg flex items-center justify-center`}
+                  >
+                    {btn.icon}
+                  </div>
+                  <span
+                    onClick={() => btn.onClick?.(setIsCaseModalOpen)}
+                    className="font-medium text-gray-900"
+                  >
+                    {btn.title}
+                  </span>
                 </div>
-                <span
-                  onClick={() => setIsCaseModalOpen(true)}
-                  className="font-medium text-gray-900"
-                >
-                  Create New Case
-                </span>
-              </div>
-              <ChevronRight
-                size={20}
-                className="text-gray-400 group-hover:text-blue-600"
-              />
-            </button>
-            <button className="w-full flex items-center justify-between p-4 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors group">
-              <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
-                  <UserCog size={20} className="text-white" />
-                </div>
-                <span className="font-medium text-gray-900">
-                  Client Management
-                </span>
-              </div>
-              <ChevronRight
-                size={20}
-                className="text-gray-400 group-hover:text-blue-600"
-              />
-            </button>
-            <button className="w-full flex items-center justify-between p-4 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors group">
-              <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
-                  <Settings size={20} className="text-white" />
-                </div>
-                <span className="font-medium text-gray-900">Settings</span>
-              </div>
-              <ChevronRight
-                size={20}
-                className="text-gray-400 group-hover:text-blue-600"
-              />
-            </button>
+                <BsArrowRight
+                  size={20}
+                  className="text-gray-400 group-hover:text-blue-600"
+                />
+              </button>
+            ))}
           </div>
         </CommonBorderWrapper>
       </div>
 
       <CommonBorderWrapper>
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">
-          Recent Activities
-        </h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-3.5">
+        <CommonHeader> Recent Activities</CommonHeader>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-3.5 pt-4">
           {activities.map((activity, index) => (
             <div
               key={index}
-              className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow"
+              className="border border-gray-200 rounded-lg p-4 bg-[#F6F6F6]"
             >
               <span
-                className={`inline-block px-2 py-1 rounded text-xs font-medium mb-2 ${getStatusColor(
-                  activity.status
+                className={`inline-block px-2 py-1 rounded-full text-xs font-medium mb-2 ${getStatusColor(
+                  activity.status,
                 )}`}
               >
                 {activity.status}
               </span>
-              <p className="text-sm text-gray-900 font-medium mb-2">
+              <CommonHeader size="sm" className="text-[#0F1010]!">
                 {activity.title}
-              </p>
-              <p className="text-xs text-gray-500">Case : {activity.caseNo}</p>
+              </CommonHeader>
+              <CommonHeader size="sm" className="text-[#747C81]!">
+                Case : {activity.caseNo}
+              </CommonHeader>
             </div>
           ))}
         </div>
@@ -234,7 +258,8 @@ const HomePage: React.FC = () => {
 
       <CommonBorderWrapper>
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-semibold text-gray-900">All Cases</h3>
+          <CommonHeader>Recent Cases</CommonHeader>
+
           <button className="text-blue-600 text-sm hover:underline">
             See all
           </button>
@@ -243,9 +268,10 @@ const HomePage: React.FC = () => {
           <table className="w-full">
             <thead>
               <tr className="border-b border-gray-200">
-                <th className="text-left py-3 px-4 text-sm font-medium text-gray-600">
+                <CommonHeader size="sm" className="text-[#747C81]!">
                   Case No:
-                </th>
+                </CommonHeader>
+
                 <th className="text-left py-3 px-4 text-sm font-medium text-gray-600">
                   Name
                 </th>
