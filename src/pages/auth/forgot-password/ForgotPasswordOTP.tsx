@@ -1,32 +1,61 @@
 import type React from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import OTPInput from "@/components/ui/OTPInput";
+import { useVerifyOTPMutation, useResendOTPMutation } from "@/redux/api/authApi";
 
 export default function ForgotPasswordOTP() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { method, value } = location.state || {};
+  const { email, token } = location.state || {};
   const [otp, setOtp] = useState("");
-  const [error, setError] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [verifyOTP, { isLoading: isVerifying }] = useVerifyOTPMutation();
+  const [resendOTP, { isLoading: isResending }] = useResendOTPMutation();
 
-  if (!method || !value) navigate("/forgot-password");
+  useEffect(() => {
+    if (!email || !token) {
+      navigate("/forgot-password", { replace: true });
+    }
+  }, [email, token, navigate]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  if (!email || !token) {
+    return null;
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (otp.length !== 6) {
-      setError(true);
+      setError("Please enter the 6-digit code.");
       return;
     }
 
-    setLoading(true);
-    setTimeout(() => {
-      navigate("/reset-password", { state: { method, value, otp } });
-      setLoading(false);
-    }, 800);
+    try {
+      await verifyOTP({ 
+        token: token, 
+        receivedOTP: Number(otp) 
+      }).unwrap();
+      navigate("/reset-password", { state: { email, token } });
+    } catch (err: any) {
+      setError(err?.data?.message || "Invalid or expired OTP. Please try again.");
+    }
+  };
+
+  const handleResend = async () => {
+    try {
+      const resp = await resendOTP({ resendOTPtoken: token }).unwrap();
+      // If resend returns a new token, we might need to update it
+      const newToken = resp?.data?.approvalToken || resp?.approvalToken;
+      if (newToken) {
+        navigate(location.pathname, { state: { email, token: newToken }, replace: true });
+      }
+      setError("");
+      alert("OTP Resent successfully!");
+    } catch (err: any) {
+      setError(err?.data?.message || "Failed to resend OTP.");
+    }
   };
 
   return (
@@ -36,41 +65,45 @@ export default function ForgotPasswordOTP() {
           Enter the confirmation code
         </h1>
         <p className="text-center mb-6 md:px-12 text-gray-700">
-          Verification code has been sent to your email ***abcd@gmai.com
+          Verification code has been sent to your email {email}
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <OTPInput value={otp} onChange={setOtp} />
 
           {error && (
-            <div className="flex justify-between bg-[#FFECE6] rounded-md">
+            <div className="flex justify-between bg-[#FFECE6] rounded-md transition-all">
               <div className="px-4 py-3">
-                <p className="text-[#FE1B1B] font-semibold">Invalid code</p>
+                <p className="text-[#FE1B1B] font-semibold">Error</p>
                 <p className="text-[#FE1B1B] text-sm">
-                  Please enter the 6-digit code.
+                  {error}
                 </p>
               </div>
               <button
                 type="button"
-                onClick={() => setError(false)}
-                className="px-[18px] py-[12px] cursor-pointer"
+                onClick={() => setError("")}
+                className="px-4 py-2 cursor-pointer"
               >
                 <X className="w-4 h-4 text-[#FE1B1B]" />
               </button>
             </div>
           )}
 
-          <Button className="w-full bg-[#1878B5] hover:bg-[#1878D9] py-5 cursor-pointer">
-            {loading ? "Verifying..." : "Verify"}
+          <Button 
+            disabled={isVerifying}
+            className="w-full bg-[#1878B5] hover:bg-[#1878D9] py-5 cursor-pointer font-semibold"
+          >
+            {isVerifying ? "Verifying..." : "Verify"}
           </Button>
         </form>
 
         <div className="text-center mt-4">
           <button
-            onClick={() => navigate("/forgot-password")}
-            className="text-[#1878B5] hover:underline text-sm font-medium cursor-pointer"
+            disabled={isResending}
+            onClick={handleResend}
+            className="text-[#1878B5] hover:underline text-sm font-medium cursor-pointer disabled:opacity-50"
           >
-            Resend
+            {isResending ? "Resending..." : "Resend"}
           </button>
         </div>
       </div>

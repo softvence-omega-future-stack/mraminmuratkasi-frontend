@@ -6,30 +6,35 @@ import type React from "react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Logo from "/public/images/authLogo.png";
-import { Lock, Eye, EyeOff, X, CarFront, Phone } from "lucide-react";
+import { Lock, Eye, EyeOff, X, Mail } from "lucide-react";
+import { useLoginMutation } from "@/redux/api/authApi";
+import { useAppDispatch } from "@/redux/hooks";
+import { setCredentials } from "@/redux/features/auth/authSlice";
 
 export default function ClientSignIn() {
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+  const [login, { isLoading: isLoginLoading }] = useLoginMutation();
 
   const [formData, setFormData] = useState({
-    phone: "",
-    licensePlate: "",
+    email: "",
     password: "",
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [submitError, setSubmitError] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
-    if (!formData.phone.trim()) newErrors.phone = "required";
-    if (!formData.licensePlate.trim()) newErrors.licensePlate = "required";
+    if (!formData.email.trim()) newErrors.email = "required";
     if (!formData.password) newErrors.password = "required";
 
     setErrors(newErrors);
-    setSubmitError(Object.keys(newErrors).length > 0);
+    if (Object.keys(newErrors).length > 0) {
+      setErrorMessage("Please fill in all required fields.");
+    }
     return Object.keys(newErrors).length === 0;
   };
 
@@ -42,17 +47,34 @@ export default function ClientSignIn() {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validateForm()) return;
 
-    setLoading(true);
+    try {
+      const res = await login(formData).unwrap();
+      
+      // Fixed: Access user and approvalToken directly from response
+      dispatch(setCredentials({ user: res.user, token: res.approvalToken }));
+      localStorage.setItem("token", res.approvalToken);
+      
+      setSuccessMessage(res.message || "Sign in successful!");
+      
+      // Redirect based on role after 1.5 seconds
+      setTimeout(() => {
+        if (res.user.role === "admin") {
+          navigate("/admin");
+        } else {
+          navigate("/client");
+        }
+      }, 1500);
 
-    // simulate login failure
-    setTimeout(() => {
-      setSubmitError(true);
-      setLoading(false);
-    }, 800);
+    } catch (err: any) {
+      setErrorMessage(
+        err?.data?.message || err?.message || "Failed to sign in. Please try again."
+      );
+      console.error("Failed to sign in:", err);
+    }
   };
 
   const errorInputStyle = "border border-[#FE1B1B] bg-[#FFECE6]";
@@ -68,18 +90,33 @@ export default function ClientSignIn() {
           Sign In
         </h1>
 
-        {/* Error Section */}
-        {submitError && (
-          <div className="flex justify-between items-start bg-[#FFECE6] rounded-md mb-6">
+        {/* Success Section */}
+        {successMessage && (
+          <div className="flex justify-between items-start bg-[#E6FFF1] rounded-md mb-6 border border-[#18B558]">
             <div className="px-4 py-3">
-              <p className="text-[#FE1B1B] font-semibold">Failed to sign in</p>
-              <p className="text-[#FE1B1B] text-sm">
-                Please check your credential & try again.
-              </p>
+              <p className="text-[#18B558] font-semibold">Success</p>
+              <p className="text-[#18B558] text-sm">{successMessage}</p>
             </div>
             <button
               type="button"
-              onClick={() => setSubmitError(false)}
+              onClick={() => setSuccessMessage("")}
+              className="px-[18px] py-[12px] cursor-pointer"
+            >
+              <X className="w-4 h-4 text-[#18B558]" />
+            </button>
+          </div>
+        )}
+
+        {/* Error Section */}
+        {errorMessage && (
+          <div className="flex justify-between items-start bg-[#FFECE6] rounded-md mb-6">
+            <div className="px-4 py-3">
+              <p className="text-[#FE1B1B] font-semibold">Sign in Error</p>
+              <p className="text-[#FE1B1B] text-sm">{errorMessage}</p>
+            </div>
+            <button
+              type="button"
+              onClick={() => setErrorMessage("")}
               className="px-[18px] py-[12px] cursor-pointer"
             >
               <X className="w-4 h-4 text-[#FE1B1B]" />
@@ -88,38 +125,18 @@ export default function ClientSignIn() {
         )}
 
         <form onSubmit={handleSubmit} className="space-y-5">
-          {/* Phone */}
+          {/* Email */}
           <div>
-            <p className="text-gray-900 text-base font-semibold mb-2">
-              Phone Number
-            </p>
+            <p className="text-gray-900 text-base font-semibold mb-2">Email</p>
             <div className="relative">
-              <Phone className="absolute left-3 top-1/2 -translate-y-1/2 text-[#1878B5] w-5 h-5" />
+              <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-[#1878B5] w-5 h-5" />
               <Input
-                name="phone"
-                value={formData.phone}
+                name="email"
+                type="email"
+                value={formData.email}
                 onChange={handleChange}
-                placeholder="Enter phone number"
-                className={`pl-10 py-6 ${errors.phone ? errorInputStyle : ""}`}
-              />
-            </div>
-          </div>
-
-          {/* License Plate */}
-          <div>
-            <p className="text-gray-900 text-base font-semibold mb-2">
-              Car License Plate Number
-            </p>
-            <div className="relative">
-              <CarFront className="absolute left-3 top-1/2 -translate-y-1/2 text-[#1878B5] w-5 h-5" />
-              <Input
-                name="licensePlate"
-                value={formData.licensePlate}
-                onChange={handleChange}
-                placeholder="Enter license plate number"
-                className={`pl-10 py-6 ${
-                  errors.licensePlate ? errorInputStyle : ""
-                }`}
+                placeholder="Enter email address"
+                className={`pl-10 py-6 ${errors.email ? errorInputStyle : ""}`}
               />
             </div>
           </div>
@@ -168,10 +185,10 @@ export default function ClientSignIn() {
 
           <Button
             type="submit"
-            disabled={loading}
+            disabled={isLoginLoading}
             className="w-full bg-[#1878B5] py-5 rounded-[6px] hover:bg-[#1878D9] cursor-pointer"
           >
-            {loading ? "Signing In..." : "Sign In"}
+            {isLoginLoading ? "Signing In..." : "Sign In"}
           </Button>
         </form>
 

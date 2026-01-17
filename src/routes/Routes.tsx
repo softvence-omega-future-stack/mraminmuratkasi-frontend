@@ -17,7 +17,9 @@ import AdminCaseDetails from "@/components/admin/case/AdminCaseDetails";
 import AdminCasesPage from "@/components/admin/case/AdminCasesPage";
 import AdminChatPage from "@/components/admin/chat/AdminChatPage";
 import AllClients from "@/components/admin/client/AllClients";
-import HomePage from "@/pages/adminDashboard/HomePage";
+import ChangePasswordPageForAdmin from "@/components/admin/profile/ChangePasswordPageForAdmin";
+import EditProfilePageForAdmin from "@/components/admin/profile/EditProfilePageForAdmin";
+import HomePage from "@/pages/adminDashboard/CommonHeader";
 import Login from "@/pages/Login";
 import RoleSelection from "@/pages/RoleSelection";
 import Signup from "@/pages/Signup";
@@ -99,9 +101,18 @@ const routes = createBrowserRouter([
             path: "client",
             element: <AllClients />,
           },
+
           {
             path: "chat",
             element: <AdminChatPage />,
+          },
+          {
+            path: "edit-profile",
+            element: <EditProfilePageForAdmin />,
+          },
+          {
+            path: "change-password",
+            element: <ChangePasswordPageForAdmin />,
           },
         ],
       },

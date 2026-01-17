@@ -4,13 +4,14 @@ import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import {
   FileText,
-  Clock,
   Download,
   NotepadText,
   Paperclip,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import DocumentUploadModal from "@/common/DocumentUploadModal";
+import ClientDashboardLayout from "@/Layout/ClientDashboardLayout";
+// import star from "/public/images/star.png";
 // import DocumentUploadModal from "@/common/DocumentUploadModal";
 
 interface Document {
@@ -139,8 +140,9 @@ export default function CaseDetails() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F7F9FC]">
-      <div className="max-w-7xl mx-auto px-6 py-6">
+    <ClientDashboardLayout>
+      <div className="min-h-screen bg-[#F7F9FC]">
+        <div className="pb-5">
         <div className="bg-white rounded-xl shadow-sm p-5">
           <div className="flex items-center justify-between">
             <h2 className="text-lg font-semibold text-black">Case Details</h2>
@@ -253,55 +255,118 @@ export default function CaseDetails() {
           </div>
         </div>
 
-        {/* Timeline */}
-        <div className="mt-6 bg-white rounded-xl shadow-sm p-5">
-          <div className="flex items-center justify-between mb-4">
+        {/* Timeline Section */}
+        <div className="mt-8 bg-white rounded-[24px] shadow-sm p-8 pb-10">
+          <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
             <div>
-              <h3 className="text-sm font-semibold text-gray-900">
+              <h3 className="text-lg font-semibold text-gray-900 mb-1">
                 Case Timeline
               </h3>
-              <p className="text-sm font-normal text-gray-500">Track important events and documents for case #2024-001</p>
+              <p className="text-sm font-normal text-gray-500">
+                Track important events and documents for case #{caseDetails.id}
+              </p>
             </div>
-            <div className="flex gap-2">
+            <div className="flex gap-3">
               <Button
                 size="sm"
-                variant="outline"
-                className="bg-[#1878B5] text-white rounded-full px-5 py-3"
+                className="bg-[#1878B5] hover:bg-[#146499] text-white rounded-2xl h-11 px-8 font-semibold transition-all shadow-md"
               >
                 Export
               </Button>
               <Button
                 size="sm"
                 variant="outline"
-                className="border-[#1878B5] text-[#1878B5] bg-[#E8F2F8] rounded-full px-5 py-3"
+                className="border-[#1878B5] text-[#1878B5] bg-[#E8F2F8] hover:bg-[#D1E5F2] rounded-2xl h-11 px-8 font-semibold transition-all"
               >
                 Share
               </Button>
             </div>
           </div>
 
-          <div className="flex gap-4 overflow-x-auto pb-2">
+          {/* Cards Container */}
+          <div className="flex gap-5 overflow-x-auto pb-6 scrollbar-hide no-scrollbar -mx-2 px-2">
             {[
-              "Court Hearing Scheduled",
-              "Insurance Response Received",
-              "Documents Reviewed",
-              "Case In Progress",
-            ].map((title, i) => (
+              {
+                title: "Court Hearing Scheduled",
+                description: "A court hearing has been scheduled for 20/11/2025.",
+                date: "20-Jan-2025",
+                file: "Evidence.jpg",
+              },
+              {
+                title: "Insurance Response Received",
+                description:
+                  "The insurance company requested additional documents to process the claim.",
+                date: "20-Jan-2025",
+                file: "Insurance.jpg",
+              },
+              {
+                title: "Insurance Response Received",
+                description:
+                  "The insurance company requested additional documents to process the claim.",
+                date: "20-Jan-2025",
+                file: "Evidence.jpg",
+              },
+              {
+                title: "Insurance Response Received",
+                description:
+                  "The insurance company requested additional documents to process the claim.",
+                date: "20-Jan-2025",
+                file: "Evidence.jpg",
+              },
+              {
+                title: "Insurance Response Received",
+                description:
+                  "The insurance company requested additional documents to process the claim.",
+                date: "20-Jan-2025",
+                file: "Evidence.jpg",
+              },
+            ].map((event, i) => (
               <div
                 key={i}
-                className="min-w-[260px] border border-gray-200 rounded-lg p-4"
+                className="min-w-[320px] bg-[#F9FAFB] rounded-[20px] p-6 flex flex-col hover:shadow-md transition-shadow duration-200 border border-transparent hover:border-blue-100"
               >
-                <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mb-3">
-                  <Clock className="w-4 h-4 text-[#1878B5]" />
-                </div>
-                <p className="text-sm font-medium text-gray-900 mb-1">
-                  {title}
+                {/* <div className="w-10 h-10 bg-[#1878B5] rounded-full flex items-center justify-center mb-5 shadow-sm"> */}
+                  {/* <Check className="w-6 h-6 text-white" /> */}
+                  <img className="mb-5" src="../../../public/images/star.png" alt="star" width={40} height={40}/>
+                {/* </div> */}
+                <h4 className="text-[#1878B5] font-bold text-[17px] mb-2 leading-tight">
+                  {event.title}
+                </h4>
+                <p className="text-gray-500 text-[13px] leading-relaxed mb-6 font-normal">
+                  {event.description}
                 </p>
-                <span className="inline-block mt-2 text-xs px-2 py-1 bg-blue-50 text-blue-700 rounded-full">
-                  Jan 2024
-                </span>
+
+                <div className="mt-auto flex items-center justify-between">
+                  <div className="flex items-center gap-2 px-2 py-1.5 bg-[#E8F2F8] rounded-md transition-colors hover:bg-blue-100 cursor-pointer">
+                    {/* <div className="bg-[#4169E1] p-0.5 rounded-[2px]">
+                      <span className="text-[6px] text-white font-black uppercase">jpg</span>
+                    </div> */}
+                    <span className="text-[11px] font-medium text-gray-500">
+                      {event.file}
+                    </span>
+                  </div>
+                  <div className="bg-[#C48C57] text-white text-[11px] font-bold px-4 py-1.5 rounded-lg shadow-sm">
+                    {event.date}
+                  </div>
+                </div>
               </div>
             ))}
+          </div>
+
+          {/* Progress Bar & Status Footer */}
+          <div className="mt-8 border-t border-gray-100 pt-8">
+            <div className="w-full bg-[#E5E7EB] h-1.5 rounded-full overflow-hidden mb-6">
+              <div className="bg-[#1878B5] h-full w-[40px] rounded-full"></div>
+            </div>
+            
+            <div className="space-y-1">
+              <h4 className="text-gray-900 font-bold text-base">
+                Case Status : <span className="text-gray-700 font-semibold">{caseDetails.status}</span>
+              </h4>
+              <p className="text-gray-400 text-xs font-normal">
+                Last Update : Insurance claim filed
+              </p>
+            </div>
           </div>
         </div>
       </div>
@@ -312,6 +377,7 @@ export default function CaseDetails() {
         onUpload={handleDocumentUpload}
       />
     </div>
+    </ClientDashboardLayout>
   );
 }
 

@@ -1,8 +1,8 @@
-"use client";
-
-import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-// import { useAuth } from "../../context/AuthContext";
+import { useGetProfileQuery, useLogOutMutation } from "@/redux/api/authApi";
+import { useAppDispatch } from "@/redux/hooks";
+import { logout } from "@/redux/features/auth/authSlice";
+import { useState } from "react";
 import {
   Menu,
   Bell,
@@ -12,7 +12,7 @@ import {
   SquarePen,
   LockKeyhole,
   MessageSquareDot,
-  User,
+  LogOut,
 } from "lucide-react";
 import NotificationModal from "@/common/NotificationModal";
 
@@ -24,25 +24,32 @@ interface ClientTopNavProps {
 
 export default function ClientTopNav({
   onMenuClick,
-}: //   showProfileMenu,
-//   setShowProfileMenu,
-ClientTopNavProps) {
-  //   const { user, logout } = useAuth();
+}: ClientTopNavProps) {
   const navigate = useNavigate();
   const location = useLocation();
-  // const [showNotifications, setShowNotifications] = useState(false);
+  const dispatch = useAppDispatch();
+  const { data: profileData } = useGetProfileQuery(undefined);
+  const user = profileData?.data;
+
   const [showAccountMenu, setShowAccountMenu] = useState(false);
   const [open, setOpen] = useState(false);
-  // const [pushNotificationsEnabled, setPushNotificationsEnabled] = useState(false);
 
-  // Function to check if a route is active
   const isActiveRoute = (path: string) => {
     return location.pathname === path;
   };
 
-  const handleLogout = () => {
-    // logout();
-    navigate("/");
+  const [logOut] = useLogOutMutation();
+
+  const handleLogout = async () => {
+    try {
+      await logOut(undefined).unwrap();
+    } catch (err) {
+      console.error("Logout failed:", err);
+    } finally {
+      dispatch(logout());
+      localStorage.removeItem("token");
+      navigate("/");
+    }
   };
 
   // const notifications = [
@@ -191,15 +198,14 @@ ClientTopNavProps) {
               className="flex items-center space-x-3 bg-[#E8F2F8] rounded-full pl-1 pr-2 py-2 hover:bg-gray-200 transition-colors cursor-pointer"
             >
               <img
-                // src="/public/images/navProfile.png"
-                src="https://media.istockphoto.com/id/2235903620/photo/happy-50-years-old-business-man-in-suit-standing-in-office-headshot-portrait.webp?a=1&b=1&s=612x612&w=0&k=20&c=2say2ge83Ytw-k3YPSCweS8BcXoira3VoIiZjwGzghQ="
+                src={user?.img || "https://media.istockphoto.com/id/2235903620/photo/happy-50-years-old-business-man-in-suit-standing-in-office-headshot-portrait.webp?a=1&b=1&s=612x612&w=0&k=20&c=2say2ge83Ytw-k3YPSCweS8BcXoira3VoIiZjwGzghQ="}
                 alt="Profile"
-                className="w-8 h-8 rounded-full bg-white"
+                className="w-8 h-8 rounded-full bg-white object-cover"
               />
               <span className="hidden sm:block text-xs font-medium text-gray-900">
-                Wade Warren
+                {user?.name || "User"}
               </span>
-              <span className="text-gray-400 text-xs">▼</span>
+              <span className="text-gray-400 text-xs text-center items-center justify-center flex">▼</span>
             </button>
 
             {/* Account Menu Dropdown */}
@@ -241,10 +247,10 @@ ClientTopNavProps) {
                     </div>
                     <button
                       onClick={handleLogout}
-                      className="w-full flex items-center space-x-2 px-3 py-4 text-sm text-[#FE1B1B] hover:bg-gray-50 rounded transition-colors border-t border-t-gray-50 cursor-pointer"
+                      className="w-full flex items-center space-x-2 px-3 py-4 text-sm text-[#FE1B1B] hover:bg-gray-50 rounded transition-colors border-t border-t-gray-50 cursor-pointer font-medium"
                     >
-                      <User className="w-4 h-4" />
-                      <span>Delete Account</span>
+                      <LogOut className="w-4 h-4" />
+                      <span>Log Out</span>
                     </button>
                   </div>
                 </div>
