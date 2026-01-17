@@ -21,9 +21,10 @@ import HomePage from "@/pages/adminDashboard/HomePage";
 import Login from "@/pages/Login";
 import RoleSelection from "@/pages/RoleSelection";
 import Signup from "@/pages/Signup";
-import { createBrowserRouter } from "react-router-dom";
+import { createBrowserRouter, Outlet } from "react-router-dom";
 import App from "../App";
 import NotFound from "../pages/NotFound";
+import ProtectedRoute from "./ProtectedRoute";
 
 const routes = createBrowserRouter([
   {
