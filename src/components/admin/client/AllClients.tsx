@@ -1,6 +1,10 @@
 // AllCases.tsx
-import { MessageSquare, MoreVertical } from "lucide-react";
+import CommonBorderWrapper from "@/common/CommonBorderWrapper";
+import CommonButton from "@/common/CommonButton";
+import CommonHeader from "@/common/CommonHeader";
+import Pagination from "@/common/Pagination";
 import { useState } from "react";
+import ClientDetailsModal from "./ClientDetailsModal";
 
 type CaseStatus = "Active" | "Pending" | "Closed";
 
@@ -51,16 +55,14 @@ const mockCases: Case[] = [
 
 const AllClients = () => {
   const [cases] = useState<Case[]>(mockCases);
+  const [isClientModalOpen, setIsClientModalOpen] = useState(false);
 
   return (
     <div className="">
-      <div className="">
+      <CommonBorderWrapper className="">
         {/* Header */}
         <div className="mb-6">
-          <h1 className="text-2xl font-bold text-gray-900">All Cases</h1>
-          <p className="mt-1 text-sm text-gray-600">
-            Manage and track all client cases
-          </p>
+          <CommonHeader>All Cases</CommonHeader>
         </div>
 
         {/* Card wrapper */}
@@ -82,7 +84,10 @@ const AllClients = () => {
                 className="grid grid-cols-6 gap-4 px-6 py-4 hover:bg-gray-50/70 transition-colors"
               >
                 {/* Name + avatar + email */}
-                <div className="col-span-2 flex items-center gap-3">
+                <div
+                  onClick={() => setIsClientModalOpen(true)}
+                  className="col-span-2 flex items-center gap-3 cursor-pointer"
+                >
                   <div className="h-10 w-10 flex-shrink-0 rounded-full overflow-hidden border border-gray-200">
                     <img
                       src={
@@ -108,8 +113,8 @@ const AllClients = () => {
                       item.type === "Active"
                         ? "bg-green-100 text-green-800"
                         : item.type === "Pending"
-                        ? "bg-yellow-100 text-yellow-800"
-                        : "bg-gray-100 text-gray-800"
+                          ? "bg-yellow-100 text-yellow-800"
+                          : "bg-gray-100 text-gray-800"
                     }`}
                   >
                     {item.type}
@@ -128,14 +133,7 @@ const AllClients = () => {
 
                 {/* Actions */}
                 <div className="flex items-center justify-end gap-2">
-                  <button className="inline-flex items-center gap-1.5 rounded-lg border border-gray-300 bg-white px-3.5 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-1 transition">
-                    <MessageSquare size={16} />
-                    Message
-                  </button>
-
-                  <button className="rounded-lg p-2 text-gray-500 hover:bg-gray-100 hover:text-gray-700">
-                    <MoreVertical size={18} />
-                  </button>
+                  <CommonButton>Message</CommonButton>
                 </div>
               </div>
             ))}
@@ -148,23 +146,13 @@ const AllClients = () => {
             </div>
           )}
         </div>
-
-        {/* Pagination (placeholder) */}
-        <div className="mt-6 flex items-center justify-between">
-          <p className="text-sm text-gray-600">
-            Showing <span className="font-medium">1–{cases.length}</span> of{" "}
-            {cases.length} cases
-          </p>
-          <div className="flex gap-2">
-            <button className="rounded border border-gray-300 px-3 py-1.5 text-sm disabled:opacity-50">
-              Previous
-            </button>
-            <button className="rounded border border-gray-300 px-3 py-1.5 text-sm">
-              Next
-            </button>
-          </div>
-        </div>
+      </CommonBorderWrapper>{" "}
+      <div className="py-5">
+        <Pagination totalPages={5} onPageChange={() => {}} currentPage={1} />
       </div>
+      {isClientModalOpen && (
+        <ClientDetailsModal setIsClientModalOpen={setIsClientModalOpen} />
+      )}
     </div>
   );
 };
