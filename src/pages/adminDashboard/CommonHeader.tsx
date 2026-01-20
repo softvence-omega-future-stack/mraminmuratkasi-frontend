@@ -7,6 +7,7 @@ import { AiOutlineFileAdd } from "react-icons/ai";
 import { BsArrowRight, BsFileEarmarkCheck } from "react-icons/bs";
 import { FiUsers } from "react-icons/fi";
 import { TbFileText } from "react-icons/tb";
+import { useNavigate } from "react-router-dom";
 
 interface Case {
   caseNo: string;
@@ -131,6 +132,13 @@ const HomePage: React.FC = () => {
     }
   };
   const [isCaseModalOpen, setIsCaseModalOpen] = useState(false);
+  const navigate = useNavigate();
+  const handleClient = () => {
+    navigate("/admin/client");
+  };
+  const handleChangePassword = () => {
+    navigate("/admin/change-password");
+  };
   const buttons = [
     {
       title: "Create New Case",
@@ -144,14 +152,14 @@ const HomePage: React.FC = () => {
       title: "Client Management",
       icon: <FiUsers size={20} className="text-white" />,
       bgColor: "bg-blue-600",
-      onClick: undefined, // no click handler
+      onClick: handleClient,
       bgButton: "bg-gray-50 hover:bg-gray-100",
     },
     {
       title: "Settings",
       icon: <Settings size={20} className="text-white" />,
       bgColor: "bg-blue-600",
-      onClick: undefined, // no click handler
+      onClick: handleChangePassword,
       bgButton: "bg-gray-50 hover:bg-gray-100",
     },
   ];
