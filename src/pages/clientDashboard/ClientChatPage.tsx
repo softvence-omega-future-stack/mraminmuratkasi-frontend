@@ -2,12 +2,13 @@
 
 import type React from "react";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Send, Paperclip, Search } from "lucide-react";
 import ClientDashboardLayout from "@/Layout/ClientDashboardLayout";
+import { useGetChatListQuery, useGetConversationQuery } from "@/redux/api/chatApi";
 
 interface Message {
-  id: number;
+  id: string;
   sender: string;
   avatar: string;
   text: string;
@@ -16,7 +17,7 @@ interface Message {
 }
 
 interface Chat {
-  id: number;
+  id: string;
   name: string;
   avatar: string;
   lastMessage: string;
@@ -24,84 +25,73 @@ interface Chat {
   unread: number;
 }
 
-const chats: Chat[] = [
-  {
-    id: 1,
-    name: "John Lieberman",
-    // avatar: "/public/images/chatImg.png",
-    avatar:
-      "https://plus.unsplash.com/premium_photo-1689977807477-a579eda91fa2?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OXx8cHJvZmlsZXxlbnwwfHwwfHx8MA%3D%3D",
-    lastMessage: "How are you doing?",
-    time: "2m",
-    unread: 2,
-  },
-  {
-    id: 2,
-    name: "Jane Smith",
-    avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8cHJvZmlsZXxlbnwwfHwwfHx8MA%3D%3D",
-    lastMessage: "Thanks for your help!",
-    time: "1h",
-    unread: 0,
-  },
-];
 
-const initialMessages: Message[] = [
-  {
-    id: 1,
-    sender: "John Lieberman",
-    // avatar: "/public/images/chatImg.png",
-    avatar:
-      "https://plus.unsplash.com/premium_photo-1689977807477-a579eda91fa2?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OXx8cHJvZmlsZXxlbnwwfHwwfHx8MA%3D%3D",
-    text: "Hey there!",
-    time: "10:30 AM",
-    isOwn: false,
-  },
-  {
-    id: 2,
-    sender: "You",
-    // avatar: "/public/images/chatImg2.png",
-    avatar:
-      "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTF8fHByb2ZpbGV8ZW58MHx8MHx8fDA%3D",
-    text: "Hi! How are you?",
-    time: "10:32 AM",
-    isOwn: true,
-  },
-  {
-    id: 3,
-    sender: "John Lieberman",
-    avatar:
-      "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTZ8fHByb2ZpbGV8ZW58MHx8MHx8fDA%3D",
-    text: "How r u doing?",
-    time: "10:35 AM",
-    isOwn: false,
-  },
-];
 
 export default function ClientChatPage() {
-  const [messages, setMessages] = useState<Message[]>(initialMessages);
-  const [newMessage, setNewMessage] = useState("");
-  const [activeChat, setActiveChat] = useState(chats[0]);
+  const [activeChat, setActiveChat] = useState<Chat | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [newMessage, setNewMessage] = useState("");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  // Fetch Chat List
+  const { data: chatListData, isLoading: isChatListLoading } = useGetChatListQuery(undefined);
+  
+  // Fetch Conversation
+  const { data: conversationData, isLoading: isConversationLoading } = useGetConversationQuery(activeChat?.id, {
+    skip: !activeChat?.id,
+  });
+
+  // Derived state for chats
+  const chatList = Array.isArray(chatListData) ? chatListData : chatListData?.data || [];
+  const chats: Chat[] = chatList.map((chat: any) => ({
+    id: chat.userId,
+    name: chat.name,
+    avatar: chat.img || "https://ammachilabs.org/wp-content/uploads/2023/11/male.jpeg",
+    lastMessage: chat.lastMessage,
+    time: new Date(chat.lastMessageTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+    unread: chat.unseenCount,
+  }));
+
+  // Derived state for messages
+  const conversation = conversationData?.data || conversationData;
+  const rawMessages = conversation?.messages || [];
+  
+  const messages: Message[] = rawMessages.map((msg: any) => ({
+    id: msg._id,
+    sender: msg.sentByMe ? "You" : conversation?.chatWith?.name,
+    avatar: msg.sentByMe 
+      ? "https://ammachilabs.org/wp-content/uploads/2023/11/male.jpeg" 
+      : (activeChat?.avatar || "/placeholder.svg"),
+    text: msg.text,
+    time: new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+    isOwn: msg.sentByMe,
+  }));
+
+  // Set first chat as active initially if available and none selected
+  useEffect(() => {
+    if (!activeChat && chats.length > 0) {
+      setActiveChat(chats[0]);
+    }
+  }, [chats, activeChat]);
 
   const handleSendMessage = () => {
     if (!newMessage.trim()) return;
-
-    const message: Message = {
-      id: messages.length + 1,
-      sender: "You",
-      //   avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=you",
-      avatar:
-        "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTF8fHByb2ZpbGV8ZW58MHx8MHx8fDA%3D",
-      text: newMessage,
-      time: new Date().toLocaleTimeString("en-US", {
-        hour: "2-digit",
-        minute: "2-digit",
-      }),
-      isOwn: true,
-    };
-
-    setMessages([...messages, message]);
+    
+    // Optimistic update or waiting for mutation - user asked for chat list/get conversation api implementation first. 
+    // Assuming send message will be implemented later or we just mock local add for now? 
+    // The user didn't provide send message API. I will leave the local state update for now but it won't persist without API.
+    // Ideally we need a sendMessage mutation.
+    
+    // const message: Message = {
+    //   id: Date.now().toString(),
+    //   sender: "You",
+    //   avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTF8fHByb2ZpbGV8ZW58MHx8MHx8fDA%3D",
+    //   text: newMessage,
+    //   time: new Date().toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" }),
+    //   isOwn: true,
+    // };
+    // setMessages([...messages, message]); // This won't work directly as messages is derived from query data now.
+    
     setNewMessage("");
   };
 
@@ -143,7 +133,12 @@ export default function ClientChatPage() {
             </div>
 
             <div className="divide-y divide-gray-100 space-y-0.5">
-              {filteredChats.map((chat) => (
+              {isChatListLoading ? (
+                <div className="p-4 text-center text-gray-500">Loading chats...</div>
+              ) : filteredChats.length === 0 ? (
+                <div className="p-4 text-center text-gray-500">No chats found</div>
+              ) : (
+                filteredChats.map((chat) => (
                 <button
                   key={chat.id}
                   onClick={() => {
@@ -151,7 +146,7 @@ export default function ClientChatPage() {
                     setIsMobileMenuOpen(false);
                   }}
                   className={`w-full p-4 text-left hover:bg-gray-50 transition-colors cursor-pointer rounded-[8px] ${
-                    activeChat.id === chat.id ? "bg-[#E8F2F8] p-2" : ""
+                    activeChat?.id === chat.id ? "bg-[#E8F2F8] p-2" : ""
                   }`}
                 >
                   <div className="flex items-center space-x-3">
@@ -189,7 +184,7 @@ export default function ClientChatPage() {
                     </div>
                   </div>
                 </button>
-              ))}
+              )))}
             </div>
           </div>
 
@@ -219,11 +214,12 @@ export default function ClientChatPage() {
                   />
                 </svg>
               </button>
-              <h3 className="font-semibold text-gray-900">{activeChat.name}</h3>
+              <h3 className="font-semibold text-gray-900">{activeChat?.name || "Select Chat"}</h3>
               <div className="w-6" />
             </div>
 
             {/* Chat Header */}
+            {activeChat ? (
             <div className="hidden md:flex px-5 pt-4 pb-3 border-b border-gray-200 items-center justify-between">
               <div className="flex items-center space-x-3">
                 <div className="relative">
@@ -244,10 +240,24 @@ export default function ClientChatPage() {
                 </div>
               </div>
             </div>
+            ) : (
+                <div className="hidden md:flex px-5 pt-4 pb-3 border-b border-gray-200 items-center justify-between">
+                    <p className="font-medium text-gray-500">Select a chat to start messaging</p>
+                </div>
+            )}
 
             {/* Messages */}
             <div className="flex-1 overflow-y-auto p-4 space-y-4">
-              {messages.map((message) => (
+              {isConversationLoading ? (
+                 <div className="flex h-full items-center justify-center">
+                    <p className="text-gray-500">Loading messages...</p>
+                 </div>
+              ) : messages.length === 0 ? (
+                 <div className="flex h-full items-center justify-center">
+                    <p className="text-gray-500">No messages found</p>
+                 </div>
+              ) : (
+                messages.map((message) => (
                 <div
                   key={message.id}
                   className={`flex ${
@@ -288,7 +298,7 @@ export default function ClientChatPage() {
                     </div>
                   </div>
                 </div>
-              ))}
+              )))}
             </div>
 
             {/* Message Input */}

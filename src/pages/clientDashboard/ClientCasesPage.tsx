@@ -148,39 +148,37 @@
 import ClientDashboardLayout from "@/Layout/ClientDashboardLayout";
 import { MoreVertical } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useGetProfileQuery } from "@/redux/api/authApi";
 
-interface CaseItem {
-  caseNo: string;
-  name: string;
-  type: string;
-  created: string;
-  courtDate: string;
-  status: "InProgress" | "Complete";
-}
 
-export const cases: CaseItem[] = Array.from({ length: 9 }).map((_, i) => ({
-  caseNo: "CASE-2024-001",
-  name: "Speeding Violation 85mph in 55mph",
-  type: "Reckless Driving",
-  created: "Jan 20, 2024",
-  courtDate: "Not Scheduled",
-  status: i < 6 ? "InProgress" : "Complete",
-}));
 
-export const getStatusStyles = (status: CaseItem["status"]) => {
-  switch (status) {
-    case "Complete":
-      return "bg-green-100 text-green-700";
-    default:
-      return "bg-blue-100 text-blue-700";
+export const getStatusStyles = (status: string) => {
+  const normalizedStatus = status.toLowerCase();
+  if (normalizedStatus === "complete" || normalizedStatus === "completed") {
+    return "bg-green-100 text-green-700";
   }
+  if (normalizedStatus === "pending" || normalizedStatus === "inprogress" || normalizedStatus === "in progress") {
+    return "bg-blue-100 text-blue-700";
+  }
+  return "bg-gray-100 text-gray-700";
 };
 
 export default function ClientCasesPage() {
   const navigate = useNavigate();
+  const { data: profileData, isLoading } = useGetProfileQuery(undefined);
+  const userCases = profileData?.data?.case_ids || [];
 
-  const handleCaseClick = (caseNo: string) => {
-    navigate(`/client/case/${caseNo}`, { state: { from: "/client/cases" } });
+  const handleCaseClick = (caseId: string) => {
+    navigate(`/client/case/${caseId}`, { state: { from: "/client/cases" } });
+  };
+
+  const formatDate = (dateString: string) => {
+    if (!dateString) return "N/A";
+    return new Date(dateString).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    });
   };
 
   return (
@@ -208,49 +206,63 @@ export default function ClientCasesPage() {
               </thead>
 
               <tbody className="divide-y divide-gray-200 bg-[#F0FAFF] text-gray-900 font-inter">
-                {cases.map((item, index) => (
-                  <tr
-                    key={index}
-                    className="hover:bg-gray-50 transition-colors cursor-pointer"
-                    onClick={() => handleCaseClick(item.caseNo)}
-                  >
-                    <td className="px-6 py-4 text-sm font-medium text-gray-900">
-                      {item.caseNo}
-                    </td>
-
-                    <td className="px-6 py-4 text-sm text-gray-700 max-w-[320px] truncate">
-                      {item.name}
-                    </td>
-
-                    <td className="px-6 py-4 text-sm text-gray-700">
-                      {item.type}
-                    </td>
-
-                    <td className="px-6 py-4 text-sm text-gray-700">
-                      {item.created}
-                    </td>
-
-                    <td className="px-6 py-4 text-sm text-gray-700">
-                      {item.courtDate}
-                    </td>
-
-                    <td className="px-6 py-4">
-                      <span
-                        className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${getStatusStyles(
-                          item.status
-                        )}`}
-                      >
-                        {item.status}
-                      </span>
-                    </td>
-
-                    <td className="px-4 py-4 text-right">
-                      <button className="text-gray-500 hover:text-gray-700">
-                        <MoreVertical className="w-4 h-4" />
-                      </button>
+                {isLoading ? (
+                  <tr>
+                    <td colSpan={7} className="px-6 py-8 text-center text-sm text-gray-500">
+                      Loading cases...
                     </td>
                   </tr>
-                ))}
+                ) : userCases.length === 0 ? (
+                  <tr>
+                    <td colSpan={7} className="px-6 py-8 text-center text-sm text-gray-500">
+                      No cases found.
+                    </td>
+                  </tr>
+                ) : (
+                  userCases.map((item: any) => (
+                    <tr
+                      key={item._id}
+                      className="hover:bg-gray-50 transition-colors cursor-pointer"
+                      onClick={() => handleCaseClick(item._id)}
+                    >
+                      <td className="px-6 py-4 text-sm font-medium text-gray-900">
+                        {item.caseNumber || "N/A"}
+                      </td>
+
+                      <td className="px-6 py-4 text-sm text-gray-700 max-w-[320px] truncate">
+                        {item.caseTitle}
+                      </td>
+
+                      <td className="px-6 py-4 text-sm text-gray-700">
+                        {item.caseType}
+                      </td>
+
+                      <td className="px-6 py-4 text-sm text-gray-700">
+                        {formatDate(item.createdAt)}
+                      </td>
+
+                      <td className="px-6 py-4 text-sm text-gray-700">
+                        {formatDate(item.coatDate)}
+                      </td>
+
+                      <td className="px-6 py-4">
+                        <span
+                          className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${getStatusStyles(
+                            item.case_status
+                          )}`}
+                        >
+                          {item.case_status}
+                        </span>
+                      </td>
+
+                      <td className="px-4 py-4 text-right">
+                        <button className="text-gray-500 hover:text-gray-700">
+                          <MoreVertical className="w-4 h-4" />
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </table>
           </div>

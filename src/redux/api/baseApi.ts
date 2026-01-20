@@ -28,6 +28,6 @@ export const baseApi = createApi({
     }
     return result;
   },
-  tagTypes: ["User"],
+  tagTypes: ["User", "Notification", "Message", "Case"],
   endpoints: () => ({}),
 });
