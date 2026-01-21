@@ -2,18 +2,13 @@
 
 import ClientSidebar from "@/pages/clientDashboard/ClientSidebar";
 import ClientTopNav from "@/pages/clientDashboard/ClientTopNav";
-import type React from "react";
 
 import { useState } from "react";
 import { SocketProvider } from "@/context/SocketContext";
 
-interface DashboardLayoutProps {
-  children: React.ReactNode;
-}
+import { Outlet } from "react-router-dom";
 
-export default function ClientDashboardLayout({
-  children,
-}: DashboardLayoutProps) {
+export default function ClientDashboardLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   //   const { user } = useAuth();
@@ -57,7 +52,9 @@ export default function ClientDashboardLayout({
 
           {/* Page Content */}
           <main className="flex-1 overflow-auto">
-            <div className="max-w-7x mx-auto">{children}</div>
+            <div className="max-w-7x mx-auto">
+              <Outlet />
+            </div>
           </main>
         </div>
       </div>
