@@ -19,7 +19,7 @@ import AdminChatPage from "@/components/admin/chat/AdminChatPage";
 import AllClients from "@/components/admin/client/AllClients";
 import ChangePasswordPageForAdmin from "@/components/admin/profile/ChangePasswordPageForAdmin";
 import EditProfilePageForAdmin from "@/components/admin/profile/EditProfilePageForAdmin";
-import HomePage from "@/pages/adminDashboard/CommonHeader";
+import HomePage from "@/pages/adminDashboard/HomePage";
 import Login from "@/pages/Login";
 import RoleSelection from "@/pages/RoleSelection";
 import Signup from "@/pages/Signup";
@@ -118,21 +118,31 @@ const routes = createBrowserRouter([
       },
       {
         path: "client",
-        element: <ClientDashboardLayout>
-          <App />
-        </ClientDashboardLayout>,
         children: [
           {
             path: "",
-            element: <ClientDashboard />,
+            element: (
+              <ClientDashboardLayout>
+                <ClientDashboard />
+              </ClientDashboardLayout>
+            ),
           },
+
           {
             path: "chat",
-            element: <ClientChatPage />,
+            element: (
+              // <ClientDashboardLayout>
+              <ClientChatPage />
+              // </ClientDashboardLayout>
+            ),
           },
           {
             path: "cases",
-            element: <ClientCasesPage />,
+            element: (
+              // <ClientDashboardLayout>
+              <ClientCasesPage />
+              // </ClientDashboardLayout>
+            ),
           },
           {
             path: "case/:id",
