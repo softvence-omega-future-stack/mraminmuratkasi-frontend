@@ -118,21 +118,31 @@ const routes = createBrowserRouter([
       },
       {
         path: "client",
-        element: <ClientDashboardLayout>
-          <App />
-        </ClientDashboardLayout>,
         children: [
           {
             path: "",
-            element: <ClientDashboard />,
+            element: (
+              <ClientDashboardLayout>
+                <ClientDashboard />
+              </ClientDashboardLayout>
+            ),
           },
+
           {
             path: "chat",
-            element: <ClientChatPage />,
+            element: (
+              // <ClientDashboardLayout>
+              <ClientChatPage />
+              // </ClientDashboardLayout>
+            ),
           },
           {
             path: "cases",
-            element: <ClientCasesPage />,
+            element: (
+              // <ClientDashboardLayout>
+              <ClientCasesPage />
+              // </ClientDashboardLayout>
+            ),
           },
           {
             path: "case/:id",
