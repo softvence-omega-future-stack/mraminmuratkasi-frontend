@@ -1,21 +1,25 @@
-import React, { createContext, useContext, useEffect, useRef, useState } from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
 import { useAppSelector } from "@/redux/hooks";
 import { selectToken } from "@/redux/features/auth/authSlice";
 import { useGetChatListQuery } from "@/redux/api/chatApi";
+import { useAppDispatch } from "@/redux/hooks";
+import { baseApi } from "@/redux/api/baseApi";
 
 interface SocketContextType {
   socket: WebSocket | null;
   isConnected: boolean;
   totalUnseenCount: number;
+  refetchChatList: () => void;
 }
 
 const SocketContext = createContext<SocketContextType | undefined>(undefined);
 
 export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [socket, setSocket] = useState<WebSocket | null>(null);
   const [isConnected, setIsConnected] = useState(false);
   const [totalUnseenCount, setTotalUnseenCount] = useState(0);
-  const socketRef = useRef<WebSocket | null>(null);
   const token = useAppSelector(selectToken);
+  const dispatch = useAppDispatch();
 
   const { data: chatListData, refetch: refetchChatList } = useGetChatListQuery(undefined, {
     skip: !token,
@@ -31,13 +35,13 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
   useEffect(() => {
     if (!token) {
-      if (socketRef.current) {
-        socketRef.current.close();
+      if (socket) {
+        socket.close();
       }
       return;
     }
 
-    let socket: WebSocket | null = null;
+    let ws: WebSocket | null = null;
     let reconnectionTimeout: NodeJS.Timeout;
     let retryCount = 0;
     const maxRetries = 5;
@@ -46,33 +50,36 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       const wsUrl = `wss://unfall-update.de/api/v1?token=${token}`;
       console.log(`[Global Socket] Connecting... (Attempt ${retryCount + 1})`);
       
-      socket = new WebSocket(wsUrl);
-      socketRef.current = socket;
+      ws = new WebSocket(wsUrl);
+      setSocket(ws);
 
-      socket.onopen = () => {
+      ws.onopen = () => {
         console.log("[Global Socket] Connected");
         setIsConnected(true);
         retryCount = 0;
       };
 
-      socket.onmessage = (event) => {
+      const handleGlobalMessage = (event: MessageEvent) => {
         try {
           const data = JSON.parse(event.data);
           console.log("[Global Socket] Message:", data);
           
-          // Refetch chat list to update previews and unseen counts
-          refetchChatList();
+          // Use Redux tag invalidation to trigger automatic refetching of all related queries
+          dispatch(baseApi.util.invalidateTags(["Message"]));
         } catch (error) {
           console.error("[Global Socket] Parse Error:", error);
         }
       };
 
-      socket.onerror = () => {
+      ws.addEventListener("message", handleGlobalMessage);
+
+      ws.onerror = () => {
         setIsConnected(false);
       };
 
-      socket.onclose = (event) => {
+      ws.onclose = (event) => {
         setIsConnected(false);
+        setSocket(null);
         if (!event.wasClean && retryCount < maxRetries) {
           const delay = Math.min(1000 * Math.pow(2, retryCount), 10000);
           reconnectionTimeout = setTimeout(() => {
@@ -86,13 +93,16 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     connect();
 
     return () => {
-      if (socket) socket.close();
+      if (ws) {
+        ws.removeEventListener("message", () => {}); // Cleanup doesn't really work this way with anonymous funcs but close is better
+        ws.close();
+      }
       if (reconnectionTimeout) clearTimeout(reconnectionTimeout);
     };
   }, [token]);
 
   return (
-    <SocketContext.Provider value={{ socket: socketRef.current, isConnected, totalUnseenCount }}>
+    <SocketContext.Provider value={{ socket, isConnected, totalUnseenCount, refetchChatList }}>
       {children}
     </SocketContext.Provider>
   );

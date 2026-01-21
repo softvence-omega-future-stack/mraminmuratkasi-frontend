@@ -1,4 +1,4 @@
-import { Trash2, X } from "lucide-react";
+import { X, Trash2, Loader2 } from "lucide-react";
 
 interface Notification {
   id: string | number;
@@ -6,6 +6,7 @@ interface Notification {
   time: string;
   unread?: boolean;
   avatar: string;
+  type?: "message" | "other"; // Added type for redirection logic
 }
 
 interface NotificationModalProps {
@@ -13,6 +14,9 @@ interface NotificationModalProps {
   onClose: () => void;
   notifications: Notification[];
   onDelete: (id: string | number) => void;
+  onView?: (notif: Notification) => void;
+  deletingId?: string | number | null; // Added
+  viewingId?: string | number | null; // Added
 }
 
 export default function NotificationModal({
@@ -20,6 +24,9 @@ export default function NotificationModal({
   onClose,
   notifications,
   onDelete,
+  onView,
+  deletingId,
+  viewingId,
 }: NotificationModalProps) {
   if (!open) return null;
 
@@ -49,6 +56,20 @@ export default function NotificationModal({
             </div>
           ) : (
             notifications.map((notif) => (
+            <div
+              key={notif.id}
+              onClick={() => !viewingId && !deletingId && onView?.(notif)}
+              className={`flex items-start gap-4 px-5 py-4 hover:bg-gray-50 transition cursor-pointer group ${
+                (viewingId === notif.id || deletingId === notif.id) ? "opacity-60 pointer-events-none" : ""
+              }`}
+            >
+              {/* Avatar */}
+              <div className="relative">
+                {viewingId === notif.id ? (
+                  <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center">
+                    <Loader2 className="w-5 h-5 animate-spin text-blue-500" />
+                  </div>
+                ) : (
               <div
                 key={notif.id}
                 className="flex items-start gap-4 px-5 py-4 hover:bg-gray-50 transition cursor-pointer group"
@@ -60,6 +81,13 @@ export default function NotificationModal({
                     alt=""
                     className="w-10 h-10 rounded-full object-cover"
                   />
+                )}
+                {notif.unread && (
+                  <span className="absolute -top-1 -right-1 w-4 h-4 text-[10px] flex items-center justify-center bg-orange-500 text-white rounded-full">
+                    {notif.unread ? "•" : ""}
+                  </span>
+                )}
+              </div>
                   {notif.unread && (
                     <span className="absolute -top-1 -right-1 w-4 h-4 text-[10px] flex items-center justify-center bg-orange-500 text-white rounded-full">
                       {notif.unread ? "•" : ""}
@@ -75,6 +103,24 @@ export default function NotificationModal({
                   <p className="text-xs text-gray-400 mt-1">{notif.time}</p>
                 </div>
 
+              {/* Delete Button */}
+              <button 
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onDelete(notif.id);
+                }}
+                disabled={!!deletingId || !!viewingId}
+                className="p-1 rounded-full hover:bg-red-50 text-gray-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity disabled:opacity-50"
+                title="Delete"
+              >
+                {deletingId === notif.id ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <Trash2 className="w-4 h-4" />
+                )}
+              </button>
+            </div>
+          )))}
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
