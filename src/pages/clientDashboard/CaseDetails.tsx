@@ -61,7 +61,7 @@ export default function CaseDetails() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-[400px]">
+      <div className="flex items-center justify-center min-h-100">
         <p className="text-gray-500">Loading case details...</p>
       </div>
     );
@@ -69,7 +69,7 @@ export default function CaseDetails() {
 
   if (!caseData) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[400px]">
+      <div className="flex flex-col items-center justify-center min-h-100">
         <p className="text-gray-500 mb-4">Case not found</p>
         <Button onClick={handleBack}>Go Back</Button>
       </div>

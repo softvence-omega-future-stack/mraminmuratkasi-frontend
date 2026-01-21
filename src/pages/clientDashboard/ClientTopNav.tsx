@@ -149,7 +149,7 @@ export default function ClientTopNav({
             <MessageCircleMore className="w-4 h-4" />
             <span className="font-medium">Chat</span>
             {totalUnseenCount > 0 && (
-              <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] bg-red-500 text-white text-[10px] font-bold flex items-center justify-center rounded-full border-2 border-white px-1">
+              <span className="absolute -top-1 -right-1 min-w-4.5 h-4.5 bg-red-500 text-white text-[10px] font-bold flex items-center justify-center rounded-full border-2 border-white px-1">
                 {totalUnseenCount}
               </span>
             )}
@@ -165,7 +165,7 @@ export default function ClientTopNav({
           >
             <Bell className="w-5 h-5" />
             {newNotificationCount > 0 && (
-              <span className="absolute top-1 right-1 min-w-[18px] h-[18px] bg-red-500 text-white text-[10px] font-bold flex items-center justify-center rounded-full border-2 border-white px-1">
+              <span className="absolute top-1 right-1 min-w-4.5 h-4.5 bg-red-500 text-white text-[10px] font-bold flex items-center justify-center rounded-full border-2 border-white px-1">
                 {newNotificationCount}
               </span>
             )}

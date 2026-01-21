@@ -32,7 +32,7 @@ export default function ClientDashboardLayout({
         {/* Main Container - Flex Sidebar and Content */}
         <div className="flex flex-1 gap-5 overflow-hidden px-6 pt-6">
           {/* Mobile Sidebar overlay is inside ClientSidebar, but desktop persistent sidebar is here */}
-          <div className="hidden lg:block lg:flex-shrink-0">
+          <div className="hidden lg:block lg:shrink-0">
             <ClientSidebar
               isOpen={sidebarOpen}
               onClose={() => setSidebarOpen(false)}
