@@ -137,7 +137,7 @@ export default function ClientSidebar({ isOpen, onClose }: SidebarProps) {
               {/* Total Cases */}
               <div className="text-center">
                 <h3 className="text-2xl md:text-3xl lg:text-4xl font-semibold">
-                  24
+                  {user?.case_ids?.length || 0}
                 </h3>
                 <p className="text-[#B7D5E8] text-xs md:text-sm mt-1 capitalize">
                   Total Cases
@@ -157,7 +157,10 @@ export default function ClientSidebar({ isOpen, onClose }: SidebarProps) {
               {/* In Progress */}
               <div className="text-center">
                 <h3 className="text-2xl md:text-3xl lg:text-4xl font-semibold">
-                  3
+                  {user?.case_ids?.filter((c: any) => {
+                    const status = c.case_status?.toLowerCase();
+                    return status === "inprogress" || status === "in progress" || status === "pending";
+                  }).length || 0}
                 </h3>
                 <p className="text-[#B7D5E8] text-xs md:text-sm mt-1 capitalize">
                   In Progress

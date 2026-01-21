@@ -1,21 +1,18 @@
 import CommonBorderWrapper from "@/common/CommonBorderWrapper";
 import CommonHeader from "@/common/CommonHeader";
 import CreateCaseModal from "@/components/admin/case/CreateCaseModal";
+import {
+  useGetAlCasesQuery,
+  useGetAllUserQuery,
+} from "@/redux/features/admin/clientAPI";
+import { formatDate } from "@/utils/data";
 import { MoreVertical, Settings } from "lucide-react";
 import React, { useState } from "react";
 import { AiOutlineFileAdd } from "react-icons/ai";
 import { BsArrowRight, BsFileEarmarkCheck } from "react-icons/bs";
 import { FiUsers } from "react-icons/fi";
 import { TbFileText } from "react-icons/tb";
-
-interface Case {
-  caseNo: string;
-  name: string;
-  type: string;
-  created: string;
-  courtDate: string;
-  status: "InProgress" | "Closed";
-}
+import { Link, useNavigate } from "react-router-dom";
 
 interface Activity {
   status: "Created" | "Updated" | "Closed";
@@ -23,114 +20,83 @@ interface Activity {
   caseNo: string;
 }
 
+const activities: Activity[] = [
+  {
+    status: "Created",
+    title: "New Case created for Johnson Electronics",
+    caseNo: "CASE-2024-001",
+  },
+  {
+    status: "Updated",
+    title: "New Case Updated to InProgress",
+    caseNo: "CASE-2024-001",
+  },
+  {
+    status: "Closed",
+    title: "Case Successfully closed",
+    caseNo: "CASE-2024-001",
+  },
+  {
+    status: "Updated",
+    title: "New Case Updated to InProgress",
+    caseNo: "CASE-2024-001",
+  },
+  {
+    status: "Created",
+    title: "New Case created for Johnson Electronics",
+    caseNo: "CASE-2024-001",
+  },
+  {
+    status: "Closed",
+    title: "Case Successfully closed",
+    caseNo: "CASE-2024-001",
+  },
+];
+
+const clients = [
+  { id: 1, name: "Client 1", avatar: "https://i.pravatar.cc/150?img=12" },
+  { id: 2, name: "Client 2", avatar: "https://i.pravatar.cc/150?img=45" },
+  { id: 3, name: "Client 3", avatar: "https://i.pravatar.cc/150?img=33" },
+];
+const getStatusColor = (status: string): string => {
+  switch (status) {
+    case "Created":
+      return "bg-green-100 text-green-700";
+    case "Updated":
+      return "bg-blue-100 text-blue-700";
+    case "Closed":
+      return "bg-purple-100 text-purple-700";
+    default:
+      return "bg-gray-100 text-gray-700";
+  }
+};
+
 const HomePage: React.FC = () => {
+  const { data } = useGetAlCasesQuery();
+  const { data: userData } = useGetAllUserQuery();
+  const totalCases = data?.data?.cases.length || 0;
+  const totalClients = userData?.data?.length || 0;
+  const activeClass =
+    userData?.data?.filter((user) => !user.isBlocked).length ?? 0;
+
   const stats = [
-    { label: "Total Clients", count: 18, icon: <FiUsers /> },
-    { label: "Total Cases", count: 59, icon: <TbFileText /> },
-    { label: "Active Cases", count: 8, icon: <BsFileEarmarkCheck /> },
+    {
+      label: "Total Clients",
+      count: totalClients,
+      icon: <FiUsers />,
+    },
+    { label: "Total Cases", count: totalCases, icon: <TbFileText /> },
+    { label: "Active Cases", count: activeClass, icon: <BsFileEarmarkCheck /> },
   ];
 
-  const activities: Activity[] = [
-    {
-      status: "Created",
-      title: "New Case created for Johnson Electronics",
-      caseNo: "CASE-2024-001",
-    },
-    {
-      status: "Updated",
-      title: "New Case Updated to InProgress",
-      caseNo: "CASE-2024-001",
-    },
-    {
-      status: "Closed",
-      title: "Case Successfully closed",
-      caseNo: "CASE-2024-001",
-    },
-    {
-      status: "Updated",
-      title: "New Case Updated to InProgress",
-      caseNo: "CASE-2024-001",
-    },
-    {
-      status: "Created",
-      title: "New Case created for Johnson Electronics",
-      caseNo: "CASE-2024-001",
-    },
-    {
-      status: "Closed",
-      title: "Case Successfully closed",
-      caseNo: "CASE-2024-001",
-    },
-  ];
-
-  const cases: Case[] = [
-    {
-      caseNo: "CASE-2024-001",
-      name: "Speeding Violation 85mph in 55mph",
-      type: "Reckless Driving",
-      created: "Jan 20, 2024",
-      courtDate: "Not Scheduled",
-      status: "InProgress",
-    },
-    {
-      caseNo: "CASE-2024-001",
-      name: "Speeding Violation 85mph in 55mph",
-      type: "Reckless Driving",
-      created: "Jan 20, 2024",
-      courtDate: "Not Scheduled",
-      status: "InProgress",
-    },
-    {
-      caseNo: "CASE-2024-001",
-      name: "Speeding Violation 85mph in 55mph",
-      type: "Reckless Driving",
-      created: "Jan 20, 2024",
-      courtDate: "Not Scheduled",
-      status: "InProgress",
-    },
-    {
-      caseNo: "CASE-2024-001",
-      name: "Speeding Violation 85mph in 55mph",
-      type: "Reckless Driving",
-      created: "Jan 20, 2024",
-      courtDate: "Not Scheduled",
-      status: "InProgress",
-    },
-    {
-      caseNo: "CASE-2024-001",
-      name: "Speeding Violation 85mph in 55mph",
-      type: "Reckless Driving",
-      created: "Jan 20, 2024",
-      courtDate: "Not Scheduled",
-      status: "InProgress",
-    },
-    {
-      caseNo: "CASE-2024-001",
-      name: "Speeding Violation 85mph in 55mph",
-      type: "Reckless Driving",
-      created: "Jan 20, 2024",
-      courtDate: "Not Scheduled",
-      status: "InProgress",
-    },
-  ];
-  const clients = [
-    { id: 1, name: "Client 1", avatar: "https://i.pravatar.cc/150?img=12" },
-    { id: 2, name: "Client 2", avatar: "https://i.pravatar.cc/150?img=45" },
-    { id: 3, name: "Client 3", avatar: "https://i.pravatar.cc/150?img=33" },
-  ];
-  const getStatusColor = (status: string): string => {
-    switch (status) {
-      case "Created":
-        return "bg-green-100 text-green-700";
-      case "Updated":
-        return "bg-blue-100 text-blue-700";
-      case "Closed":
-        return "bg-purple-100 text-purple-700";
-      default:
-        return "bg-gray-100 text-gray-700";
-    }
+  const navigate = useNavigate();
+  const handleClient = () => {
+    navigate("/admin/client");
   };
-  const [isCaseModalOpen, setIsCaseModalOpen] = useState(false);
+  const handleChangePassword = () => {
+    navigate("/admin/change-password");
+  };
+
   const buttons = [
     {
       title: "Create New Case",
@@ -144,17 +110,25 @@ const HomePage: React.FC = () => {
       title: "Client Management",
       icon: <FiUsers size={20} className="text-white" />,
       bgColor: "bg-blue-600",
-      onClick: undefined, // no click handler
+      onClick: handleClient,
       bgButton: "bg-gray-50 hover:bg-gray-100",
     },
     {
       title: "Settings",
       icon: <Settings size={20} className="text-white" />,
       bgColor: "bg-blue-600",
-      onClick: undefined, // no click handler
+      onClick: handleChangePassword,
       bgButton: "bg-gray-50 hover:bg-gray-100",
     },
   ];
+  const [isCaseModalOpen, setIsCaseModalOpen] = useState(false);
+
+  const cases = data?.data?.cases ?? [];
+
+  const [showAll, setShowAll] = useState(false);
+
+  const paginatedData = showAll ? cases : cases.slice(0, 5);
+
   return (
     <div className=" space-y-5 pb-5 ">
       <div className="flex  gap-5 w-full">
@@ -233,23 +207,25 @@ const HomePage: React.FC = () => {
       <CommonBorderWrapper>
         <CommonHeader> Recent Activities</CommonHeader>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-3.5 pt-4">
-          {activities.map((activity, index) => (
+          {data?.data?.cases.slice(0, 6).map((activity, index) => (
             <div
               key={index}
               className="border border-gray-200 rounded-lg p-4 bg-[#F6F6F6]"
             >
               <span
-                className={`inline-block px-2 py-1 rounded-full text-xs font-medium mb-2 ${getStatusColor(
-                  activity.status,
-                )}`}
+                className={`inline-block px-2 py-1 rounded-full text-xs font-medium mb-2  ${
+                  activity.case_status === "Pending"
+                    ? "bg-yellow-100 text-yellow-800"
+                    : "bg-green-100 text-green-800"
+                }`}
               >
-                {activity.status}
+                {activity.case_status}
               </span>
-              <CommonHeader size="sm" className="text-[#0F1010]!">
-                {activity.title}
+              <CommonHeader size="sm" className="text-[#0F1010]! line-clamp-1">
+                {activity.caseTitle}
               </CommonHeader>
               <CommonHeader size="sm" className="text-[#747C81]!">
-                Case : {activity.caseNo}
+                Case : {activity.caseNumber}
               </CommonHeader>
             </div>
           ))}
@@ -260,18 +236,22 @@ const HomePage: React.FC = () => {
         <div className="flex items-center justify-between mb-4">
           <CommonHeader>Recent Cases</CommonHeader>
 
-          <button className="text-blue-600 text-sm hover:underline">
-            See all
-          </button>
+          {cases.length > 10 && (
+            <button
+              onClick={() => setShowAll(!showAll)}
+              className="text-primary underline mt-4 cursor-pointer"
+            >
+              {showAll ? "Show Less" : "Show All"}
+            </button>
+          )}
         </div>
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
               <tr className="border-b border-gray-200">
-                <CommonHeader size="sm" className="text-[#747C81]!">
+                <th className="text-left py-3 px-4 text-sm font-medium text-gray-600">
                   Case No:
-                </CommonHeader>
-
+                </th>
                 <th className="text-left py-3 px-4 text-sm font-medium text-gray-600">
                   Name
                 </th>
@@ -290,35 +270,45 @@ const HomePage: React.FC = () => {
                 <th className="py-3 px-4"></th>
               </tr>
             </thead>
-            <tbody>
-              {cases.map((caseItem, index) => (
+            <tbody className="divide-y divide-gray-200  text-gray-900 font-inter">
+              {paginatedData.map((item, index) => (
                 <tr
                   key={index}
-                  className="border-b border-gray-100 hover:bg-gray-50"
+                  className="hover:bg-gray-50 transition-colors cursor-pointer"
                 >
-                  <td className="py-3 px-4 text-sm text-gray-900">
-                    {caseItem.caseNo}
+                  <td className="px-6 py-4 text-sm font-medium text-gray-900">
+                    <Link to={`/admin/cases/${item._id}`}>
+                      {item.caseNumber}
+                    </Link>
                   </td>
-                  <td className="py-3 px-4 text-sm text-gray-900">
-                    {caseItem.name}
+
+                  <td className="px-6 py-4 text-sm text-gray-700 max-w-[320px] truncate">
+                    {item.clientName}
                   </td>
-                  <td className="py-3 px-4 text-sm text-gray-900">
-                    {caseItem.type}
+
+                  <td className="px-6 py-4 text-sm text-gray-700">
+                    {item.caseType}
                   </td>
-                  <td className="py-3 px-4 text-sm text-gray-900">
-                    {caseItem.created}
+
+                  <td className="px-6 py-4 text-sm text-gray-700">
+                    {formatDate(item.createdAt)}
                   </td>
-                  <td className="py-3 px-4 text-sm text-gray-900">
-                    {caseItem.courtDate}
+
+                  <td className="px-6 py-4 text-sm text-gray-700">
+                    {formatDate(item.coatDate)}
                   </td>
-                  <td className="py-3 px-4">
-                    <span className="inline-block px-3 py-1 bg-blue-100 text-blue-700 text-xs rounded-full">
-                      {caseItem.status}
+
+                  <td className="px-6 py-4">
+                    <span
+                      className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium  ${item.case_status === "Pending" ? "bg-yellow-100 text-yellow-800" : "bg-green-100 text-green-800"}`}
+                    >
+                      {item.case_status}
                     </span>
                   </td>
-                  <td className="py-3 px-4">
-                    <button className="text-gray-400 hover:text-gray-600">
-                      <MoreVertical size={16} />
+
+                  <td className="px-4 py-4 text-right">
+                    <button className="text-gray-500 hover:text-gray-700">
+                      <MoreVertical className="w-4 h-4" />
                     </button>
                   </td>
                 </tr>

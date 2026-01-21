@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, useParams } from "react-router-dom";
 import {
   FileText,
   Download,
@@ -10,79 +10,21 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import DocumentUploadModal from "@/common/DocumentUploadModal";
-import ClientDashboardLayout from "@/Layout/ClientDashboardLayout";
-// import star from "/public/images/star.png";
-// import DocumentUploadModal from "@/common/DocumentUploadModal";
+import { useGetCaseDetailsQuery } from "@/redux/api/caseApi";
+import { getStatusStyles } from "./ClientCasesPage";
+import star from "/images/star.png";
 
-interface Document {
-  id: string;
-  name: string;
-  type: string;
-  size: string;
-  uploadDate: string;
-  status: "uploaded" | "processing" | "approved";
-}
 
-interface CaseDetails {
-  id: string;
-  title: string;
-  type: string;
-  status: "In Progress" | "Complete" | "Pending";
-  created: string;
-  updated: string;
-  courtDate: string;
-  description: string;
-  clientName: string;
-  lawyerName: string;
-  documents: Document[];
-}
-
-const mockCaseDetails: CaseDetails = {
-  id: "CASE-2024-001",
-  title: "Speeding Violation 85mph in 55mph",
-  type: "Reckless Driving",
-  status: "In Progress",
-  created: "Jan 20, 2024",
-  updated: "Jan 25, 2024",
-  courtDate: "Feb 15, 2024",
-  description:
-    "Client was cited for driving 85 mph in a 55 mph zone on Highway 101. The incident occurred during clear weather conditions and light traffic. Client maintains they were not exceeding the speed limit and requests contestation of the citation.",
-  clientName: "John Doe",
-  lawyerName: "Sarah Johnson",
-  documents: [
-    {
-      id: "1",
-      name: "Traffic Citation Copy",
-      type: "PDF",
-      size: "2.4 MB",
-      uploadDate: "Jan 20, 2024",
-      status: "approved",
-    },
-    {
-      id: "2",
-      name: "Driving License",
-      type: "PDF",
-      size: "1.2 MB",
-      uploadDate: "Jan 21, 2024",
-      status: "approved",
-    },
-    {
-      id: "3",
-      name: "Insurance Policy",
-      type: "PDF",
-      size: "3.8 MB",
-      uploadDate: "Jan 22, 2024",
-      status: "processing",
-    },
-  ],
-};
 
 export default function CaseDetails() {
+  const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const location = useLocation();
-  const [caseDetails, setCaseDetails] = useState<CaseDetails>(mockCaseDetails);
   const [showUploadModal, setShowUploadModal] = useState(false);
   const [fromPage, setFromPage] = useState<string>("/client/dashboard");
+
+  const { data: caseResponse, isLoading } = useGetCaseDetailsQuery(id);
+  const caseData = caseResponse?.data?.caseOverview;
 
   useEffect(() => {
     // Track where user came from for proper back navigation
@@ -91,56 +33,53 @@ export default function CaseDetails() {
     }
   }, [location.state]);
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "Complete":
-        return "bg-green-100 text-green-700";
-      case "In Progress":
-        return "bg-blue-100 text-blue-700";
-      case "Pending":
-        return "bg-yellow-100 text-yellow-700";
-      default:
-        return "bg-gray-100 text-gray-700";
-    }
+  const formatDate = (dateString: string) => {
+    if (!dateString) return "N/A";
+    return new Date(dateString).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    });
   };
 
-  //   const getDocumentStatusColor = (status: string) => {
-  //     switch (status) {
-  //       case "approved":
-  //         return "bg-green-100 text-green-700";
-  //       case "processing":
-  //         return "bg-yellow-100 text-yellow-700";
-  //       case "uploaded":
-  //         return "bg-blue-100 text-blue-700";
-  //       default:
-  //         return "bg-gray-100 text-gray-700";
-  //     }
-  //   };
+  const formatFileSize = (bytes: number) => {
+    if (!bytes) return "0 Bytes";
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  };
 
   const handleBack = () => {
     navigate(fromPage);
   };
 
-  const handleDocumentUpload = (
-    newDocument: Omit<Document, "id" | "uploadDate" | "status">
-  ) => {
-    const document: Document = {
-      ...newDocument,
-      id: Date.now().toString(),
-      uploadDate: new Date().toLocaleDateString(),
-      status: "uploaded",
-    };
-
-    setCaseDetails((prev) => ({
-      ...prev,
-      documents: [...prev.documents, document],
-    }));
-
+  const handleDocumentUpload = () => {
+    // This local update won't persist without an API call, but we'll leave the modal handling
     setShowUploadModal(false);
   };
 
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <p className="text-gray-500">Loading case details...</p>
+      </div>
+    );
+  }
+
+  if (!caseData) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[400px]">
+        <p className="text-gray-500 mb-4">Case not found</p>
+        <Button onClick={handleBack}>Go Back</Button>
+      </div>
+    );
+  }
+
+  const documents = caseData.assetList_id?.assets || [];
+  const timeline = caseData.timeLine_id?.timeLine || [];
+
   return (
-    <ClientDashboardLayout>
       <div className="min-h-screen bg-[#F7F9FC]">
         <div className="pb-5">
         <div className="bg-white rounded-xl shadow-sm p-5">
@@ -168,37 +107,35 @@ export default function CaseDetails() {
                 </div>
 
                 <p className="text-lg font-semibold text-gray-900 mb-2">
-                  {caseDetails.title}
+                  {caseData.caseTitle}
                 </p>
-                <p className="text-xs text-gray-400 mb-4">{caseDetails.id}</p>
+                <p className="text-xs text-gray-400 mb-4">{caseData.caseNumber}</p>
 
                 <div className="space-y-3">
-                  <Info label="Type" value={caseDetails.type} />
+                  <Info label="Type" value={caseData.caseType} />
                   <Info label="Status">
                     <span
-                      className={`px-2 py-0.5 rounded-full text-xs ${getStatusColor(
-                        caseDetails.status
+                      className={`px-2 py-0.5 rounded-full text-xs font-medium ${getStatusStyles(
+                        caseData.case_status
                       )}`}
                     >
-                      {caseDetails.status}
+                      {caseData.case_status}
                     </span>
                   </Info>
-                  <Info label="Court Date" value={caseDetails.courtDate} />
-                  <Info label="Created" value={caseDetails.created} />
-                  <Info label="Last Updated" value={caseDetails.updated} />
+                  <Info label="Court Date" value={formatDate(caseData.coatDate)} />
+                  <Info label="Created" value={formatDate(caseData.createdAt)} />
+                  <Info label="Last Updated" value={formatDate(caseData.updatedAt)} />
                 </div>
               </div>
 
               <div className="bg-[#F3FAFF] rounded-xl shadow-sm p-5">
                 <div className="flex items-center gap-2 mb-3">
-                  <NotepadText className="w-6 h-6 text-[#1878B5]" />
-                  <h3 className="font-medium text-[#1878B5]">Case Overview</h3>
+                   <FileText className="w-6 h-6 text-[#1878B5]" />
+                  <h3 className="font-medium text-[#1878B5]">Notes</h3>
                 </div>
 
-                <p className="text-xs text-gray-900 font-normal mb-4 border-l-[3px] py-2 border-l-[#1878B5] pl-2.5 rounded-[6px]">
-                  First-time DUI offense. Client was cooperative at traffic
-                  stop. BAC was 0.09%. Need to review dash cam footage and
-                  explore plea options.
+                <p className="text-xs text-gray-900 font-normal mb-4 border-l-[3px] py-2 border-l-[#1878B5] pl-2.5 rounded-[6px] whitespace-pre-wrap">
+                  {caseData.note || "No notes provided for this case."}
                 </p>
               </div>
             </div>
@@ -222,34 +159,43 @@ export default function CaseDetails() {
               </div>
 
               <p className="text-lg font-semibold text-gray-900">
-                {caseDetails.title}
+                {caseData.caseTitle}
               </p>
-              <p className="text-xs text-gray-400 mb-4">{caseDetails.id}</p>
+              <p className="text-xs text-gray-400 mb-4">{caseData.caseNumber}</p>
 
               <div className="space-y-3">
-                {caseDetails.documents.map((doc) => (
-                  <div
-                    key={doc.id}
-                    className="flex items-center justify-between border border-[#B7D5E8] rounded-lg p-3 bg-[#E8F2F8]"
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className="w-9 h-9 bg-blue-50 rounded-lg flex items-center justify-center">
-                        <FileText className="w-4 h-4 text-[#1878B5]" />
+                {documents.length === 0 ? (
+                  <p className="text-sm text-gray-500 text-center py-4">No documents uploaded</p>
+                ) : (
+                  documents.map((doc: any) => (
+                    <div
+                      key={doc._id}
+                      className="flex items-center justify-between border border-[#B7D5E8] rounded-lg p-3 bg-[#E8F2F8]"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="w-9 h-9 bg-blue-50 rounded-lg flex items-center justify-center">
+                          <FileText className="w-4 h-4 text-[#1878B5]" />
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium text-gray-900 truncate max-w-[150px]" title={doc.assetName}>
+                            {doc.assetName}
+                          </p>
+                          <p className="text-xs text-gray-500">{formatFileSize(doc.fileSize)}</p>
+                        </div>
                       </div>
-                      <div>
-                        <p className="text-sm font-medium text-gray-900">
-                          {doc.name}
-                        </p>
-                        <p className="text-xs text-gray-500">{doc.size}</p>
-                      </div>
-                    </div>
 
-                    <button className="flex items-center gap-1.5 text-[#1878B5] hover:text-gray-600">
-                      <Download className="w-4 h-4" />
-                      <p>Download</p>
-                    </button>
-                  </div>
-                ))}
+                      <a 
+                        href={doc.assetUrl} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-1.5 text-[#1878B5] hover:text-[#146499] transition-colors"
+                      >
+                        <Download className="w-4 h-4" />
+                        <span className="text-sm font-medium">Download</span>
+                      </a>
+                    </div>
+                  ))
+                )}
               </div>
             </div>
           </div>
@@ -263,7 +209,7 @@ export default function CaseDetails() {
                 Case Timeline
               </h3>
               <p className="text-sm font-normal text-gray-500">
-                Track important events and documents for case #{caseDetails.id}
+                Track important events and documents for case #{caseData.caseNumber}
               </p>
             </div>
             <div className="flex gap-3">
@@ -285,50 +231,15 @@ export default function CaseDetails() {
 
           {/* Cards Container */}
           <div className="flex gap-5 overflow-x-auto pb-6 scrollbar-hide no-scrollbar -mx-2 px-2">
-            {[
-              {
-                title: "Court Hearing Scheduled",
-                description: "A court hearing has been scheduled for 20/11/2025.",
-                date: "20-Jan-2025",
-                file: "Evidence.jpg",
-              },
-              {
-                title: "Insurance Response Received",
-                description:
-                  "The insurance company requested additional documents to process the claim.",
-                date: "20-Jan-2025",
-                file: "Insurance.jpg",
-              },
-              {
-                title: "Insurance Response Received",
-                description:
-                  "The insurance company requested additional documents to process the claim.",
-                date: "20-Jan-2025",
-                file: "Evidence.jpg",
-              },
-              {
-                title: "Insurance Response Received",
-                description:
-                  "The insurance company requested additional documents to process the claim.",
-                date: "20-Jan-2025",
-                file: "Evidence.jpg",
-              },
-              {
-                title: "Insurance Response Received",
-                description:
-                  "The insurance company requested additional documents to process the claim.",
-                date: "20-Jan-2025",
-                file: "Evidence.jpg",
-              },
-            ].map((event, i) => (
+            {timeline.length === 0 ? (
+              <p className="text-sm text-gray-500 w-full text-center py-8">No timeline updates yet</p>
+            ) : (
+              timeline.map((event: any, i: number) => (
               <div
-                key={i}
+                key={event._id || i}
                 className="min-w-[320px] bg-[#F9FAFB] rounded-[20px] p-6 flex flex-col hover:shadow-md transition-shadow duration-200 border border-transparent hover:border-blue-100"
               >
-                {/* <div className="w-10 h-10 bg-[#1878B5] rounded-full flex items-center justify-center mb-5 shadow-sm"> */}
-                  {/* <Check className="w-6 h-6 text-white" /> */}
-                  <img className="mb-5" src="../../../public/images/star.png" alt="star" width={40} height={40}/>
-                {/* </div> */}
+                  <img className="mb-5" src={star} alt="star" width={40} height={40}/>
                 <h4 className="text-[#1878B5] font-bold text-[17px] mb-2 leading-tight">
                   {event.title}
                 </h4>
@@ -337,20 +248,21 @@ export default function CaseDetails() {
                 </p>
 
                 <div className="mt-auto flex items-center justify-between">
-                  <div className="flex items-center gap-2 px-2 py-1.5 bg-[#E8F2F8] rounded-md transition-colors hover:bg-blue-100 cursor-pointer">
-                    {/* <div className="bg-[#4169E1] p-0.5 rounded-[2px]">
-                      <span className="text-[6px] text-white font-black uppercase">jpg</span>
-                    </div> */}
-                    <span className="text-[11px] font-medium text-gray-500">
-                      {event.file}
-                    </span>
-                  </div>
+                  {event.assetUrl && event.assetUrl.length > 0 ? (
+                    <div className="flex items-center gap-2 px-2 py-1.5 bg-[#E8F2F8] rounded-md transition-colors hover:bg-blue-100 cursor-pointer">
+                      <span className="text-[11px] font-medium text-gray-500">
+                        Attachment Available
+                      </span>
+                    </div>
+                  ) : (
+                    <div></div>
+                  )}
                   <div className="bg-[#C48C57] text-white text-[11px] font-bold px-4 py-1.5 rounded-lg shadow-sm">
-                    {event.date}
+                    {formatDate(event.date)}
                   </div>
                 </div>
               </div>
-            ))}
+            )))}
           </div>
 
           {/* Progress Bar & Status Footer */}
@@ -361,10 +273,10 @@ export default function CaseDetails() {
             
             <div className="space-y-1">
               <h4 className="text-gray-900 font-bold text-base">
-                Case Status : <span className="text-gray-700 font-semibold">{caseDetails.status}</span>
+                Case Status : <span className="text-gray-700 font-semibold">{caseData.case_status}</span>
               </h4>
               <p className="text-gray-400 text-xs font-normal">
-                Last Update : Insurance claim filed
+                Last Update : {formatDate(caseData.updatedAt)}
               </p>
             </div>
           </div>
@@ -377,7 +289,6 @@ export default function CaseDetails() {
         onUpload={handleDocumentUpload}
       />
     </div>
-    </ClientDashboardLayout>
   );
 }
 

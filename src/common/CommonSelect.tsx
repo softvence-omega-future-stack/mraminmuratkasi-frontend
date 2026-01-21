@@ -38,9 +38,9 @@ const CommonSelect = <T extends string>({
       </SelectTrigger>
 
       <SelectContent className="bg-white border border-[#D4D6D8] rounded-md shadow-md">
-        {item.map((option) => (
+        {item.map((option, index) => (
           <SelectItem
-            key={option.value}
+            key={`${option.value}-${index}`}
             value={option.value}
             className="cursor-pointer px-4 py-2 hover:bg-gray-100 transition-colors rounded"
           >
