@@ -72,7 +72,7 @@ const getStatusColor = (status: string): string => {
 };
 
 const HomePage: React.FC = () => {
-  const { data, isLoading } = useGetAlCasesQuery();
+  const { data } = useGetAlCasesQuery();
   const { data: userData } = useGetAllUserQuery();
   const totalCases = data?.data?.cases.length || 0;
   const totalClients = userData?.data?.length || 0;
@@ -207,23 +207,25 @@ const HomePage: React.FC = () => {
       <CommonBorderWrapper>
         <CommonHeader> Recent Activities</CommonHeader>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-3.5 pt-4">
-          {activities.map((activity, index) => (
+          {data?.data?.cases.slice(0, 6).map((activity, index) => (
             <div
               key={index}
               className="border border-gray-200 rounded-lg p-4 bg-[#F6F6F6]"
             >
               <span
-                className={`inline-block px-2 py-1 rounded-full text-xs font-medium mb-2 ${getStatusColor(
-                  activity.status,
-                )}`}
+                className={`inline-block px-2 py-1 rounded-full text-xs font-medium mb-2  ${
+                  activity.case_status === "Pending"
+                    ? "bg-yellow-100 text-yellow-800"
+                    : "bg-green-100 text-green-800"
+                }`}
               >
-                {activity.status}
+                {activity.case_status}
               </span>
-              <CommonHeader size="sm" className="text-[#0F1010]!">
-                {activity.title}
+              <CommonHeader size="sm" className="text-[#0F1010]! line-clamp-1">
+                {activity.caseTitle}
               </CommonHeader>
               <CommonHeader size="sm" className="text-[#747C81]!">
-                Case : {activity.caseNo}
+                Case : {activity.caseNumber}
               </CommonHeader>
             </div>
           ))}

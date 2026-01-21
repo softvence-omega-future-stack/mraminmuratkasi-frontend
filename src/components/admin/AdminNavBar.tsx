@@ -1,7 +1,14 @@
 import NotificationModal from "@/common/NotificationModal";
+import { useSocket } from "@/context/SocketContext";
 import { useGetProfileQuery, useLogOutMutation } from "@/redux/api/authApi";
+import {
+  useDeleteNotificationMutation,
+  useGetAllNotificationsQuery,
+  useGetNotificationForBellQuery,
+} from "@/redux/api/notificationApi";
 import { logout } from "@/redux/features/auth/authSlice";
 import { useAppDispatch } from "@/redux/hooks";
+import { formatDate } from "@/utils/data";
 import {
   Bell,
   FileText,
@@ -9,14 +16,11 @@ import {
   LockKeyhole,
   Menu,
   MessageCircleMore,
-  MessageSquareDot,
   SquarePen,
-  User,
 } from "lucide-react";
 import { useState } from "react";
 import { FaUserFriends } from "react-icons/fa";
 import { useLocation, useNavigate } from "react-router-dom";
-
 interface ClientTopNavProps {
   onMenuClick: () => void;
   showProfileMenu: boolean;
@@ -38,6 +42,29 @@ ClientTopNavProps) => {
   const [showAccountMenu, setShowAccountMenu] = useState(false);
   const [open, setOpen] = useState(false);
 
+  const { data: notificationData } = useGetAllNotificationsQuery(undefined);
+  const { data: bellNotificationData } =
+    useGetNotificationForBellQuery(undefined);
+  const [deleteNotification] = useDeleteNotificationMutation();
+
+  const notificationsList = notificationData?.data?.notificationList || [];
+  const newNotificationCount = bellNotificationData?.data?.newNotification || 0;
+
+  const notifications = notificationsList.map((notif: any) => ({
+    id: notif._id,
+    message: notif.notificationDetail,
+    time: formatDate(notif.createdAt),
+    unread: !notif.isSeen,
+    avatar: notif.Profile_id?.img || "/images/navProfile.png",
+  }));
+
+  const handleDeleteNotification = async (id: string | number) => {
+    try {
+      await deleteNotification(id).unwrap();
+    } catch (error) {
+      console.error("Failed to delete notification:", error);
+    }
+  };
   const handleLogout = async () => {
     try {
       await logOut(undefined).unwrap();
@@ -49,30 +76,6 @@ ClientTopNavProps) => {
       navigate("/");
     }
   };
-
-  const notifications = [
-    {
-      id: 1,
-      message: "You have received a new message regarding your traffic case.",
-      time: "9:01am",
-      unread: true,
-      avatar: "/avatars/user1.png",
-    },
-    {
-      id: 2,
-      message: "You have received a new message regarding your traffic case.",
-      time: "9:01am",
-      unread: true,
-      avatar: "/avatars/user2.png",
-    },
-    {
-      id: 3,
-      message: "You have received a new message regarding your traffic case.",
-      time: "9:01am",
-      unread: false,
-      avatar: "/avatars/user3.png",
-    },
-  ];
 
   const accountMenuItems = [
     {
@@ -86,12 +89,6 @@ ClientTopNavProps) => {
       icon: LockKeyhole,
       onClick: () => navigate("/admin/change-password"),
       danger: false,
-    },
-    {
-      label: "Delete Account",
-      icon: User,
-      onClick: handleLogout,
-      danger: true,
     },
   ];
   const navItems = [
@@ -127,6 +124,7 @@ ClientTopNavProps) => {
     }
     return currentPath === path || currentPath.startsWith(`${path}/`);
   };
+  const { totalUnseenCount } = useSocket();
 
   return (
     <div className="bg-white border-b border-gray-200 px-8 py-5 sticky top-0 z-30 rounded-[60px]">
@@ -150,7 +148,7 @@ ClientTopNavProps) => {
             <button
               key={path}
               onClick={() => navigate(path)}
-              className={`flex items-center space-x-2 ${padding} py-2 rounded-full transition-all cursor-pointer ${
+              className={`flex items-center space-x-2 ${padding} py-2 rounded-full transition-all cursor-pointer relative ${
                 isActiveRoute(path)
                   ? "bg-[#1878B5] text-white shadow-sm"
                   : "text-gray-500 hover:bg-[#1878B5] hover:text-white"
@@ -158,6 +156,11 @@ ClientTopNavProps) => {
             >
               <Icon className="w-5 h-5" />
               <span className="font-medium">{label}</span>
+              {totalUnseenCount > 0 && path === "/admin/chat" && (
+                <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] bg-red-500 text-white text-[10px] font-bold flex items-center justify-center rounded-full border-2 border-white px-1">
+                  {totalUnseenCount}
+                </span>
+              )}
             </button>
           ))}
         </div>
@@ -168,7 +171,11 @@ ClientTopNavProps) => {
             className="relative p-3 bg-blue-50 text-blue-600 rounded-full hover:bg-blue-100 transition cursor-pointer"
           >
             <Bell className="w-5 h-5" />
-            <span className="absolute top-2 right-2 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white" />
+            {newNotificationCount > 0 && (
+              <span className="absolute top-1 right-1 min-w-[18px] h-[18px] bg-red-500 text-white text-[10px] font-bold flex items-center justify-center rounded-full border-2 border-white px-1">
+                {newNotificationCount}
+              </span>
+            )}
           </button>
 
           <div className="relative">
@@ -212,13 +219,6 @@ ClientTopNavProps) => {
                       </button>
                     ),
                   )}
-
-                  <div className="w-full flex items-center justify-between px-3 py-4 text-sm text-gray-900 border-t border-t-gray-50">
-                    <div className="flex items-center space-x-2">
-                      <MessageSquareDot className="w-4 h-4" />
-                      <span>Push Notification</span>
-                    </div>
-                  </div>
                 </div>
               </div>
             )}
@@ -230,7 +230,7 @@ ClientTopNavProps) => {
         open={open}
         onClose={() => setOpen(false)}
         notifications={notifications}
-        onDelete={() => {}}
+        onDelete={handleDeleteNotification}
       />
     </div>
   );

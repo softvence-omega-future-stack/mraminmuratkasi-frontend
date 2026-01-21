@@ -10,7 +10,7 @@ import { useState } from "react";
 import { FaRegFileLines } from "react-icons/fa6";
 import { ImAttachment } from "react-icons/im";
 import { LuPencilLine } from "react-icons/lu";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { EditNoteModal } from "./modal/EditNoteModal";
 import { EditOverviewModal } from "./modal/EditOverviewModal";
 import { TimelineModal } from "./modal/TimelineModal";
@@ -44,19 +44,22 @@ export default function CaseDetails() {
   const closeModal = () => setOpenModal(null);
 
   const { id } = useParams();
-  console.log("id", id);
-
   const { data, isLoading } = useGetSingleCasesQuery(id ?? skipToken, {
     refetchOnMountOrArgChange: true,
   });
   const singleCase = data?.data.caseOverview;
 
+  const navigate = useNavigate();
+
+  const handleBack = () => {
+    navigate(-1);
+  };
   return (
     <div className="">
       <CommonBorderWrapper className="">
         <div className=" flex justify-between pb-6">
           <CommonHeader>All Cases Details</CommonHeader>
-          <CommonButton>Back</CommonButton>
+          <CommonButton onClick={handleBack}>Back</CommonButton>
         </div>
         <div
           className="flex justify-between w-full gap-5
