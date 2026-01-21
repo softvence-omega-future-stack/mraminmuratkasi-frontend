@@ -16,11 +16,13 @@ export const baseApi = createApi({
   reducerPath: "baseApi",
   baseQuery: async (args, api, extraOptions) => {
     const result = await baseQuery(args, api, extraOptions);
-    
-    const isUnauthorized = 
-      result.error?.status === 401 || 
-      (result.data as any)?.success === false && 
-      (result.data as any)?.message?.toLowerCase().includes("session expired");
+
+    const isUnauthorized =
+      result.error?.status === 401 ||
+      ((result.data as any)?.success === false &&
+        (result.data as any)?.message
+          ?.toLowerCase()
+          .includes("session expired"));
 
     if (isUnauthorized) {
       api.dispatch(logout());
@@ -28,6 +30,6 @@ export const baseApi = createApi({
     }
     return result;
   },
-  tagTypes: ["User"],
+  tagTypes: ["User", "Chat"],
   endpoints: () => ({}),
 });
