@@ -145,7 +145,6 @@
 //   );
 // }
 
-import ClientDashboardLayout from "@/Layout/ClientDashboardLayout";
 import { MoreVertical } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useGetProfileQuery } from "@/redux/api/authApi";
@@ -182,7 +181,6 @@ export default function ClientCasesPage() {
   };
 
   return (
-    <ClientDashboardLayout>
       <div className="p-4 sm:p-6 bg-white rounded-[24px] font-inter">
         {/* Header */}
         <div className="mb-6">
@@ -268,6 +266,5 @@ export default function ClientCasesPage() {
           </div>
         </div>
       </div>
-    </ClientDashboardLayout>
   );
 }
