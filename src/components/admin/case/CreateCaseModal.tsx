@@ -55,7 +55,7 @@ interface CreateCaseModalProps {
 const CreateCaseModal: React.FC<CreateCaseModalProps> = ({ onClose }) => {
   const [files, setFiles] = useState<UploadedFile[]>([]);
   const [createCase, { isLoading: isCreating }] = useCreateCaseMutation();
-  const { data, isLoading } = useGetAlCasesQuery();
+  const { data } = useGetAlCasesQuery();
   console.log("data", data);
   const clientsOptions =
     data?.data.cases.map((client) => ({
@@ -74,7 +74,7 @@ const CreateCaseModal: React.FC<CreateCaseModalProps> = ({ onClose }) => {
       title: "",
       clientName: "",
       status: "In Bearbeitung",
-      date: "2026-01-02",
+      date: "",
       note: "",
     },
   });
@@ -129,8 +129,6 @@ const CreateCaseModal: React.FC<CreateCaseModalProps> = ({ onClose }) => {
         uploadDate: new Date().toISOString(),
       })),
     };
-
-    console.log("payload", payload);
     // FormData for file upload
     const formData = new FormData();
     files.forEach((f) => formData.append("files", f.file));

@@ -14,62 +14,13 @@ import { FiUsers } from "react-icons/fi";
 import { TbFileText } from "react-icons/tb";
 import { Link, useNavigate } from "react-router-dom";
 
-interface Activity {
-  status: "Created" | "Updated" | "Closed";
-  title: string;
-  caseNo: string;
-}
-
-const activities: Activity[] = [
-  {
-    status: "Created",
-    title: "New Case created for Johnson Electronics",
-    caseNo: "CASE-2024-001",
-  },
-  {
-    status: "Updated",
-    title: "New Case Updated to InProgress",
-    caseNo: "CASE-2024-001",
-  },
-  {
-    status: "Closed",
-    title: "Case Successfully closed",
-    caseNo: "CASE-2024-001",
-  },
-  {
-    status: "Updated",
-    title: "New Case Updated to InProgress",
-    caseNo: "CASE-2024-001",
-  },
-  {
-    status: "Created",
-    title: "New Case created for Johnson Electronics",
-    caseNo: "CASE-2024-001",
-  },
-  {
-    status: "Closed",
-    title: "Case Successfully closed",
-    caseNo: "CASE-2024-001",
-  },
-];
 
 const clients = [
   { id: 1, name: "Client 1", avatar: "https://i.pravatar.cc/150?img=12" },
   { id: 2, name: "Client 2", avatar: "https://i.pravatar.cc/150?img=45" },
   { id: 3, name: "Client 3", avatar: "https://i.pravatar.cc/150?img=33" },
 ];
-const getStatusColor = (status: string): string => {
-  switch (status) {
-    case "Created":
-      return "bg-green-100 text-green-700";
-    case "Updated":
-      return "bg-blue-100 text-blue-700";
-    case "Closed":
-      return "bg-purple-100 text-purple-700";
-    default:
-      return "bg-gray-100 text-gray-700";
-  }
-};
+
 
 const HomePage: React.FC = () => {
   const { data } = useGetAlCasesQuery();
