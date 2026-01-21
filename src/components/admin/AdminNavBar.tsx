@@ -1,13 +1,11 @@
 import NotificationModal from "@/common/NotificationModal";
 import { useSocket } from "@/context/SocketContext";
-import { useGetProfileQuery, useLogOutMutation } from "@/redux/api/authApi";
+import { useGetProfileQuery } from "@/redux/api/authApi";
 import {
   useDeleteNotificationMutation,
   useGetAllNotificationsQuery,
   useGetNotificationForBellQuery,
 } from "@/redux/api/notificationApi";
-import { logout } from "@/redux/features/auth/authSlice";
-import { useAppDispatch } from "@/redux/hooks";
 import { formatDate } from "@/utils/data";
 import {
   Bell,
@@ -33,8 +31,6 @@ const AdminNavBar = ({
 //   setShowProfileMenu,
 ClientTopNavProps) => {
   const navigate = useNavigate();
-  const dispatch = useAppDispatch();
-  const [logOut] = useLogOutMutation();
   const { data: profileData } = useGetProfileQuery(undefined);
   const user = profileData?.data;
 
@@ -65,17 +61,17 @@ ClientTopNavProps) => {
       console.error("Failed to delete notification:", error);
     }
   };
-  const handleLogout = async () => {
-    try {
-      await logOut(undefined).unwrap();
-    } catch (err) {
-      console.error("Logout failed:", err);
-    } finally {
-      dispatch(logout());
-      localStorage.removeItem("token");
-      navigate("/");
-    }
-  };
+  // const handleLogout = async () => {
+  //   try {
+  //     await logOut(undefined).unwrap();
+  //   } catch (err) {
+  //     console.error("Logout failed:", err);
+  //   } finally {
+  //     dispatch(logout());
+  //     localStorage.removeItem("token");
+  //     navigate("/");
+  //   }
+  // };
 
   const accountMenuItems = [
     {
@@ -201,7 +197,7 @@ ClientTopNavProps) => {
               <div className="absolute right-0 mt-2 w-72 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
                 <div className="p-4 border-b border-gray-200 space-y-2">
                   {accountMenuItems.map(
-                    ({ label, icon: Icon, onClick, danger }, index) => (
+                    ({ label, icon: Icon, onClick, danger }, _index) => (
                       <button
                         key={label}
                         onClick={() => {

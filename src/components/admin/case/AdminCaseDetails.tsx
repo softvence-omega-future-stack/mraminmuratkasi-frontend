@@ -5,16 +5,15 @@ import CommonHeader from "@/common/CommonHeader";
 import { useGetSingleCasesQuery } from "@/redux/features/admin/clientAPI";
 import { formatDate } from "@/utils/data";
 import { skipToken } from "@reduxjs/toolkit/query";
-import { Download, FileText, Plus } from "lucide-react";
+import { CheckCircle, Download, FileText } from "lucide-react";
 import { useState } from "react";
 import { FaRegFileLines } from "react-icons/fa6";
 import { ImAttachment } from "react-icons/im";
 import { LuPencilLine } from "react-icons/lu";
 import { useNavigate, useParams } from "react-router-dom";
-import { EditNoteModal } from "./modal/EditNoteModal";
-import { EditOverviewModal } from "./modal/EditOverviewModal";
-import { TimelineModal } from "./modal/TimelineModal";
-import { UploadDocumentsModal } from "./modal/UploadDocumentsModal";
+import EditOverviewModal from "./modal/EditOverviewModal";
+import TimelineModal from "./modal/TimelineModal";
+import UploadDocumentsModal from "./modal/UploadDocumentsModal";
 
 type ModalType =
   | "edit-overview"
@@ -22,7 +21,35 @@ type ModalType =
   | "upload-docs"
   | "timeline"
   | null;
-
+const timelineData = [
+  {
+    title: "Court Hearing Scheduled",
+    description: "A court hearing has been scheduled for 20/11/2025.",
+    file: "Evidence.jpg",
+    date: "20-Jan-2025",
+  },
+  {
+    title: "Insurance Response Received",
+    description:
+      "The insurance company requested additional documents to process the claim.",
+    file: "Insurance.jpg",
+    date: "20-Jan-2025",
+  },
+  {
+    title: "Insurance Response Received",
+    description:
+      "The insurance company requested additional documents to process the claim.",
+    file: "Evidence.jpg",
+    date: "20-Jan-2025",
+  },
+  {
+    title: "Insurance Response Received",
+    description:
+      "The insurance company requested additional documents to process the claim.",
+    file: "Evidence.jpg",
+    date: "20-Jan-2025",
+  },
+];
 export default function CaseDetails() {
   const [openModal, setOpenModal] = useState<ModalType>(null);
   const [editingTimelineId, setEditingTimelineId] = useState<string | null>(
@@ -44,7 +71,7 @@ export default function CaseDetails() {
   const closeModal = () => setOpenModal(null);
 
   const { id } = useParams();
-  const { data, isLoading } = useGetSingleCasesQuery(id ?? skipToken, {
+  const { data } = useGetSingleCasesQuery(id ?? skipToken, {
     refetchOnMountOrArgChange: true,
   });
   const singleCase = data?.data.caseOverview;
@@ -61,10 +88,7 @@ export default function CaseDetails() {
           <CommonHeader>All Cases Details</CommonHeader>
           <CommonButton onClick={handleBack}>Back</CommonButton>
         </div>
-        <div
-          className="flex justify-between w-full gap-5
- "
-        >
+        <div className="flex justify-between w-full gap-5">
           <div className="space-y-5 flex-1">
             <div className="rounded-xl  bg-[#F3FAFF] ">
               <div className="flex items-center justify-between  px-6 py-4">
@@ -86,9 +110,6 @@ export default function CaseDetails() {
                   <h3 className="font-medium text-gray-900">
                     {singleCase?.caseTitle}
                   </h3>
-                  {/* <p className="mt-1 text-sm text-gray-600">
-                    Speeding Violation 85mph in 55mph
-                  </p> */}
                 </div>
 
                 <div className="grid grid-cols-2 gap-6 text-sm">
@@ -112,15 +133,15 @@ export default function CaseDetails() {
                   </div>
                   <div>
                     <div className="text-gray-500">Court Date</div>
-                    <div>{formatDate(singleCase?.coatDate) || "—"}</div>
+                    <div>{formatDate(singleCase?.coatDate || "")}</div>
                   </div>
                   <div>
                     <div className="text-gray-500">Last Updated</div>
-                    <div>{formatDate(singleCase?.updatedAt)}</div>
+                    <div>{formatDate(singleCase?.updatedAt || "")}</div>
                   </div>
                   <div>
                     <div className="text-gray-500">Created</div>
-                    <div>{formatDate(singleCase?.createdAt)}</div>
+                    <div>{formatDate(singleCase?.createdAt || "")}</div>
                   </div>
                 </div>
               </div>
@@ -177,89 +198,89 @@ export default function CaseDetails() {
           </div>
         </div>
       </CommonBorderWrapper>
+      <CommonBorderWrapper className="my-6">
+        {/* Header */}
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h2 className="text-xl font-semibold text-gray-900">
+              Case Timeline
+            </h2>
+            <p className="text-sm text-gray-500">
+              Track important events and documents for case #2024-001
+            </p>
+          </div>
 
-      <div className="grid gap-6 lg:grid-cols-3">
-        {/* Left Column - Overview + Note */}
-        <div className="lg:col-span-2 space-y-6">
-          {/* Case Overview Card */}
-
-          {/* Case Timeline */}
-          <div className="rounded-xl border bg-white shadow-sm">
-            <div className="flex items-center justify-between border-b px-6 py-4">
-              <h2 className="text-lg font-semibold">Case Timeline</h2>
-              <button
-                onClick={openAddTimeline}
-                className="flex items-center gap-1.5 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700"
-              >
-                <Plus size={16} /> Add Timeline
-              </button>
-            </div>
-
-            <div className="p-6 space-y-6">
-              {singleCase?.timeLine_id.timeLine.map((event) => (
-                <div key={event._id} className="relative pl-10">
-                  <div className="absolute left-3 top-1.5 h-4 w-4 rounded-full border-4 border-indigo-600 bg-white" />
-                  <div className="flex items-start justify-between gap-4">
-                    <div>
-                      <h4 className="font-medium text-gray-900">
-                        {event.title}
-                      </h4>
-                      <p className="mt-1 text-sm text-gray-600">
-                        {event.description}
-                      </p>
-                      <p className="mt-2 text-xs text-gray-500">{event.date}</p>
-                    </div>
-                    <button
-                      onClick={() => openEditTimeline(event._id)}
-                      className="text-sm text-indigo-600 hover:text-indigo-800"
-                    >
-                      Edit
-                    </button>
-                  </div>
-
-                  {singleCase?.timeLine_id.timeLine.length > 0 && (
-                    <div className="mt-3 flex flex-wrap gap-2">
-                      {singleCase?.timeLine_id.timeLine.map((d, i) => (
-                        <div
-                          key={i}
-                          className="flex items-center gap-1.5 rounded bg-gray-100 px-2.5 py-1 text-xs"
-                        >
-                          <FileText size={14} /> {d.assetName}
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
+          <div className="flex gap-3">
+            <CommonButton onClick={openAddTimeline}>Add Timeline</CommonButton>
+            <CommonButton
+              onClick={() => openEditTimeline(id ?? "")}
+              className="!bg-[#E8F2F8] !text-[#1878B5] border !border-[#1878B5]"
+            >
+              Update Timeline
+            </CommonButton>
           </div>
         </div>
-      </div>
 
-      {/* Modals */}
-      {openModal === "edit-overview" && (
-        <EditOverviewModal caseData={singleCase} onClose={closeModal} />
+        {/* Timeline Cards */}
+        <div className="relative">
+          <div className="flex gap-6 overflow-x-auto pb-4 scrollbar-hide">
+            {timelineData.map((item, index) => (
+              <div
+                key={index}
+                className="min-w-[320px] rounded-[8px] bg-[#F9F9F9] backdrop-blur-[20.1px] p-5"
+              >
+                <CheckCircle className="w-7 h-7 text-blue-600 mb-4" />
+
+                <h3 className="text-blue-600 font-semibold mb-2">
+                  {item.title}
+                </h3>
+
+                <p className="text-sm text-gray-600 mb-6">{item.description}</p>
+
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2 text-sm text-gray-500">
+                    <FileText className="w-4 h-4 text-blue-600" />
+                    <span>{item.file}</span>
+                  </div>
+
+                  <span className="px-4 py-1 rounded-full bg-amber-600 text-white text-xs font-medium">
+                    {item.date}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Scroll Indicator */}
+          <div className="h-1 bg-gray-200 rounded-full mt-4">
+            <div className="w-16 h-1 bg-blue-600 rounded-full" />
+          </div>
+        </div>
+
+        {/* Case Status */}
+        <div className="mt-6">
+          <p className="text-sm font-medium text-gray-900">
+            Case Status : <span className="font-semibold">In Progress</span>
+          </p>
+          <p className="text-sm text-gray-500">
+            Last Update : Insurance claim filed
+          </p>
+        </div>
+      </CommonBorderWrapper>
+
+      {openModal === "edit-overview" && singleCase && (
+        <EditOverviewModal onClose={closeModal} singleCase={data} />
       )}
 
-      {openModal === "edit-note" && (
-        <EditNoteModal note={singleCase?.note} onClose={closeModal} />
+      {openModal === "upload-docs" && singleCase && (
+        <UploadDocumentsModal onClose={closeModal} singleCase={data} />
       )}
 
-      {openModal === "upload-docs" && (
-        <UploadDocumentsModal caseData={singleCase} onClose={closeModal} />
-      )}
-
-      {openModal === "timeline" && (
+      {openModal === "timeline" && singleCase && (
         <TimelineModal
           isEdit={!!editingTimelineId}
-          initialData={
-            editingTimelineId
-              ? singleCase?.timeLine_id.timeLine.find(
-                  (t) => t._id === editingTimelineId,
-                )
-              : undefined
-          }
           onClose={closeModal}
+          singleCase={data}
         />
       )}
     </div>
