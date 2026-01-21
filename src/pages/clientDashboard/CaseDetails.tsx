@@ -10,7 +10,6 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import DocumentUploadModal from "@/common/DocumentUploadModal";
-import ClientDashboardLayout from "@/Layout/ClientDashboardLayout";
 import { useGetCaseDetailsQuery } from "@/redux/api/caseApi";
 import { getStatusStyles } from "./ClientCasesPage";
 import star from "/images/star.png";
@@ -62,22 +61,18 @@ export default function CaseDetails() {
 
   if (isLoading) {
     return (
-      <ClientDashboardLayout>
-        <div className="flex items-center justify-center min-h-[400px]">
-          <p className="text-gray-500">Loading case details...</p>
-        </div>
-      </ClientDashboardLayout>
+      <div className="flex items-center justify-center min-h-[400px]">
+        <p className="text-gray-500">Loading case details...</p>
+      </div>
     );
   }
 
   if (!caseData) {
     return (
-      <ClientDashboardLayout>
-        <div className="flex flex-col items-center justify-center min-h-[400px]">
-          <p className="text-gray-500 mb-4">Case not found</p>
-          <Button onClick={handleBack}>Go Back</Button>
-        </div>
-      </ClientDashboardLayout>
+      <div className="flex flex-col items-center justify-center min-h-[400px]">
+        <p className="text-gray-500 mb-4">Case not found</p>
+        <Button onClick={handleBack}>Go Back</Button>
+      </div>
     );
   }
 
@@ -85,7 +80,6 @@ export default function CaseDetails() {
   const timeline = caseData.timeLine_id?.timeLine || [];
 
   return (
-    <ClientDashboardLayout>
       <div className="min-h-screen bg-[#F7F9FC]">
         <div className="pb-5">
         <div className="bg-white rounded-xl shadow-sm p-5">
@@ -295,7 +289,6 @@ export default function CaseDetails() {
         onUpload={handleDocumentUpload}
       />
     </div>
-    </ClientDashboardLayout>
   );
 }
 

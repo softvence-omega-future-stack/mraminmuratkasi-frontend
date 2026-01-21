@@ -18,6 +18,7 @@ import NotificationModal from "@/common/NotificationModal";
 import { useGetAllNotificationsQuery, useGetNotificationForBellQuery, useDeleteNotificationMutation } from "@/redux/api/notificationApi";
 import { Switch } from "@/components/ui/switch";
 import { useToggleNotificationMutation } from "@/redux/api/authApi";
+import { useSocket } from "@/context/SocketContext";
 
 interface ClientTopNavProps {
   onMenuClick: () => void;
@@ -39,6 +40,8 @@ export default function ClientTopNav({
   const { data: bellNotificationData } = useGetNotificationForBellQuery(undefined);
   const [deleteNotification] = useDeleteNotificationMutation();
   const [toggleNotification] = useToggleNotificationMutation();
+
+  const { totalUnseenCount } = useSocket();
 
   const notificationsList = notificationData?.data?.notificationList || [];
   const newNotificationCount = bellNotificationData?.data?.newNotification || 0;
@@ -137,7 +140,7 @@ export default function ClientTopNav({
           </button>
           <button
             onClick={() => navigate("/client/chat")}
-            className={`flex items-center space-x-2 px-6 py-2 rounded-full transition-all cursor-pointer ${
+            className={`relative flex items-center space-x-2 px-6 py-2 rounded-full transition-all cursor-pointer ${
               isActiveRoute("/client/chat")
                 ? "bg-[#1878B5] text-white shadow-sm"
                 : "text-gray-500 hover:bg-[#1878B5] hover:text-white"
@@ -145,6 +148,11 @@ export default function ClientTopNav({
           >
             <MessageCircleMore className="w-4 h-4" />
             <span className="font-medium">Chat</span>
+            {totalUnseenCount > 0 && (
+              <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] bg-red-500 text-white text-[10px] font-bold flex items-center justify-center rounded-full border-2 border-white px-1">
+                {totalUnseenCount}
+              </span>
+            )}
           </button>
         </div>
 
