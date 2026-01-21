@@ -35,7 +35,8 @@ export default function ForgotPasswordOTP() {
     try {
       await verifyOTP({ 
         token: token, 
-        receivedOTP: Number(otp) 
+        receivedOTP: Number(otp),
+        passwordChange:true
       }).unwrap();
       navigate("/reset-password", { state: { email, token } });
     } catch (err: any) {

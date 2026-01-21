@@ -81,6 +81,14 @@ const authApi = baseApi.injectEndpoints({
         method: "POST",
       }),
     }),
+    toggleNotification: builder.mutation({
+      query: (data) => ({
+        url: "/users/notification-toggle",
+        method: "PATCH",
+        body: data,
+      }),
+      invalidatesTags: ["User"],
+    }),
   }),
 });
 
@@ -96,4 +104,5 @@ export const {
   useChangePasswordMutation,
   useUploadImageMutation,
   useLogOutMutation,
+  useToggleNotificationMutation,
 } = authApi;

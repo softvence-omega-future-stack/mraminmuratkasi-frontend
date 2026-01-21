@@ -1,5 +1,6 @@
 import type React from "react";
 import { useState, useEffect } from "react";
+import { toast } from "sonner";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Lock, Eye, EyeOff, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
@@ -50,7 +51,7 @@ export default function ResetPassword() {
         token: token,
         newPassword: formData.password
       }).unwrap();
-      alert("Password reset successfully! Please login with your new password.");
+      toast.success("Password reset successfully! Please login with your new password.");
       navigate("/client/signin");
     } catch (err: any) {
       setSubmitError(err?.data?.message || "Failed to reset password. Please try again.");

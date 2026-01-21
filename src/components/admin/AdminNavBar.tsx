@@ -226,6 +226,7 @@ ClientTopNavProps) => {
         open={open}
         onClose={() => setOpen(false)}
         notifications={notifications}
+        onDelete={() => {}}
       />
     </div>
   );
