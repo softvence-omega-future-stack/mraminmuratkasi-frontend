@@ -18,6 +18,7 @@ interface Message {
   fileType?: string;
   time: string;
   isOwn: boolean;
+  isOnline?: boolean;
 }
 
 interface Chat {
@@ -27,6 +28,7 @@ interface Chat {
   lastMessage: string;
   time: string;
   unread: number;
+  isOnline: boolean;
 }
 
 export default function ClientChatPage() {
@@ -61,6 +63,7 @@ export default function ClientChatPage() {
     lastMessage: chat.lastMessage,
     time: new Date(chat.lastMessageTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
     unread: chat.unseenCount,
+    isOnline: chat.isOnline,
   }));
 
   // Scroll to bottom when messages change
@@ -303,8 +306,8 @@ export default function ClientChatPage() {
                       alt={chat.name}
                       className="w-12 h-12 rounded-full object-cover"
                     />
-                    {chat.unread > 0 && (
-                      <span className="absolute bottom-0 right-0 w-3 h-3 bg-[#0FE16D] text-white rounded-full text-xs flex items-center justify-center font-semibold">
+                    {chat?.isOnline && (
+                      <span className="absolute bottom-0 right-0 w-3 h-3 bg-[#0FE16D] border-2 border-white rounded-full">
                       </span>
                     )}
                   </div>
@@ -374,14 +377,17 @@ export default function ClientChatPage() {
                   alt={activeChat.name}
                   className="w-10 h-10 rounded-full object-cover"
                 />
-                <div className={`absolute bottom-0 right-0 w-3 h-3 ${isConnected ? "bg-green-500" : "bg-red-500"} rounded-full border-2 border-white`}></div>
+                <div className={`absolute bottom-0 right-0 w-3 h-3 ${activeChat.isOnline ? "bg-green-500" : "bg-gray-400"} rounded-full border-2 border-white`}></div>
               </div>
               <div>
                 <p className="font-medium text-black font-inter">
                   {activeChat.name}
                 </p>
-                <p className={`text-xs ${isConnected ? "text-green-600" : "text-red-600"} font-medium font-inter`}>
+                {/* <p className={`text-xs ${isConnected ? "text-green-600" : "text-red-600"} font-medium font-inter`}>
                   {isConnected ? "Connected" : "Disconnected"}
+                </p> */}
+                <p className={`text-xs ${activeChat.isOnline ? "text-green-600" : "text-gray-500"} font-medium font-inter`}>
+                  {activeChat.isOnline ? "Online" : "Offline"}
                 </p>
               </div>
             </div>

@@ -212,7 +212,7 @@ export default function CaseDetails() {
                 Track important events and documents for case #{caseData.caseNumber}
               </p>
             </div>
-            <div className="flex gap-3">
+            {/* <div className="flex gap-3">
               <Button
                 size="sm"
                 className="bg-[#1878B5] hover:bg-[#146499] text-white rounded-2xl h-11 px-8 font-semibold transition-all shadow-md"
@@ -226,7 +226,7 @@ export default function CaseDetails() {
               >
                 Share
               </Button>
-            </div>
+            </div> */}
           </div>
 
           {/* Cards Container */}

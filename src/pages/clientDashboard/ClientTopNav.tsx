@@ -15,7 +15,7 @@ import {
   LogOut,
 } from "lucide-react";
 import NotificationModal from "@/common/NotificationModal";
-import { useGetAllNotificationsQuery, useGetNotificationForBellQuery, useDeleteNotificationMutation } from "@/redux/api/notificationApi";
+import { useGetAllNotificationsQuery, useGetNotificationForBellQuery, useDeleteNotificationMutation, useViewSpecificNotificationMutation } from "@/redux/api/notificationApi";
 import { Switch } from "@/components/ui/switch";
 import { useToggleNotificationMutation } from "@/redux/api/authApi";
 import { useSocket } from "@/context/SocketContext";
@@ -40,6 +40,7 @@ export default function ClientTopNav({
   const { data: bellNotificationData } = useGetNotificationForBellQuery(undefined);
   const [deleteNotification] = useDeleteNotificationMutation();
   const [toggleNotification] = useToggleNotificationMutation();
+  const [viewNotification] = useViewSpecificNotificationMutation();
 
   const { totalUnseenCount } = useSocket();
 
@@ -48,12 +49,43 @@ export default function ClientTopNav({
 
   const [showAccountMenu, setShowAccountMenu] = useState(false);
   const [open, setOpen] = useState(false);
+  const [deletingId, setDeletingId] = useState<string | number | null>(null);
+  const [viewingId, setViewingId] = useState<string | number | null>(null);
 
   const handleDeleteNotification = async (id: string | number) => {
     try {
+      setDeletingId(id);
       await deleteNotification(id).unwrap();
     } catch (error) {
       console.error("Failed to delete notification:", error);
+    } finally {
+      setDeletingId(null);
+    }
+  };
+
+  const handleViewNotification = async (notif: any) => {
+    try {
+      setViewingId(notif.id);
+      // Mark as read
+      await viewNotification(notif.id).unwrap();
+      
+      // Close modal
+      setOpen(false);
+
+      // Redirect logic
+      const message = notif.message.toLowerCase();
+      if (message.includes("message") || message.includes("chat") || message.includes("sent")) {
+        navigate("/client/chat");
+      } else if (message.includes("case") || message.includes("document")) {
+        navigate("/client/cases");
+      } else {
+        // Fallback or other specific routes
+        navigate("/client");
+      }
+    } catch (error) {
+      console.error("Failed to view notification:", error);
+    } finally {
+      setViewingId(null);
     }
   };
 
@@ -245,6 +277,9 @@ export default function ClientTopNav({
         onClose={() => setOpen(false)}
         notifications={notifications}
         onDelete={handleDeleteNotification}
+        onView={handleViewNotification}
+        deletingId={deletingId}
+        viewingId={viewingId}
       />
     </div>
   );

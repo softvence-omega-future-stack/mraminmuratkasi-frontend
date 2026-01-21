@@ -23,7 +23,19 @@ export const notificationApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["Notification"],
     }),
+    viewSpecificNotification: builder.mutation({
+      query: (notification_id) => ({
+        url: `/notifications/viewSpecificNotification?notification_id=${notification_id}`,
+        method: "GET",
+      }),
+      invalidatesTags: ["Notification"],
+    }),
   }),
 });
 
-export const { useGetAllNotificationsQuery, useGetNotificationForBellQuery, useDeleteNotificationMutation } = notificationApi;
+export const { 
+  useGetAllNotificationsQuery, 
+  useGetNotificationForBellQuery, 
+  useDeleteNotificationMutation,
+  useViewSpecificNotificationMutation 
+} = notificationApi;
