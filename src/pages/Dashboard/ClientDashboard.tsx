@@ -1,9 +1,10 @@
 import { MoreVertical } from "lucide-react";
 import { getStatusStyles } from "../clientDashboard/ClientCasesPage";
 import activeCaseIcon from "/public/images/activeCaseIcon.png";
-import icon1 from "/public/images/icon1.png";
-import icon2 from "/public/images/icon2.png";
-import icon3 from "/public/images/icon3.png";
+// import icon1 from "/public/images/icon1.png";
+// import icon2 from "/public/images/icon2.png";
+// import icon3 from "/public/images/icon3.png";
+import resentUploadIcon from "/public/images/resentUploadIcon.png";
 import { Link, useNavigate } from "react-router-dom";
 import { useGetProfileQuery } from "@/redux/api/authApi";
 
@@ -35,29 +36,26 @@ export default function ClientDashboard() {
 
   const displayCases = userCases.slice(0, 5);
 
-  const recentUpdates = [
-    {
-      id: 1,
-      title: "Accident Report Filed",
-      date: "2024-01-15",
-      icon: icon1, // <FileText className="w-5 h-5 text-blue-500" />,
-      bg: "bg-blue-50",
-    },
-    {
-      id: 2,
-      title: "Court Date Scheduled",
-      date: "2024-03-21",
-      icon: icon2, //<Calendar className="w-5 h-5 text-blue-500" />,
-      bg: "bg-blue-50",
-    },
-    {
-      id: 3,
-      title: "Additional Documents Needed",
-      date: "2024-01-12",
-      icon: icon3, //<AlertCircle className="w-5 h-5 text-blue-500" />,
-      bg: "bg-blue-50",
-    },
-  ];
+  // Extract recent uploads from all cases
+  const recentUploads = userCases
+    .flatMap((c: any) => 
+      (c.assetList_id?.assets || []).map((asset: any) => ({
+        id: asset._id || `${c._id}-${asset.assetName}`,
+        title: asset.assetName,
+        caseTitle: c.caseTitle,
+        date: c.updatedAt,
+        url: asset.assetUrl,
+      }))
+    )
+    .sort((a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime())
+    .slice(0, 3);
+
+  // const getFileIcon = (fileName: string) => {
+  //   const ext = fileName.split(".").pop()?.toLowerCase();
+  //   if (["jpg", "jpeg", "png", "gif", "webp"].includes(ext || "")) return icon1;
+  //   if (ext === "pdf") return icon2;
+  //   return icon3;
+  // };
 
   return (
     <div className="space-y-6 font-inter">
@@ -103,31 +101,41 @@ export default function ClientDashboard() {
           </div>
         </div>
 
-        {/* Recent Updates */}
+        {/* Recent Uploads */}
         <div className="bg-white rounded-2xl p-6 shadow-sm">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold text-black">Recent Updates</h3>
+            <h3 className="text-lg font-semibold text-black">Recent Uploads</h3>
           </div>
 
           <div className="space-y-3">
-            {recentUpdates.map((update) => (
-              <div
-                key={update.id}
-                className="flex items-start gap-3 p-3 rounded-xl bg-[#F6F6F6] border border-gray-100 hover:bg-gray-50 transition"
-              >
-                <div className="w-9 h-9 rounded-lg bg-blue-50 flex items-center justify-center shrink-0">
-                  {/* {update.icon} */}
-                  <img src={update.icon} alt="" />
-                </div>
+            {isLoading ? (
+               <p className="text-gray-500 text-sm">Loading uploads...</p>
+            ) : recentUploads.length === 0 ? (
+               <p className="text-gray-500 text-sm">No recent uploads found.</p>
+            ) : (
+              recentUploads.map((upload: any) => (
+                <div
+                  key={upload.id}
+                  className="flex items-start gap-3 p-3 rounded-xl bg-[#F6F6F6] border border-gray-100 hover:bg-gray-50 transition cursor-pointer"
+                  onClick={() => window.open(upload.url, '_blank')}
+                >
+                  <div className="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center shrink-0 overflow-hidden">
+                    {/* <img src={getFileIcon(upload.title)} alt="" className="w-full h-full object-contain" /> */}
+                    {/* <NotebookIcon className="text-[#1878B5]" size={24}/> */}
+                    <img src={resentUploadIcon} alt="" className="w-full h-full" />
+                  </div>
 
-                <div>
-                  <p className="text-sm font-medium text-gray-900">
-                    {update.title}
-                  </p>
-                  <p className="text-xs text-gray-400 mt-1">{update.date}</p>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-gray-900 truncate" title={upload.title}>
+                      {upload.title}
+                    </p>
+                    <p className="text-[10px] text-gray-400 mt-1 uppercase">
+                      CASE: {upload.caseTitle} • {formatDate(upload.date)}
+                    </p>
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))
+            )}
           </div>
         </div>
       </div>
