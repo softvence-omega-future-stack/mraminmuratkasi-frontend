@@ -8,7 +8,11 @@ import { SocketProvider } from "@/context/SocketContext";
 
 import { Outlet } from "react-router-dom";
 
-export default function ClientDashboardLayout() {
+export default function ClientDashboardLayout({
+  children,
+}: {
+  children?: React.ReactNode;
+}) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   //   const { user } = useAuth();
@@ -53,7 +57,7 @@ export default function ClientDashboardLayout() {
           {/* Page Content */}
           <main className="flex-1 overflow-auto">
             <div className="max-w-7x mx-auto">
-              <Outlet />
+              {children || <Outlet />}
             </div>
           </main>
         </div>

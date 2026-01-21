@@ -89,6 +89,12 @@ const authApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["User"],
     }),
+    selfDestruct: builder.mutation({
+      query: () => ({
+        url: "/users/selfDestruct",
+        method: "DELETE",
+      }),
+    }),
   }),
 });
 
@@ -105,4 +111,5 @@ export const {
   useUploadImageMutation,
   useLogOutMutation,
   useToggleNotificationMutation,
+  useSelfDestructMutation,
 } = authApi;
