@@ -16,7 +16,15 @@ export const chatApi = baseApi.injectEndpoints({
       }),
       providesTags: ["Message"],
     }),
+    chatFile: builder.mutation({
+      query: (formData) => ({
+        url: "/message/chat-file",
+        method: "POST",
+        body: formData,
+      }),
+      invalidatesTags: ["Message"],
+    }),
   }),
 });
 
-export const { useGetChatListQuery, useGetConversationQuery } = chatApi;
+export const { useGetChatListQuery, useGetConversationQuery, useChatFileMutation } = chatApi;

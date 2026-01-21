@@ -1,5 +1,5 @@
 import { useNavigate, useLocation } from "react-router-dom";
-import { useGetProfileQuery, useLogOutMutation } from "@/redux/api/authApi";
+import { useGetProfileQuery } from "@/redux/api/authApi";
 import { useAppDispatch } from "@/redux/hooks";
 import { logout } from "@/redux/features/auth/authSlice";
 import { useState } from "react";
@@ -12,12 +12,13 @@ import {
   SquarePen,
   LockKeyhole,
   MessageSquareDot,
-  LogOut,
+  UserRound,
+  AlertTriangle,
 } from "lucide-react";
 import NotificationModal from "@/common/NotificationModal";
-import { useGetAllNotificationsQuery, useGetNotificationForBellQuery, useDeleteNotificationMutation } from "@/redux/api/notificationApi";
+import { useGetAllNotificationsQuery, useGetNotificationForBellQuery, useDeleteNotificationMutation, useViewSpecificNotificationMutation } from "@/redux/api/notificationApi";
 import { Switch } from "@/components/ui/switch";
-import { useToggleNotificationMutation } from "@/redux/api/authApi";
+import { useToggleNotificationMutation, useSelfDestructMutation } from "@/redux/api/authApi";
 import { useSocket } from "@/context/SocketContext";
 
 interface ClientTopNavProps {
@@ -40,6 +41,7 @@ export default function ClientTopNav({
   const { data: bellNotificationData } = useGetNotificationForBellQuery(undefined);
   const [deleteNotification] = useDeleteNotificationMutation();
   const [toggleNotification] = useToggleNotificationMutation();
+  const [viewNotification] = useViewSpecificNotificationMutation();
 
   const { totalUnseenCount } = useSocket();
 
@@ -48,18 +50,51 @@ export default function ClientTopNav({
 
   const [showAccountMenu, setShowAccountMenu] = useState(false);
   const [open, setOpen] = useState(false);
+  const [deletingId, setDeletingId] = useState<string | number | null>(null);
+  const [viewingId, setViewingId] = useState<string | number | null>(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [selfDestruct, { isLoading: isDeletingAccount }] = useSelfDestructMutation();
 
   const handleDeleteNotification = async (id: string | number) => {
     try {
+      setDeletingId(id);
       await deleteNotification(id).unwrap();
     } catch (error) {
       console.error("Failed to delete notification:", error);
+    } finally {
+      setDeletingId(null);
+    }
+  };
+
+  const handleViewNotification = async (notif: any) => {
+    try {
+      setViewingId(notif.id);
+      // Mark as read
+      await viewNotification(notif.id).unwrap();
+      
+      // Close modal
+      setOpen(false);
+
+      // Redirect logic
+      const message = notif.message.toLowerCase();
+      if (message.includes("message") || message.includes("chat") || message.includes("sent")) {
+        navigate("/client/chat");
+      } else if (message.includes("case") || message.includes("document")) {
+        navigate("/client/cases");
+      } else {
+        // Fallback or other specific routes
+        navigate("/client");
+      }
+    } catch (error) {
+      console.error("Failed to view notification:", error);
+    } finally {
+      setViewingId(null);
     }
   };
 
   const handleToggleNotification = async (checked: boolean) => {
     try {
-      await toggleNotification({ enabled: checked }).unwrap();
+      await toggleNotification({ notificationsEnabled: checked }).unwrap();
     } catch (error) {
       console.error("Failed to toggle notification:", error);
     }
@@ -69,17 +104,16 @@ export default function ClientTopNav({
     return location.pathname === path;
   };
 
-  const [logOut] = useLogOutMutation();
-
-  const handleLogout = async () => {
+  const handleDeleteAccount = async () => {
     try {
-      await logOut(undefined).unwrap();
-    } catch (err) {
-      console.error("Logout failed:", err);
-    } finally {
+      await selfDestruct(undefined).unwrap();
       dispatch(logout());
       localStorage.removeItem("token");
       navigate("/");
+    } catch (err) {
+      console.error("Account deletion failed:", err);
+    } finally {
+      setShowDeleteModal(false);
     }
   };
 
@@ -149,7 +183,7 @@ export default function ClientTopNav({
             <MessageCircleMore className="w-4 h-4" />
             <span className="font-medium">Chat</span>
             {totalUnseenCount > 0 && (
-              <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] bg-red-500 text-white text-[10px] font-bold flex items-center justify-center rounded-full border-2 border-white px-1">
+              <span className="absolute -top-1 -right-1 min-w-4.5 h-4.5 bg-red-500 text-white text-[10px] font-bold flex items-center justify-center rounded-full border-2 border-white px-1">
                 {totalUnseenCount}
               </span>
             )}
@@ -159,17 +193,19 @@ export default function ClientTopNav({
         {/* Right: Notifications & Profile */}
         <div className="flex items-center space-x-4">
           {/* Bell Button */}
-          <button
-            onClick={() => setOpen(true)}
-            className="relative p-3 bg-blue-50 text-blue-600 rounded-full hover:bg-blue-100 transition cursor-pointer"
-          >
-            <Bell className="w-5 h-5" />
-            {newNotificationCount > 0 && (
-              <span className="absolute top-1 right-1 min-w-[18px] h-[18px] bg-red-500 text-white text-[10px] font-bold flex items-center justify-center rounded-full border-2 border-white px-1">
-                {newNotificationCount}
-              </span>
-            )}
-          </button>
+          {user?.user_id?.notificationsEnabled && (
+            <button
+              onClick={() => setOpen(true)}
+              className="relative p-3 bg-blue-50 text-blue-600 rounded-full hover:bg-blue-100 transition cursor-pointer"
+            >
+              <Bell className="w-5 h-5" />
+              {newNotificationCount > 0 && (
+                <span className="absolute top-1 right-1 min-w-4.5 h-4.5 bg-red-500 text-white text-[10px] font-bold flex items-center justify-center rounded-full border-2 border-white px-1">
+                  {newNotificationCount}
+                </span>
+              )}
+            </button>
+          )}
 
           {/* Profile Menu */}
           <div className="relative">
@@ -221,16 +257,19 @@ export default function ClientTopNav({
                       </div>
                       
                       <Switch 
-                        checked={user?.notification}
+                        checked={user?.user_id?.notificationsEnabled}
                         onCheckedChange={handleToggleNotification}
                       />
                     </div>
                     <button
-                      onClick={handleLogout}
+                      onClick={() => {
+                        setShowDeleteModal(true);
+                        setShowAccountMenu(false);
+                      }}
                       className="w-full flex items-center space-x-2 px-3 py-4 text-sm text-[#FE1B1B] hover:bg-gray-50 rounded transition-colors border-t border-t-gray-50 cursor-pointer font-medium"
                     >
-                      <LogOut className="w-4 h-4" />
-                      <span>Log Out</span>
+                      <UserRound className="w-4 h-4" />
+                      <span>Delete Account</span>
                     </button>
                   </div>
                 </div>
@@ -245,7 +284,49 @@ export default function ClientTopNav({
         onClose={() => setOpen(false)}
         notifications={notifications}
         onDelete={handleDeleteNotification}
+        onView={handleViewNotification}
+        deletingId={deletingId}
+        viewingId={viewingId}
       />
+
+      {/* Delete Account Warning Modal */}
+      {showDeleteModal && (
+        <div className="fixed inset-0 z-100 flex items-center justify-center p-4">
+          <div 
+            className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+            onClick={() => setShowDeleteModal(false)}
+          />
+          <div className="relative bg-white rounded-2xl shadow-xl max-w-md w-full p-6 animate-in fade-in zoom-in duration-200">
+            <div className="flex flex-col items-center text-center">
+              <div className="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mb-4">
+                <AlertTriangle className="w-8 h-8 text-red-500" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-2">
+                Delete Account?
+              </h3>
+              <p className="text-gray-500 mb-8">
+                Are you sure you want to delete your account? This action is permanent and all your data will be lost.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-3 w-full">
+                <button
+                  onClick={() => setShowDeleteModal(false)}
+                  className="flex-1 px-6 py-3 rounded-xl border border-gray-200 text-gray-700 font-medium hover:bg-gray-50 transition-colors"
+                  disabled={isDeletingAccount}
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleDeleteAccount}
+                  className="flex-1 px-6 py-3 rounded-xl bg-red-500 text-white font-medium hover:bg-red-600 transition-colors disabled:opacity-50"
+                  disabled={isDeletingAccount}
+                >
+                  {isDeletingAccount ? "Deleting..." : "Delete Permanently"}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

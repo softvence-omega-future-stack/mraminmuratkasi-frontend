@@ -61,7 +61,7 @@ export default function CaseDetails() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-[400px]">
+      <div className="flex items-center justify-center min-h-100">
         <p className="text-gray-500">Loading case details...</p>
       </div>
     );
@@ -69,7 +69,7 @@ export default function CaseDetails() {
 
   if (!caseData) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[400px]">
+      <div className="flex flex-col items-center justify-center min-h-100">
         <p className="text-gray-500 mb-4">Case not found</p>
         <Button onClick={handleBack}>Go Back</Button>
       </div>
@@ -212,7 +212,7 @@ export default function CaseDetails() {
                 Track important events and documents for case #{caseData.caseNumber}
               </p>
             </div>
-            <div className="flex gap-3">
+            {/* <div className="flex gap-3">
               <Button
                 size="sm"
                 className="bg-[#1878B5] hover:bg-[#146499] text-white rounded-2xl h-11 px-8 font-semibold transition-all shadow-md"
@@ -226,7 +226,7 @@ export default function CaseDetails() {
               >
                 Share
               </Button>
-            </div>
+            </div> */}
           </div>
 
           {/* Cards Container */}

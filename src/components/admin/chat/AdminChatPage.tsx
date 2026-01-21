@@ -1,108 +1,278 @@
 "use client";
 
+import { useSocket } from "@/context/SocketContext";
+import {
+  useChatFileMutation,
+  useGetChatListQuery,
+  useGetConversationQuery,
+} from "@/redux/api/chatApi";
+import { selectUser } from "@/redux/features/auth/authSlice";
+import { useAppSelector } from "@/redux/hooks";
+import { Download, FileText, Paperclip, Search, Send } from "lucide-react";
 import type React from "react";
-
-import { Paperclip, Search, Send } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { toast } from "sonner";
 
 interface Message {
-  id: number;
+  id: string;
   sender: string;
   avatar: string;
   text: string;
+  fileUrl?: string;
+  fileType?: string;
   time: string;
   isOwn: boolean;
+  isOnline?: boolean;
 }
 
 interface Chat {
-  id: number;
+  id: string;
   name: string;
   avatar: string;
   lastMessage: string;
   time: string;
   unread: number;
+  isOnline: boolean;
 }
 
-const chats: Chat[] = [
-  {
-    id: 1,
-    name: "John Lieberman",
-    // avatar: "/public/images/chatImg.png",
-    avatar:
-      "https://plus.unsplash.com/premium_photo-1689977807477-a579eda91fa2?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OXx8cHJvZmlsZXxlbnwwfHwwfHx8MA%3D%3D",
-    lastMessage: "How are you doing?",
-    time: "2m",
-    unread: 2,
-  },
-  {
-    id: 2,
-    name: "Jane Smith",
-    avatar:
-      "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8cHJvZmlsZXxlbnwwfHwwfHx8MA%3D%3D",
-    lastMessage: "Thanks for your help!",
-    time: "1h",
-    unread: 0,
-  },
-];
-
-const initialMessages: Message[] = [
-  {
-    id: 1,
-    sender: "John Lieberman",
-    // avatar: "/public/images/chatImg.png",
-    avatar:
-      "https://plus.unsplash.com/premium_photo-1689977807477-a579eda91fa2?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OXx8cHJvZmlsZXxlbnwwfHwwfHx8MA%3D%3D",
-    text: "Hey there!",
-    time: "10:30 AM",
-    isOwn: false,
-  },
-  {
-    id: 2,
-    sender: "You",
-    // avatar: "/public/images/chatImg2.png",
-    avatar:
-      "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTF8fHByb2ZpbGV8ZW58MHx8MHx8fDA%3D",
-    text: "Hi! How are you?",
-    time: "10:32 AM",
-    isOwn: true,
-  },
-  {
-    id: 3,
-    sender: "John Lieberman",
-    avatar:
-      "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTZ8fHByb2ZpbGV8ZW58MHx8MHx8fDA%3D",
-    text: "How r u doing?",
-    time: "10:35 AM",
-    isOwn: false,
-  },
-];
-
-const AdminChatPage = () => {
-  const [messages, setMessages] = useState<Message[]>(initialMessages);
-  const [newMessage, setNewMessage] = useState("");
-  const [activeChat, setActiveChat] = useState(chats[0]);
+export default function AdminChatPage() {
+  const [activeChat, setActiveChat] = useState<Chat | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [newMessage, setNewMessage] = useState("");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [filePreview, setFilePreview] = useState<string | null>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleSendMessage = () => {
-    if (!newMessage.trim()) return;
+  const {
+    socket,
+    isConnected,
+    refetchChatList: refetchGlobalChatList,
+  } = useSocket();
+  const user = useAppSelector(selectUser);
+  const [chatFile] = useChatFileMutation();
 
-    const message: Message = {
-      id: messages.length + 1,
-      sender: "You",
-      //   avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=you",
-      avatar:
-        "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTF8fHByb2ZpbGV8ZW58MHx8MHx8fDA%3D",
-      text: newMessage,
-      time: new Date().toLocaleTimeString("en-US", {
-        hour: "2-digit",
-        minute: "2-digit",
-      }),
-      isOwn: true,
+  // Fetch Chat List
+  const { data: chatListData, isLoading: isChatListLoading } =
+    useGetChatListQuery(undefined);
+
+  // Fetch Conversation
+  const { data: conversationData, isLoading: isConversationLoading } =
+    useGetConversationQuery(activeChat?.id, {
+      skip: !activeChat?.id,
+    });
+
+  // Derived state for chats
+  const chatList = Array.isArray(chatListData)
+    ? chatListData
+    : chatListData?.data || [];
+  const chats: Chat[] = chatList.map((chat: any) => ({
+    id: chat.userId,
+    name: chat.name,
+    avatar:
+      chat.img ||
+      "https://ammachilabs.org/wp-content/uploads/2023/11/male.jpeg",
+    lastMessage: chat.lastMessage,
+    time: new Date(chat.lastMessageTime).toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit",
+    }),
+    unread: chat.unseenCount,
+    isOnline: chat.isOnline,
+  }));
+
+  // Scroll to bottom when messages change
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    }
+  }, [messages]);
+
+  // Handle seen status when activeChat changes
+  useEffect(() => {
+    if (activeChat && socket && socket.readyState === WebSocket.OPEN) {
+      socket.send(
+        JSON.stringify({
+          type: "seen",
+          chatId: activeChat.id,
+        }),
+      );
+      refetchGlobalChatList();
+    }
+  }, [activeChat, socket, isConnected, refetchGlobalChatList]);
+
+  // Update messages state when conversationData changes
+  useEffect(() => {
+    if (conversationData) {
+      const conversation = conversationData?.data || conversationData;
+      const rawMessages = conversation?.messages || [];
+
+      const formattedMessages: Message[] = rawMessages.map((msg: any) => ({
+        id: msg._id,
+        sender: msg.sentByMe ? "You" : conversation?.chatWith?.name,
+        avatar: msg.sentByMe
+          ? "https://ammachilabs.org/wp-content/uploads/2023/11/male.jpeg"
+          : activeChat?.avatar || "/placeholder.svg",
+        text: msg.text,
+        fileUrl: msg.fileUrl,
+        fileType: msg.fileType,
+        time: new Date(msg.createdAt).toLocaleTimeString([], {
+          hour: "2-digit",
+          minute: "2-digit",
+        }),
+        isOwn: msg.sentByMe,
+      }));
+      setMessages(formattedMessages);
+    }
+  }, [conversationData, activeChat]);
+
+  // WebSocket Message Listener
+  useEffect(() => {
+    if (!socket || !activeChat) return;
+
+    const handleMessage = (event: MessageEvent) => {
+      try {
+        const data = JSON.parse(event.data);
+        console.log("[Chat Page] WebSocket Event Details:", {
+          type: data.type,
+          senderId: data.senderId,
+          receiverId: data.receiverId,
+          activeChatId: activeChat.id,
+          currentUserId: user?._id,
+        });
+
+        // If it's a message event for the current active chat
+        // We use string conversion to ensure IDs match even if formats differ
+        const messageMatchesChat =
+          String(data.senderId) === String(activeChat.id) ||
+          String(data.receiverId) === String(activeChat.id);
+
+        if ((!data.type || data.type === "message") && messageMatchesChat) {
+          // If it's not sent by current user, add it to the state
+          if (String(data.senderId) !== String(user?._id)) {
+            console.log("[Chat Page] Adding incoming message to state");
+            const incomingMsg: Message = {
+              id: data._id || Date.now().toString(),
+              sender: activeChat.name,
+              avatar: activeChat.avatar || "/placeholder.svg",
+              text: data.text,
+              fileUrl: data.fileUrl,
+              fileType: data.fileType,
+              time: new Date().toLocaleTimeString([], {
+                hour: "2-digit",
+                minute: "2-digit",
+              }),
+              isOwn: false,
+            };
+
+            setMessages((prev) => {
+              if (prev.some((m) => String(m.id) === String(incomingMsg.id))) {
+                console.log("[Chat Page] Skipping duplicate message");
+                return prev;
+              }
+              return [...prev, incomingMsg];
+            });
+          }
+        }
+      } catch (error) {
+        console.error("Error parsing message:", error);
+      }
     };
 
-    setMessages([...messages, message]);
-    setNewMessage("");
+    console.log("[Chat Page] Attaching Socket Listener", {
+      socketReadyState: socket.readyState,
+      chatId: activeChat.id,
+    });
+    socket.addEventListener("message", handleMessage);
+    return () => {
+      console.log("[Chat Page] Removing Socket Listener");
+      socket.removeEventListener("message", handleMessage);
+    };
+  }, [socket, activeChat?.id, user?._id]);
+
+  // Set first chat as active initially if available and none selected
+  useEffect(() => {
+    if (!activeChat && chats.length > 0) {
+      setActiveChat(chats[0]);
+    }
+  }, [chats, activeChat]);
+
+  const handleSendMessage = async () => {
+    if (!newMessage.trim() && !selectedFile) return;
+    if (!activeChat || !socket) return;
+
+    let uploadedFileUrl = "";
+    let uploadedFileType = "";
+
+    if (selectedFile) {
+      const formData = new FormData();
+      formData.append("file", selectedFile);
+
+      try {
+        const res: any = await chatFile(formData).unwrap();
+        uploadedFileUrl = res.imageUrl;
+        uploadedFileType = res.fileType;
+      } catch (error) {
+        toast.error("Failed to upload file");
+        return;
+      }
+    }
+
+    const messagePayload: any = {
+      receiverId: activeChat.id,
+      text: newMessage,
+    };
+    if (uploadedFileUrl) messagePayload.fileUrl = uploadedFileUrl;
+    if (uploadedFileType) messagePayload.fileType = uploadedFileType;
+
+    if (socket.readyState === WebSocket.OPEN) {
+      socket.send(JSON.stringify(messagePayload));
+
+      // Optimistic update
+      const optimisticMsg: Message = {
+        id: "temp-" + Date.now(),
+        sender: "You",
+        avatar: "https://ammachilabs.org/wp-content/uploads/2023/11/male.jpeg",
+        text: newMessage,
+        fileUrl: uploadedFileUrl,
+        fileType: uploadedFileType,
+        time: new Date().toLocaleTimeString([], {
+          hour: "2-digit",
+          minute: "2-digit",
+        }),
+        isOwn: true,
+      };
+      setMessages((prev) => [...prev, optimisticMsg]);
+      setNewMessage("");
+      setSelectedFile(null);
+      setFilePreview(null);
+    } else {
+      toast.error("Connecting to server...");
+    }
+  };
+
+  const onFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setSelectedFile(file);
+    if (file.type.startsWith("image/")) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setFilePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    } else {
+      setFilePreview("doc"); // Placeholder for non-image files
+    }
+  };
+
+  const removeSelectedFile = () => {
+    setSelectedFile(null);
+    setFilePreview(null);
+    if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -122,7 +292,7 @@ const AdminChatPage = () => {
       <div className="flex gap-6 h-[calc(100vh-250px)]">
         {/* Chat List */}
         <div
-          className={`w-full md:w-96 bg-white border border-[#F1F2F2] p-5 rounded-[12px] overflow-y-auto ${
+          className={`w-full md:w-96 bg-white border border-[#F1F2F2] p-5 rounded-2xl overflow-y-auto ${
             isMobileMenuOpen ? "block" : "hidden md:block"
           }`}
         >
@@ -140,59 +310,67 @@ const AdminChatPage = () => {
           </div>
 
           <div className="divide-y divide-gray-100 space-y-0.5">
-            {filteredChats.map((chat) => (
-              <button
-                key={chat.id}
-                onClick={() => {
-                  setActiveChat(chat);
-                  setIsMobileMenuOpen(false);
-                }}
-                className={`w-full p-4 text-left hover:bg-gray-50 transition-colors cursor-pointer rounded-[8px] ${
-                  activeChat.id === chat.id ? "bg-[#E8F2F8] p-2" : ""
-                }`}
-              >
-                <div className="flex items-center space-x-3">
-                  <div className="relative">
-                    <img
-                      src={chat.avatar || "/placeholder.svg"}
-                      alt={chat.name}
-                      className="w-12 h-12 rounded-full object-cover"
-                    />
-                    {chat.unread > 0 && (
-                      <span className="absolute bottom-0 right-0 w-3 h-3 bg-[#0FE16D] text-white rounded-full text-xs flex items-center justify-center font-semibold">
-                        {/* {chat.unread} */}
-                      </span>
-                    )}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center justify-between mb-0.5">
-                      <p className="text-black font-medium truncate">
-                        {chat.name}
-                      </p>
-                      <span className="text-xs text-gray-500 font-normal flex-shrink-0">
-                        {chat.time}
-                      </span>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <p className="text-xs text-gray-400 font-normal truncate">
-                        {chat.lastMessage}
-                      </p>
-                      {chat.unread > 0 && (
-                        <span className="w-5.5 h-5.5 bg-red-500 text-white rounded-full text-xs flex items-center justify-center font-semibold">
-                          {chat.unread}
-                        </span>
+            {isChatListLoading ? (
+              <div className="p-4 text-center text-gray-500">
+                Loading chats...
+              </div>
+            ) : filteredChats.length === 0 ? (
+              <div className="p-4 text-center text-gray-500">
+                No chats found
+              </div>
+            ) : (
+              filteredChats.map((chat) => (
+                <button
+                  key={chat.id}
+                  onClick={() => {
+                    setActiveChat(chat);
+                    setIsMobileMenuOpen(false);
+                  }}
+                  className={`w-full p-4 text-left hover:bg-gray-50 transition-colors cursor-pointer rounded-[8px] ${
+                    activeChat?.id === chat.id ? "bg-[#E8F2F8] p-2" : ""
+                  }`}
+                >
+                  <div className="flex items-center space-x-3">
+                    <div className="relative">
+                      <img
+                        src={chat.avatar || "/placeholder.svg"}
+                        alt={chat.name}
+                        className="w-12 h-12 rounded-full object-cover"
+                      />
+                      {chat?.isOnline && (
+                        <span className="absolute bottom-0 right-0 w-3 h-3 bg-[#0FE16D] border-2 border-white rounded-full"></span>
                       )}
                     </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between mb-0.5">
+                        <p className="text-black font-medium truncate">
+                          {chat.name}
+                        </p>
+                        <span className="text-xs text-gray-500 font-normal flex-shrink-0">
+                          {chat.time}
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <p className="text-xs text-gray-400 font-normal truncate">
+                          {chat.lastMessage}
+                        </p>
+                        {chat.unread > 0 && (
+                          <span className="w-5.5 h-5.5 bg-red-500 text-white rounded-full text-xs flex items-center justify-center font-semibold">
+                            {chat.unread}
+                          </span>
+                        )}
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </button>
-            ))}
+                </button>
+              ))
+            )}
           </div>
         </div>
 
         {/* Chat Window */}
         <div
-          className={`flex-1 flex-col bg-white border border-[#F1F2F2] rounded-[12px] p-5 ${
+          className={`flex-1 flex-col bg-white border border-[#F1F2F2] rounded-2xl p-5 ${
             isMobileMenuOpen ? "hidden md:flex" : "flex"
           }`}
         >
@@ -216,78 +394,189 @@ const AdminChatPage = () => {
                 />
               </svg>
             </button>
-            <h3 className="font-semibold text-gray-900">{activeChat.name}</h3>
+            <h3 className="font-semibold text-gray-900">
+              {activeChat?.name || "Select Chat"}
+            </h3>
             <div className="w-6" />
           </div>
 
           {/* Chat Header */}
-          <div className="hidden md:flex px-5 pt-4 pb-3 border-b border-gray-200 items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <div className="relative">
-                <img
-                  src={activeChat.avatar || "/placeholder.svg"}
-                  alt={activeChat.name}
-                  className="w-10 h-10 rounded-full object-cover"
-                />
-                <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></div>
-              </div>
-              <div>
-                <p className="font-medium text-black font-inter">
-                  {activeChat.name}
-                </p>
-                <p className="text-xs text-green-600 font-medium font-inter">
-                  Active now
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* Messages */}
-          <div className="flex-1 overflow-y-auto p-4 space-y-4">
-            {messages.map((message) => (
-              <div
-                key={message.id}
-                className={`flex ${
-                  message.isOwn ? "justify-end" : "justify-start"
-                }`}
-              >
-                <div
-                  className={`flex items-end space-x-2 max-w-xs md:max-w-md lg:max-w-lg ${
-                    message.isOwn ? "flex-row-reverse space-x-reverse" : ""
-                  }`}
-                >
-                  {/* {!message.isOwn && (
-                      <img
-                        src={message.avatar || "/placeholder.svg"}
-                        alt={message.sender}
-                        className="w-8 h-8 rounded-full object-cover flex-shrink-0"
-                      />
-                    )} */}
+          {activeChat ? (
+            <div className="hidden md:flex px-5 pt-4 pb-3 border-b border-gray-200 items-center justify-between">
+              <div className="flex items-center space-x-3">
+                <div className="relative">
+                  <img
+                    src={activeChat.avatar || "/placeholder.svg"}
+                    alt={activeChat.name}
+                    className="w-10 h-10 rounded-full object-cover"
+                  />
                   <div
-                    className={`${message.isOwn ? "text-right" : "text-left"}`}
+                    className={`absolute bottom-0 right-0 w-3 h-3 ${activeChat.isOnline ? "bg-green-500" : "bg-gray-400"} rounded-full border-2 border-white`}
+                  ></div>
+                </div>
+                <div>
+                  <p className="font-medium text-black font-inter">
+                    {activeChat.name}
+                  </p>
+                  {/* <p className={`text-xs ${isConnected ? "text-green-600" : "text-red-600"} font-medium font-inter`}>
+                  {isConnected ? "Connected" : "Disconnected"}
+                </p> */}
+                  <p
+                    className={`text-xs ${activeChat.isOnline ? "text-green-600" : "text-gray-500"} font-medium font-inter`}
                   >
-                    <div
-                      className={`inline-block px-4 py-2 rounded-2xl ${
-                        message.isOwn
-                          ? "bg-[#1878B5] text-white rounded-br-none"
-                          : "bg-[#E8F2F8] text-gray-900 rounded-bl-none shadow-sm border border-gray-100"
-                      }`}
-                    >
-                      <p className="text-sm leading-relaxed">{message.text}</p>
-                    </div>
-                    {/* <p className="text-xs text-gray-500 mt-1 px-1">
-                        {message.time}
-                      </p> */}
-                  </div>
+                    {activeChat.isOnline ? "Online" : "Offline"}
+                  </p>
                 </div>
               </div>
-            ))}
+            </div>
+          ) : (
+            <div className="hidden md:flex px-5 pt-4 pb-3 border-b border-gray-200 items-center justify-between">
+              <p className="font-medium text-gray-500">
+                Select a chat to start messaging
+              </p>
+            </div>
+          )}
+
+          {/* Messages */}
+          <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-4">
+            {isConversationLoading ? (
+              <div className="flex h-full items-center justify-center">
+                <p className="text-gray-500">Loading messages...</p>
+              </div>
+            ) : messages.length === 0 ? (
+              <div className="flex h-full items-center justify-center">
+                <p className="text-gray-500">No messages found</p>
+              </div>
+            ) : (
+              messages.map((message) => (
+                <div
+                  key={message.id}
+                  className={`flex ${
+                    message.isOwn ? "justify-end" : "justify-start"
+                  }`}
+                >
+                  <div
+                    className={`flex items-end space-x-2 max-w-xs md:max-w-md lg:max-w-lg ${
+                      message.isOwn ? "flex-row-reverse space-x-reverse" : ""
+                    }`}
+                  >
+                    <div
+                      className={`${
+                        message.isOwn ? "text-right" : "text-left"
+                      }`}
+                    >
+                      <div
+                        className={`inline-block px-4 py-2 rounded-2xl ${
+                          message.isOwn
+                            ? message.fileUrl &&
+                              message.fileType?.startsWith("image")
+                              ? ""
+                              : "bg-[#1878B5] text-white rounded-br-none"
+                            : message.fileUrl &&
+                                message.fileType?.startsWith("image")
+                              ? ""
+                              : "bg-[#E8F2F8] text-gray-900 rounded-bl-none shadow-sm border border-gray-100"
+                        }`}
+                      >
+                        {message.fileUrl && (
+                          <div className="mb-2 max-w-50">
+                            {message.fileType?.startsWith("image") ? (
+                              <img
+                                src={message.fileUrl}
+                                alt="attached"
+                                className="rounded-lg w-full h-auto cursor-pointer"
+                                onClick={() =>
+                                  window.open(message.fileUrl, "_blank")
+                                }
+                              />
+                            ) : (
+                              <div className="flex items-center gap-2 p-2 bg-black/10 rounded-lg">
+                                <FileText className="w-5 h-5 shrink-0" />
+                                <span className="text-xs truncate flex-1">
+                                  {message.fileUrl.split("/").pop()}
+                                </span>
+                                <Download
+                                  className="w-4 h-4 cursor-pointer hover:text-blue-500"
+                                  onClick={() =>
+                                    window.open(message.fileUrl, "_blank")
+                                  }
+                                />
+                              </div>
+                            )}
+                          </div>
+                        )}
+                        {message.text && (
+                          <p className="text-sm leading-relaxed">
+                            {message.text}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))
+            )}
           </div>
 
           {/* Message Input */}
           <div className="p- border-t border-gray-200 bg-white">
+            {/* File Preview */}
+            {filePreview && (
+              <div className="px-4 py-2 flex items-center gap-3">
+                <div className="relative group">
+                  {filePreview === "doc" ? (
+                    <div className="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center border border-gray-200">
+                      <FileText className="w-8 h-8 text-gray-400" />
+                    </div>
+                  ) : (
+                    <img
+                      src={filePreview}
+                      alt="Preview"
+                      className="w-16 h-16 object-cover rounded-lg border border-gray-200"
+                    />
+                  )}
+                  <button
+                    onClick={removeSelectedFile}
+                    className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-0.5 hover:bg-red-600 transition-colors shadow-sm"
+                  >
+                    <svg
+                      className="w-3.5 h-3.5"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M6 18L18 6M6 6l12 12"
+                      />
+                    </svg>
+                  </button>
+                </div>
+                <div className="flex-1">
+                  <p className="text-xs font-medium text-gray-700 truncate max-w-50">
+                    {selectedFile?.name}
+                  </p>
+                  <p className="text-[10px] text-gray-400 capitalize">
+                    {selectedFile?.type.split("/")[1] || "file"}
+                  </p>
+                </div>
+              </div>
+            )}
+
             <div className="flex items-center space-x-3 bg-gray-100 rounded-full px-4 py-5 focus-within:bg-white focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-transparent transition-all mt-4">
-              <button className="text-gray-500 hover:text-gray-700 transition-colors">
+              <input
+                type="file"
+                ref={fileInputRef}
+                onChange={onFileSelect}
+                className="hidden"
+                accept="image/*,.pdf"
+              />
+              <button
+                className="text-gray-500 hover:text-gray-700 transition-colors"
+                onClick={() => fileInputRef.current?.click()}
+              >
                 <Paperclip className="w-5 h-5" />
               </button>
               <input
@@ -300,9 +589,9 @@ const AdminChatPage = () => {
               />
               <button
                 onClick={handleSendMessage}
-                disabled={!newMessage.trim()}
-                className={`text-blue-600 cursor-pointer hover:text-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
-                  newMessage.trim() ? "hover:scale-105" : ""
+                disabled={!newMessage.trim() && !selectedFile}
+                className={`text-blue-600 hover:text-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
+                  newMessage.trim() || selectedFile ? "hover:scale-105" : ""
                 }`}
               >
                 <Send className="w-5 h-5" />
@@ -313,5 +602,4 @@ const AdminChatPage = () => {
       </div>
     </div>
   );
-};
-export default AdminChatPage;
+}
