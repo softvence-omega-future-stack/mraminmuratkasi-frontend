@@ -1,9 +1,14 @@
-import { useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
 import NotificationModal from "@/common/NotificationModal";
+import { useSocket } from "@/context/SocketContext";
 import { useGetProfileQuery, useLogOutMutation } from "@/redux/api/authApi";
-import { useAppDispatch } from "@/redux/hooks";
+import {
+  useDeleteNotificationMutation,
+  useGetAllNotificationsQuery,
+  useGetNotificationForBellQuery,
+} from "@/redux/api/notificationApi";
 import { logout } from "@/redux/features/auth/authSlice";
+import { useAppDispatch } from "@/redux/hooks";
+import { formatDate } from "@/utils/data";
 import {
   Bell,
   FileText,
@@ -11,12 +16,11 @@ import {
   LockKeyhole,
   Menu,
   MessageCircleMore,
-  MessageSquareDot,
   SquarePen,
-  User,
 } from "lucide-react";
+import { useState } from "react";
 import { FaUserFriends } from "react-icons/fa";
-
+import { useLocation, useNavigate } from "react-router-dom";
 interface ClientTopNavProps {
   onMenuClick: () => void;
   showProfileMenu: boolean;
@@ -38,10 +42,29 @@ ClientTopNavProps) => {
   const [showAccountMenu, setShowAccountMenu] = useState(false);
   const [open, setOpen] = useState(false);
 
-  const isActiveRoute = (path: string) => {
-    return location.pathname === path;
-  };
+  const { data: notificationData } = useGetAllNotificationsQuery(undefined);
+  const { data: bellNotificationData } =
+    useGetNotificationForBellQuery(undefined);
+  const [deleteNotification] = useDeleteNotificationMutation();
 
+  const notificationsList = notificationData?.data?.notificationList || [];
+  const newNotificationCount = bellNotificationData?.data?.newNotification || 0;
+
+  const notifications = notificationsList.map((notif: any) => ({
+    id: notif._id,
+    message: notif.notificationDetail,
+    time: formatDate(notif.createdAt),
+    unread: !notif.isSeen,
+    avatar: notif.Profile_id?.img || "/images/navProfile.png",
+  }));
+
+  const handleDeleteNotification = async (id: string | number) => {
+    try {
+      await deleteNotification(id).unwrap();
+    } catch (error) {
+      console.error("Failed to delete notification:", error);
+    }
+  };
   const handleLogout = async () => {
     try {
       await logOut(undefined).unwrap();
@@ -54,34 +77,58 @@ ClientTopNavProps) => {
     }
   };
 
-  const notifications = [
+  const accountMenuItems = [
     {
-      id: 1,
-      message: "You have received a new message regarding your traffic case.",
-      time: "9:01am",
-      unread: true,
-      avatar: "/avatars/user1.png",
+      label: "Edit Profile",
+      icon: SquarePen,
+      onClick: () => navigate("/admin/edit-profile"),
+      danger: false,
     },
     {
-      id: 2,
-      message: "You have received a new message regarding your traffic case.",
-      time: "9:01am",
-      unread: true,
-      avatar: "/avatars/user2.png",
-    },
-    {
-      id: 3,
-      message: "You have received a new message regarding your traffic case.",
-      time: "9:01am",
-      unread: false,
-      avatar: "/avatars/user3.png",
+      label: "Change Password",
+      icon: LockKeyhole,
+      onClick: () => navigate("/admin/change-password"),
+      danger: false,
     },
   ];
+  const navItems = [
+    {
+      label: "Home",
+      path: "/admin",
+      icon: Home,
+      padding: "px-4.5",
+    },
+    {
+      label: "Cases",
+      path: "/admin/cases",
+      icon: FileText,
+      padding: "px-6",
+    },
+    {
+      label: "Clients",
+      path: "/admin/client",
+      icon: FaUserFriends,
+      padding: "px-6",
+    },
+    {
+      label: "Chat",
+      path: "/admin/chat",
+      icon: MessageCircleMore,
+      padding: "px-6",
+    },
+  ];
+  const isActiveRoute = (path: string) => {
+    const currentPath = location.pathname;
+    if (path === "/admin") {
+      return currentPath === "/admin";
+    }
+    return currentPath === path || currentPath.startsWith(`${path}/`);
+  };
+  const { totalUnseenCount } = useSocket();
 
   return (
     <div className="bg-white border-b border-gray-200 px-8 py-5 sticky top-0 z-30 rounded-[60px]">
       <div className="flex items-center justify-between">
-        {/* Left: Logo */}
         <div className="flex items-center space-x-4">
           <button
             onClick={onMenuClick}
@@ -96,52 +143,26 @@ ClientTopNavProps) => {
           />
         </div>
 
-        {/* Center: Navigation Pills (Desktop) */}
-        <div className="md:h-[52px] hidden md:flex items-center bg-gray-100 rounded-full p-1 space-x-3">
-          <button
-            onClick={() => navigate("/admin")}
-            className={`flex items-center space-x-2 px-4.5 py-2 rounded-full transition-all cursor-pointer ${
-              isActiveRoute("/admin")
-                ? "bg-[#1878B5] text-white shadow-sm"
-                : "text-gray-500 hover:bg-[#1878B5] hover:text-white"
-            }`}
-          >
-            <Home className="w-5 h-5" />
-            <span className="font-medium">Home</span>
-          </button>
-          <button
-            onClick={() => navigate("/admin/cases")}
-            className={`flex items-center space-x-2 px-6 py-2 rounded-full transition-all cursor-pointer ${
-              isActiveRoute("/admin/cases")
-                ? "bg-[#1878B5] text-white shadow-sm"
-                : "text-gray-500 hover:bg-[#1878B5] hover:text-white"
-            }`}
-          >
-            <FileText className="w-5 h-5" />
-            <span className="font-medium">Cases</span>
-          </button>
-          <button
-            onClick={() => navigate("/admin/client")}
-            className={`flex items-center space-x-2 px-6 py-2 rounded-full transition-all cursor-pointer ${
-              isActiveRoute("/admin/client")
-                ? "bg-[#1878B5] text-white shadow-sm"
-                : "text-gray-500 hover:bg-[#1878B5] hover:text-white"
-            }`}
-          >
-            <FaUserFriends className="w-4 h-4" />
-            <span className="font-medium">Clients</span>
-          </button>
-          <button
-            onClick={() => navigate("/admin/chat")}
-            className={`flex items-center space-x-2 px-6 py-2 rounded-full transition-all cursor-pointer ${
-              isActiveRoute("/admin/chat")
-                ? "bg-[#1878B5] text-white shadow-sm"
-                : "text-gray-500 hover:bg-[#1878B5] hover:text-white"
-            }`}
-          >
-            <MessageCircleMore className="w-4 h-4" />
-            <span className="font-medium">Chat</span>
-          </button>
+        <div className="md:h-13 hidden md:flex items-center bg-gray-100 rounded-full p-1 space-x-3">
+          {navItems.map(({ label, path, icon: Icon, padding }) => (
+            <button
+              key={path}
+              onClick={() => navigate(path)}
+              className={`flex items-center space-x-2 ${padding} py-2 rounded-full transition-all cursor-pointer relative ${
+                isActiveRoute(path)
+                  ? "bg-[#1878B5] text-white shadow-sm"
+                  : "text-gray-500 hover:bg-[#1878B5] hover:text-white"
+              }`}
+            >
+              <Icon className="w-5 h-5" />
+              <span className="font-medium">{label}</span>
+              {totalUnseenCount > 0 && path === "/admin/chat" && (
+                <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] bg-red-500 text-white text-[10px] font-bold flex items-center justify-center rounded-full border-2 border-white px-1">
+                  {totalUnseenCount}
+                </span>
+              )}
+            </button>
+          ))}
         </div>
 
         <div className="flex items-center space-x-4">
@@ -150,17 +171,23 @@ ClientTopNavProps) => {
             className="relative p-3 bg-blue-50 text-blue-600 rounded-full hover:bg-blue-100 transition cursor-pointer"
           >
             <Bell className="w-5 h-5" />
-            <span className="absolute top-2 right-2 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white" />
+            {newNotificationCount > 0 && (
+              <span className="absolute top-1 right-1 min-w-[18px] h-[18px] bg-red-500 text-white text-[10px] font-bold flex items-center justify-center rounded-full border-2 border-white px-1">
+                {newNotificationCount}
+              </span>
+            )}
           </button>
 
-          {/* Profile Menu */}
           <div className="relative">
             <button
               onClick={() => setShowAccountMenu(!showAccountMenu)}
               className="flex items-center space-x-3 bg-[#E8F2F8] rounded-full pl-1 pr-2 py-2 hover:bg-gray-200 transition-colors cursor-pointer"
             >
               <img
-                src={user?.img || "https://media.istockphoto.com/id/2235903620/photo/happy-50-years-old-business-man-in-suit-standing-in-office-headshot-portrait.webp?a=1&b=1&s=612x612&w=0&k=20&c=2say2ge83Ytw-k3YPSCweS8BcXoira3VoIiZjwGzghQ="}
+                src={
+                  user?.img ||
+                  "https://media.istockphoto.com/id/2235903620/photo/happy-50-years-old-business-man-in-suit-standing-in-office-headshot-portrait.webp?a=1&b=1&s=612x612&w=0&k=20&c=2say2ge83Ytw-k3YPSCweS8BcXoira3VoIiZjwGzghQ="
+                }
                 alt="Profile"
                 className="w-8 h-8 rounded-full bg-white"
               />
@@ -170,51 +197,28 @@ ClientTopNavProps) => {
               <span className="text-gray-400 text-xs">▼</span>
             </button>
 
-            {/* Account Menu Dropdown */}
             {showAccountMenu && (
               <div className="absolute right-0 mt-2 w-72 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
-                {/* Same dropdown content as before */}
-                <div className="p-4 border-b border-gray-200">
-                  {/* <h4 className="text-xs font-semibold text-gray-500 uppercase mb-3">
-                    Account
-                  </h4> */}
-                  <div className="space-y-2">
-                    <button
-                      onClick={() => {
-                        navigate("/admin/edit-profile");
-                        setShowAccountMenu(false);
-                      }}
-                      className="w-full flex items-center space-x-2 px-3 py-2 text-sm font-normal text-gray-900 hover:bg-gray-50 rounded transition-colors cursor-pointer"
-                    >
-                      <SquarePen className="w-4 h-4" />
-                      <span>Edit Profile</span>
-                    </button>
-                    <button
-                      onClick={() => navigate("/admin/change-password")}
-                      className="w-full flex items-center space-x-2 px-3 py-4 text-sm text-gray-900 hover:bg-gray-50 rounded transition-colors border-t border-t-gray-50 cursor-pointer"
-                    >
-                      <LockKeyhole className="w-4 h-4" />
-                      <span>Change Password</span>
-                    </button>
-                    <div className="w-full flex items-center justify-between px-3 py-4 text-sm text-gray-900 border-t border-t-gray-50">
-                      <div className="flex items-center space-x-2">
-                        <MessageSquareDot className="w-4 h-4" />
-                        <span>Push Notification</span>
-                      </div>
-                      {/* <Toggle
-                        pressed={pushNotificationsEnabled}
-                        onPressedChange={setPushNotificationsEnabled}
-                        className="data-[state=on]:bg-[#1878B5] data-[state=off]:bg-gray-300 border-0 rounded-full w-12 h-6 relative"
-                      /> */}
-                    </div>
-                    <button
-                      onClick={handleLogout}
-                      className="w-full flex items-center space-x-2 px-3 py-4 text-sm text-[#FE1B1B] hover:bg-gray-50 rounded transition-colors border-t border-t-gray-50 cursor-pointer"
-                    >
-                      <User className="w-4 h-4" />
-                      <span>Delete Account</span>
-                    </button>
-                  </div>
+                <div className="p-4 border-b border-gray-200 space-y-2">
+                  {accountMenuItems.map(
+                    ({ label, icon: Icon, onClick, danger }, index) => (
+                      <button
+                        key={label}
+                        onClick={() => {
+                          onClick();
+                          setShowAccountMenu(false);
+                        }}
+                        className={`w-full flex items-center space-x-2 px-3 py-4 text-sm rounded transition-colors border-t border-t-gray-50 cursor-pointer ${
+                          danger
+                            ? "text-[#FE1B1B] hover:bg-gray-50"
+                            : "text-gray-900 hover:bg-gray-50"
+                        }`}
+                      >
+                        <Icon className="w-4 h-4" />
+                        <span>{label}</span>
+                      </button>
+                    ),
+                  )}
                 </div>
               </div>
             )}
@@ -226,7 +230,7 @@ ClientTopNavProps) => {
         open={open}
         onClose={() => setOpen(false)}
         notifications={notifications}
-        onDelete={() => {}}
+        onDelete={handleDeleteNotification}
       />
     </div>
   );
