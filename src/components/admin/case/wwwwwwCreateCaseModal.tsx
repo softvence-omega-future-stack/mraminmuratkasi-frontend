@@ -52,11 +52,11 @@ interface CreateCaseModalProps {
   onClose: () => void;
 }
 
-const CreateCaseModal: React.FC<CreateCaseModalProps> = ({ onClose }) => {
+const wwwwwwCreateCaseModal: React.FC<CreateCaseModalProps> = ({ onClose }) => {
   const [files, setFiles] = useState<UploadedFile[]>([]);
   const [createCase, { isLoading: isCreating }] = useCreateCaseMutation();
   const { data } = useGetAlCasesQuery();
-  console.log("data", data);
+
   const clientsOptions =
     data?.data.cases.map((client) => ({
       label: client.clientName,
@@ -375,4 +375,4 @@ const CreateCaseModal: React.FC<CreateCaseModalProps> = ({ onClose }) => {
   );
 };
 
-export default CreateCaseModal;
+export default wwwwwwCreateCaseModal;

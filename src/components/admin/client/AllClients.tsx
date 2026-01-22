@@ -4,6 +4,7 @@ import CommonButton from "@/common/CommonButton";
 import CommonHeader from "@/common/CommonHeader";
 import LoadingStatus from "@/common/LoadingStatus";
 import Pagination from "@/common/Pagination";
+import { SingleUser } from "@/redux/features/admin/client";
 import { useGetAllUserQuery } from "@/redux/features/admin/clientAPI";
 import { getLastActiveTime } from "@/utils/data";
 import { useMemo, useState } from "react";
@@ -25,6 +26,12 @@ const AllClients = () => {
     const end = start + ITEMS_PER_PAGE;
     return data.data.slice(start, end);
   }, [data, currentPage]);
+
+  const [selectClient, setSelectClient] = useState<SingleUser | null>(null);
+  const handleClick = (client: SingleUser) => {
+    setSelectClient(client);
+    setIsClientModalOpen(true);
+  };
   return (
     <div className="">
       <CommonBorderWrapper className="">
@@ -54,7 +61,7 @@ const AllClients = () => {
                   className="grid grid-cols-6 gap-4 px-6 py-4 hover:bg-gray-50/70 transition-colors"
                 >
                   <div
-                    onClick={() => setIsClientModalOpen(true)}
+                    onClick={() => handleClick(item)}
                     className="col-span-2 flex items-center gap-3 cursor-pointer"
                   >
                     <div className="h-10 w-10 shrink-0 rounded-full overflow-hidden border border-gray-200">
@@ -122,8 +129,12 @@ const AllClients = () => {
           />
         </div>
       )}
-      {isClientModalOpen && (
-        <ClientDetailsModal setIsClientModalOpen={setIsClientModalOpen} />
+      {isClientModalOpen && selectClient && (
+        <ClientDetailsModal
+          setIsClientModalOpen={setIsClientModalOpen}
+          selectClient={selectClient}
+          setSelectClient={setSelectClient}
+        />
       )}
     </div>
   );

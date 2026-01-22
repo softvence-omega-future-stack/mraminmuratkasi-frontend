@@ -9,7 +9,14 @@ export const caseApi = baseApi.injectEndpoints({
       }),
       providesTags: ["Case"],
     }),
+    deleteCase: builder.mutation({
+      query: (id) => ({
+        url: `/cases/manageCase/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["Case"],
+    }),
   }),
 });
 
-export const { useGetCaseDetailsQuery } = caseApi;
+export const { useGetCaseDetailsQuery, useDeleteCaseMutation } = caseApi;

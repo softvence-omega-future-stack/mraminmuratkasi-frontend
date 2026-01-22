@@ -1,6 +1,8 @@
+import AlertDialogBox from "@/common/asdflkjsad";
 import CommonBorderWrapper from "@/common/CommonBorderWrapper";
 import CommonHeader from "@/common/CommonHeader";
-import CreateCaseModal from "@/components/admin/case/CreateCaseModal";
+import CreateCaseModal from "@/components/admin/case/modal/CreateCaseModal";
+import { useDeleteCaseMutation } from "@/redux/api/caseApi";
 import {
   useGetAlCasesQuery,
   useGetAllUserQuery,
@@ -13,14 +15,7 @@ import { BsArrowRight, BsFileEarmarkCheck } from "react-icons/bs";
 import { FiUsers } from "react-icons/fi";
 import { TbFileText } from "react-icons/tb";
 import { Link, useNavigate } from "react-router-dom";
-
-
-const clients = [
-  { id: 1, name: "Client 1", avatar: "https://i.pravatar.cc/150?img=12" },
-  { id: 2, name: "Client 2", avatar: "https://i.pravatar.cc/150?img=45" },
-  { id: 3, name: "Client 3", avatar: "https://i.pravatar.cc/150?img=33" },
-];
-
+import { toast } from "sonner";
 
 const HomePage: React.FC = () => {
   const { data } = useGetAlCasesQuery();
@@ -40,6 +35,27 @@ const HomePage: React.FC = () => {
     { label: "Active Cases", count: activeClass, icon: <BsFileEarmarkCheck /> },
   ];
 
+  const clients = [
+    {
+      id: 1,
+      name: userData?.data[0].name,
+      avatar:
+        userData?.data[0].profile.img || "https://i.pravatar.cc/150?img=12",
+    },
+
+    {
+      id: 2,
+      name: userData?.data[1].name,
+      avatar:
+        userData?.data[1].profile.img || "https://i.pravatar.cc/150?img=12",
+    },
+    {
+      id: 3,
+      name: userData?.data[2].name,
+      avatar:
+        userData?.data[2].profile.img || "https://i.pravatar.cc/150?img=12",
+    },
+  ];
   const navigate = useNavigate();
   const handleClient = () => {
     navigate("/admin/client");
@@ -80,6 +96,12 @@ const HomePage: React.FC = () => {
 
   const paginatedData = showAll ? cases : cases.slice(0, 5);
 
+  const [deleteCase, { isLoading: isDeleting }] = useDeleteCaseMutation();
+
+  const handleDelete = async (id: string) => {
+    const res = await deleteCase(id);
+    toast.success(res.data.message);
+  };
   return (
     <div className=" space-y-5 pb-5 ">
       <div className="flex  gap-5 w-full">
@@ -258,9 +280,15 @@ const HomePage: React.FC = () => {
                   </td>
 
                   <td className="px-4 py-4 text-right">
-                    <button className="text-gray-500 hover:text-gray-700">
-                      <MoreVertical className="w-4 h-4" />
-                    </button>
+                    <AlertDialogBox
+                      action={() => handleDelete(item._id)}
+                      isLoading={isDeleting}
+                      trigger={
+                        <button className="text-gray-500 hover:text-gray-700 cursor-pointer">
+                          <MoreVertical className="w-4 h-4" />
+                        </button>
+                      }
+                    />
                   </td>
                 </tr>
               ))}
@@ -269,7 +297,10 @@ const HomePage: React.FC = () => {
         </div>
       </CommonBorderWrapper>
       {isCaseModalOpen && (
-        <CreateCaseModal onClose={() => setIsCaseModalOpen(false)} />
+        <CreateCaseModal
+          isOpen={isCaseModalOpen}
+          onClose={() => setIsCaseModalOpen(false)}
+        />
       )}
     </div>
   );

@@ -1,15 +1,24 @@
+import AlertDialogBox from "@/common/asdflkjsad";
 import CommonHeader from "@/common/CommonHeader";
 import LoadingStatus from "@/common/LoadingStatus";
 import Pagination from "@/common/Pagination";
+import { useDeleteCaseMutation } from "@/redux/api/caseApi";
 import { useGetAlCasesQuery } from "@/redux/features/admin/clientAPI";
 import { formatDate } from "@/utils/data";
 import { MoreVertical } from "lucide-react";
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
+import { toast } from "sonner";
 
 const AdminCasesPage = () => {
   const { data, isLoading } = useGetAlCasesQuery();
   const cases = data?.data.cases;
+  const [deleteCase, { isLoading: isDeleting }] = useDeleteCaseMutation();
+
+  const handleDelete = async (id: string) => {
+    const res = await deleteCase(id);
+    toast.success(res.data.message);
+  };
 
   //pagination
   const ITEMS_PER_PAGE = 10;
@@ -87,9 +96,15 @@ const AdminCasesPage = () => {
                       </td>
 
                       <td className="px-4 py-4 text-right">
-                        <button className="text-gray-500 hover:text-gray-700">
-                          <MoreVertical className="w-4 h-4" />
-                        </button>
+                        <AlertDialogBox
+                          action={() => handleDelete(item._id)}
+                          isLoading={isDeleting}
+                          trigger={
+                            <button className="text-gray-500 hover:text-gray-700 cursor-pointer">
+                              <MoreVertical className="w-4 h-4" />
+                            </button>
+                          }
+                        />
                       </td>
                     </tr>
                   ))}
