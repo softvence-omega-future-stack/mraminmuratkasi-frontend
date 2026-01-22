@@ -11,6 +11,7 @@ const baseQuery = fetchBaseQuery({
     return headers;
   },
 });
+console.log(import.meta.env.VITE_API_URL);
 
 export const baseApi = createApi({
   reducerPath: "baseApi",
@@ -30,6 +31,6 @@ export const baseApi = createApi({
     }
     return result;
   },
-  tagTypes: ["User", "Notification", "Message", "Case"],
+  tagTypes: ["User", "Notification", "Message", "Case", "Client", "AdminCase"],
   endpoints: () => ({}),
 });
