@@ -10,9 +10,10 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import DocumentUploadModal from "@/common/DocumentUploadModal";
-import { useGetCaseDetailsQuery } from "@/redux/api/caseApi";
+import { useGetCaseDetailsQuery, useAddAssetToCaseMutation } from "@/redux/api/caseApi";
 import { getStatusStyles } from "./ClientCasesPage";
 import star from "/images/star.png";
+import { toast } from "sonner";
 
 
 
@@ -24,6 +25,7 @@ export default function CaseDetails() {
   const [fromPage, setFromPage] = useState<string>("/client/dashboard");
 
   const { data: caseResponse, isLoading } = useGetCaseDetailsQuery(id);
+  const [addAssetToCase, { isLoading: isUploading }] = useAddAssetToCaseMutation();
   const caseData = caseResponse?.data?.caseOverview;
 
   useEffect(() => {
@@ -54,9 +56,24 @@ export default function CaseDetails() {
     navigate(fromPage);
   };
 
-  const handleDocumentUpload = () => {
-    // This local update won't persist without an API call, but we'll leave the modal handling
-    setShowUploadModal(false);
+  const handleDocumentUpload = async (assets: any[]) => {
+    if (!caseData) return;
+
+    try {
+      const payload = {
+        user_id: caseData.user_id,
+        caseOverview_id: caseData._id,
+        assetListId: caseData.assetList_id?._id,
+        assetList: assets
+      };
+
+      await addAssetToCase(payload).unwrap();
+      toast.success("Documents uploaded successfully");
+      setShowUploadModal(false);
+    } catch (err: any) {
+      toast.error(err?.data?.message || "Failed to upload documents to case");
+      console.error("Failed to add assets to case:", err);
+    }
   };
 
   if (isLoading) {
@@ -287,6 +304,7 @@ export default function CaseDetails() {
         open={showUploadModal}
         onClose={() => setShowUploadModal(false)}
         onUpload={handleDocumentUpload}
+        isUploadingToCase={isUploading}
       />
     </div>
   );
