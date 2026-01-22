@@ -10,18 +10,35 @@ const clientAPI = baseApi.injectEndpoints({
         url: `/users/getAlluser/`,
         method: "GET",
       }),
+      providesTags: ["Client"],
     }),
     getAlCases: build.query<AllCasesResponse, void>({
       query: () => ({
         url: `/cases/all-cases/`,
         method: "GET",
       }),
+      providesTags: ["AdminCase"],
     }),
     getSingleCases: build.query<GetCaseDetailsResponse, string>({
       query: (id) => ({
         url: `/cases/case/${id}`,
         method: "GET",
       }),
+      providesTags: ["AdminCase"],
+    }),
+    blockUser: build.mutation<any, string>({
+      query: (id) => ({
+        url: `/users/block/${id}`,
+        method: "PUT",
+      }),
+      invalidatesTags: ["Client", "AdminCase"],
+    }),
+    unBlockUser: build.mutation<any, string>({
+      query: (id) => ({
+        url: `/users/unblock/${id}`,
+        method: "PUT",
+      }),
+      invalidatesTags: ["Client", "AdminCase"],
     }),
   }),
 });
@@ -30,4 +47,6 @@ export const {
   useGetAllUserQuery,
   useGetAlCasesQuery,
   useGetSingleCasesQuery,
+  useBlockUserMutation,
+  useUnBlockUserMutation,
 } = clientAPI;

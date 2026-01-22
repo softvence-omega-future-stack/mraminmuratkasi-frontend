@@ -1,3 +1,68 @@
+export interface CaseAsset {
+  _id: string;
+  assetUrl: string;
+  assetName: string;
+  fileSize: number;
+  uploadDate: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CaseTimelineItem {
+  _id: string;
+  title: string;
+  description: string;
+  date: string;
+  assetUrl: string[];
+  assetName?: string;
+  fileSize?: number;
+  isDeleted: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CaseTimeline {
+  _id: string;
+  caseOverview_id: string;
+  client_user_id: string;
+  caseTitle: string;
+  timeLine: CaseTimelineItem[];
+  createdAt: string;
+  updatedAt: string;
+  __v: number;
+}
+
+export interface CaseAssetList {
+  _id: string;
+  client_user_id: string;
+  caseOverview_id: string;
+  assets: CaseAsset[];
+  createdAt: string;
+  updatedAt: string;
+  __v: number;
+}
+
+export interface CaseOverview {
+  _id: string;
+  user_id: string;
+  client_user_id: string;
+  clientName: string;
+  caseTitle: string;
+  caseType: string;
+  case_status: string;
+  coatDate: string;
+  note: string;
+  vehicleNumber: string;
+  isMailSent: boolean;
+  isDeleted: boolean;
+  createdAt: string;
+  updatedAt: string;
+  caseNumber: string;
+  __v: number;
+  timeLine_id: CaseTimeline;
+  assetList_id?: CaseAssetList;
+}
+
 export type UserProfile = {
   _id: string;
   name: string;
@@ -6,14 +71,14 @@ export type UserProfile = {
   img: string;
   emailNotification: boolean;
   user_id: string;
-  case_ids: string[];
+  case_ids: CaseOverview[];
   isDeleted: boolean;
   createdAt: string;
   updatedAt: string;
   __v: number;
 };
 
-export type User = {
+export type SingleUser = {
   _id: string;
   name: string;
   phone: string;
@@ -39,7 +104,7 @@ export type User = {
 };
 
 export type AllClient = {
-  data: User[];
+  data: SingleUser[];
   success: boolean;
   message: string;
 };

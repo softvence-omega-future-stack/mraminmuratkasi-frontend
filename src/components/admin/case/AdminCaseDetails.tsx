@@ -2,14 +2,16 @@
 import CommonBorderWrapper from "@/common/CommonBorderWrapper";
 import CommonButton from "@/common/CommonButton";
 import CommonHeader from "@/common/CommonHeader";
+import Spinner from "@/common/Spinner";
 import { useGetSingleCasesQuery } from "@/redux/features/admin/clientAPI";
 import { formatDate } from "@/utils/data";
 import { skipToken } from "@reduxjs/toolkit/query";
-import { CheckCircle, Download, FileText } from "lucide-react";
+import { Download, FileText } from "lucide-react";
 import { useState } from "react";
 import { FaRegFileLines } from "react-icons/fa6";
 import { ImAttachment } from "react-icons/im";
 import { LuPencilLine } from "react-icons/lu";
+import { RiVerifiedBadgeFill } from "react-icons/ri";
 import { useNavigate, useParams } from "react-router-dom";
 import EditOverviewModal from "./modal/EditOverviewModal";
 import TimelineModal from "./modal/TimelineModal";
@@ -21,35 +23,7 @@ type ModalType =
   | "upload-docs"
   | "timeline"
   | null;
-const timelineData = [
-  {
-    title: "Court Hearing Scheduled",
-    description: "A court hearing has been scheduled for 20/11/2025.",
-    file: "Evidence.jpg",
-    date: "20-Jan-2025",
-  },
-  {
-    title: "Insurance Response Received",
-    description:
-      "The insurance company requested additional documents to process the claim.",
-    file: "Insurance.jpg",
-    date: "20-Jan-2025",
-  },
-  {
-    title: "Insurance Response Received",
-    description:
-      "The insurance company requested additional documents to process the claim.",
-    file: "Evidence.jpg",
-    date: "20-Jan-2025",
-  },
-  {
-    title: "Insurance Response Received",
-    description:
-      "The insurance company requested additional documents to process the claim.",
-    file: "Evidence.jpg",
-    date: "20-Jan-2025",
-  },
-];
+
 export default function CaseDetails() {
   const [openModal, setOpenModal] = useState<ModalType>(null);
   const [editingTimelineId, setEditingTimelineId] = useState<string | null>(
@@ -71,218 +45,235 @@ export default function CaseDetails() {
   const closeModal = () => setOpenModal(null);
 
   const { id } = useParams();
-  const { data } = useGetSingleCasesQuery(id ?? skipToken, {
+  const { data, isLoading } = useGetSingleCasesQuery(id ?? skipToken, {
     refetchOnMountOrArgChange: true,
   });
   const singleCase = data?.data.caseOverview;
 
   const navigate = useNavigate();
 
+  console.log("singleCase", singleCase);
   const handleBack = () => {
     navigate(-1);
   };
   return (
-    <div className="">
-      <CommonBorderWrapper className="">
-        <div className=" flex justify-between pb-6">
-          <CommonHeader>All Cases Details</CommonHeader>
-          <CommonButton onClick={handleBack}>Back</CommonButton>
-        </div>
-        <div className="flex justify-between w-full gap-5">
-          <div className="space-y-5 flex-1">
-            <div className="rounded-xl  bg-[#F3FAFF] ">
-              <div className="flex items-center justify-between  px-6 py-4">
-                <div className="text-[#1878B5] flex gap-1 items-center">
-                  <FaRegFileLines size={20} />
-                  <h2 className="text-lg font-semibold ">Case Overview</h2>
-                </div>
+    <>
+      {isLoading ? (
+        <Spinner />
+      ) : (
+        <div className="">
+          <CommonBorderWrapper className="">
+            <div className=" flex justify-between pb-6">
+              <CommonHeader>All Cases Details</CommonHeader>
+              <CommonButton onClick={handleBack}>Back</CommonButton>
+            </div>
+            <div className="flex justify-between w-full gap-5">
+              <div className="space-y-5 flex-1">
+                <div className="rounded-xl  bg-[#F3FAFF] ">
+                  <div className="flex items-center justify-between  px-6 py-4">
+                    <div className="text-[#1878B5] flex gap-1 items-center">
+                      <FaRegFileLines size={20} />
+                      <h2 className="text-lg font-semibold ">Case Overview</h2>
+                    </div>
 
-                <button
-                  onClick={openEditOverview}
-                  className="text-[#747C81] cursor-pointer"
-                >
-                  <LuPencilLine size={24} />
-                </button>
+                    <button
+                      onClick={openEditOverview}
+                      className="text-[#747C81] cursor-pointer"
+                    >
+                      <LuPencilLine size={24} />
+                    </button>
+                  </div>
+
+                  <div className="p-6 space-y-6">
+                    <div>
+                      <h3 className="font-medium text-gray-900">
+                        {singleCase?.caseTitle}
+                      </h3>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-6 text-sm">
+                      <div>
+                        <div className="text-gray-500">Name</div>
+                        <div className="font-medium">
+                          {singleCase?.clientName}
+                        </div>
+                      </div>
+                      <div>
+                        <div className="text-gray-500">Type</div>
+                        <div className="font-medium">
+                          {singleCase?.caseType}
+                        </div>
+                      </div>
+                      <div>
+                        <div className="text-gray-500">Status</div>
+                        <select
+                          value={singleCase?.case_status}
+                          className="mt-1 block w-full rounded border-gray-300 py-1.5 text-sm"
+                          disabled
+                        >
+                          <option value="inprogress">In Progress</option>
+                        </select>
+                      </div>
+                      <div>
+                        <div className="text-gray-500">Court Date</div>
+                        <div>{formatDate(singleCase?.coatDate || "")}</div>
+                      </div>
+                      <div>
+                        <div className="text-gray-500">Last Updated</div>
+                        <div>{formatDate(singleCase?.updatedAt || "")}</div>
+                      </div>
+                      <div>
+                        <div className="text-gray-500">Created</div>
+                        <div>{formatDate(singleCase?.createdAt || "")}</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className=" rounded-xl border bg-[#F3FAFF] p-5">
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="text-[#1878B5] flex gap-1 items-center">
+                      <FaRegFileLines size={20} />
+                      <h2 className="text-lg font-semibold ">Case Note</h2>
+                    </div>
+
+                    <button
+                      onClick={openEditNote}
+                      className="text-[#747C81] cursor-pointer"
+                    >
+                      <LuPencilLine size={24} />
+                    </button>
+                  </div>
+                  <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-line">
+                    {singleCase?.note}
+                  </p>
+                </div>
               </div>
 
-              <div className="p-6 space-y-6">
-                <div>
-                  <h3 className="font-medium text-gray-900">
-                    {singleCase?.caseTitle}
-                  </h3>
-                </div>
+              <div className="rounded-xl bg-[#F3FAFF]  flex-1 p-5 ">
+                <div className="flex items-center justify-between  ">
+                  <div className="text-[#1878B5] flex gap-1 items-center">
+                    <ImAttachment size={20} />
+                    <h2 className="text-lg font-semibold ">Case Documents</h2>
+                  </div>
 
-                <div className="grid grid-cols-2 gap-6 text-sm">
-                  <div>
-                    <div className="text-gray-500">Name</div>
-                    <div className="font-medium">{singleCase?.clientName}</div>
-                  </div>
-                  <div>
-                    <div className="text-gray-500">Type</div>
-                    <div className="font-medium">{singleCase?.caseType}</div>
-                  </div>
-                  <div>
-                    <div className="text-gray-500">Status</div>
-                    <select
-                      value={singleCase?.case_status}
-                      className="mt-1 block w-full rounded border-gray-300 py-1.5 text-sm"
-                      disabled
+                  <CommonButton
+                    onClick={openUploadDocs}
+                    className=" bg-[#1878B5]"
+                  >
+                    Upload Documents
+                  </CommonButton>
+                </div>
+                <h3 className="font-medium text-gray-900 py-4">
+                  {singleCase?.caseTitle}
+                </h3>
+                <div className="space-y-2.5 ">
+                  {singleCase?.timeLine_id.timeLine.map((doc, i) => (
+                    <div
+                      key={i}
+                      className="flex items-center justify-between p-6 bg-[#E8F2F8] border-[#B7D5E8] rounded-lg  "
                     >
-                      <option value="inprogress">In Progress</option>
-                    </select>
-                  </div>
-                  <div>
-                    <div className="text-gray-500">Court Date</div>
-                    <div>{formatDate(singleCase?.coatDate || "")}</div>
-                  </div>
-                  <div>
-                    <div className="text-gray-500">Last Updated</div>
-                    <div>{formatDate(singleCase?.updatedAt || "")}</div>
-                  </div>
-                  <div>
-                    <div className="text-gray-500">Created</div>
-                    <div>{formatDate(singleCase?.createdAt || "")}</div>
-                  </div>
+                      <div className="flex items-center gap-3">
+                        <FileText size={20} className="text-[#1878B5]" />
+                        <span className="font-medium text-gray-900">
+                          {doc.assetName}
+                        </span>
+                      </div>
+                      <button className="flex items-center gap-1.5 text-sm text-[#1878B5]">
+                        <Download size={16} /> Download
+                      </button>
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>
-            <div className=" rounded-xl border bg-[#F3FAFF] p-5">
-              <div className="flex items-center justify-between mb-3">
-                <h3 className="font-medium">Case Note</h3>
-
-                <button
-                  onClick={openEditNote}
-                  className="text-[#747C81] cursor-pointer"
-                >
-                  <LuPencilLine size={24} />
-                </button>
+          </CommonBorderWrapper>
+          <CommonBorderWrapper className="my-6">
+            {/* Header */}
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h2 className="text-xl font-semibold text-gray-900">
+                  Case Timeline
+                </h2>
+                <p className="text-sm text-gray-500">
+                  Track important events and documents for case #2024-001
+                </p>
               </div>
-              <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-line">
-                {singleCase?.note}
+
+              <div className="flex gap-3">
+                <CommonButton onClick={openAddTimeline}>
+                  Add Timeline
+                </CommonButton>
+                <CommonButton
+                  onClick={() => openEditTimeline(id ?? "")}
+                  className="!bg-[#E8F2F8] !text-[#1878B5] border !border-[#1878B5]"
+                >
+                  Update Timeline
+                </CommonButton>
+              </div>
+            </div>
+
+            {/* Timeline Cards */}
+            <div className="relative">
+              <div className="flex gap-6 overflow-x-auto pb-4 scrollbar-hide">
+                {singleCase?.assetList_id.assets.map((item, index) => (
+                  <div
+                    key={index}
+                    className="min-w-[320px] rounded-[8px] bg-[#F9F9F9] backdrop-blur-[20.1px] p-5"
+                  >
+                    <RiVerifiedBadgeFill className="w-7 h-7 text-blue-600 mb-4" />
+
+                    <h3 className="text-blue-600 font-semibold mb-2">
+                      {item.assetName}
+                    </h3>
+
+                    <p className="text-sm text-gray-600 mb-6">
+                      {item.assetName}
+                    </p>
+
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2 text-sm text-gray-500">
+                        <RiVerifiedBadgeFill className="w-4 h-4 text-blue-600" />
+                        <span>{item.fileSize}</span>
+                      </div>
+
+                      <span className="px-4 py-1 rounded-full bg-[#C28956] text-white text-xs font-medium">
+                        {formatDate(item.createdAt)}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Case Status */}
+            <div className="mt-6">
+              <p className="text-sm font-medium text-gray-900">
+                Case Status :{" "}
+                <span className="font-semibold">{singleCase?.case_status}</span>
+              </p>
+              <p className="text-sm text-gray-500">
+                Last Update : Insurance claim filed
               </p>
             </div>
-          </div>
+          </CommonBorderWrapper>
 
-          <div className="rounded-xl bg-[#F3FAFF]  flex-1 p-5 ">
-            <div className="flex items-center justify-between  ">
-              <div className="text-[#1878B5] flex gap-1 items-center">
-                <ImAttachment size={20} />
-                <h2 className="text-lg font-semibold ">Case Documents</h2>
-              </div>
+          {openModal === "edit-overview" && singleCase && (
+            <EditOverviewModal onClose={closeModal} singleCase={data} />
+          )}
 
-              <CommonButton onClick={openUploadDocs} className=" bg-[#1878B5]">
-                Upload Documents
-              </CommonButton>
-            </div>
-            <h3 className="font-medium text-gray-900 py-4">
-              {singleCase?.caseTitle}
-            </h3>
-            <div className="space-y-2.5 ">
-              {singleCase?.timeLine_id.timeLine.map((doc, i) => (
-                <div
-                  key={i}
-                  className="flex items-center justify-between p-6 bg-[#E8F2F8] border-[#B7D5E8] rounded-lg  "
-                >
-                  <div className="flex items-center gap-3">
-                    <FileText size={20} className="text-[#1878B5]" />
-                    <span className="font-medium text-gray-900">
-                      {doc.assetName}
-                    </span>
-                  </div>
-                  <button className="flex items-center gap-1.5 text-sm text-[#1878B5]">
-                    <Download size={16} /> Download
-                  </button>
-                </div>
-              ))}
-            </div>
-          </div>
+          {openModal === "upload-docs" && singleCase && (
+            <UploadDocumentsModal onClose={closeModal} singleCase={data} />
+          )}
+
+          {openModal === "timeline" && singleCase && (
+            <TimelineModal
+              isEdit={!!editingTimelineId}
+              onClose={closeModal}
+              singleCase={data}
+            />
+          )}
         </div>
-      </CommonBorderWrapper>
-      <CommonBorderWrapper className="my-6">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <h2 className="text-xl font-semibold text-gray-900">
-              Case Timeline
-            </h2>
-            <p className="text-sm text-gray-500">
-              Track important events and documents for case #2024-001
-            </p>
-          </div>
-
-          <div className="flex gap-3">
-            <CommonButton onClick={openAddTimeline}>Add Timeline</CommonButton>
-            <CommonButton
-              onClick={() => openEditTimeline(id ?? "")}
-              className="!bg-[#E8F2F8] !text-[#1878B5] border !border-[#1878B5]"
-            >
-              Update Timeline
-            </CommonButton>
-          </div>
-        </div>
-
-        {/* Timeline Cards */}
-        <div className="relative">
-          <div className="flex gap-6 overflow-x-auto pb-4 scrollbar-hide">
-            {timelineData.map((item, index) => (
-              <div
-                key={index}
-                className="min-w-[320px] rounded-[8px] bg-[#F9F9F9] backdrop-blur-[20.1px] p-5"
-              >
-                <CheckCircle className="w-7 h-7 text-blue-600 mb-4" />
-
-                <h3 className="text-blue-600 font-semibold mb-2">
-                  {item.title}
-                </h3>
-
-                <p className="text-sm text-gray-600 mb-6">{item.description}</p>
-
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2 text-sm text-gray-500">
-                    <FileText className="w-4 h-4 text-blue-600" />
-                    <span>{item.file}</span>
-                  </div>
-
-                  <span className="px-4 py-1 rounded-full bg-amber-600 text-white text-xs font-medium">
-                    {item.date}
-                  </span>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {/* Scroll Indicator */}
-          <div className="h-1 bg-gray-200 rounded-full mt-4">
-            <div className="w-16 h-1 bg-blue-600 rounded-full" />
-          </div>
-        </div>
-
-        {/* Case Status */}
-        <div className="mt-6">
-          <p className="text-sm font-medium text-gray-900">
-            Case Status : <span className="font-semibold">In Progress</span>
-          </p>
-          <p className="text-sm text-gray-500">
-            Last Update : Insurance claim filed
-          </p>
-        </div>
-      </CommonBorderWrapper>
-
-      {openModal === "edit-overview" && singleCase && (
-        <EditOverviewModal onClose={closeModal} singleCase={data} />
       )}
-
-      {openModal === "upload-docs" && singleCase && (
-        <UploadDocumentsModal onClose={closeModal} singleCase={data} />
-      )}
-
-      {openModal === "timeline" && singleCase && (
-        <TimelineModal
-          isEdit={!!editingTimelineId}
-          onClose={closeModal}
-          singleCase={data}
-        />
-      )}
-    </div>
+    </>
   );
 }
