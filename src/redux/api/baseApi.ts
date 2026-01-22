@@ -11,6 +11,7 @@ const baseQuery = fetchBaseQuery({
     return headers;
   },
 });
+console.log(import.meta.env.VITE_API_URL);
 
 export const baseApi = createApi({
   reducerPath: "baseApi",
