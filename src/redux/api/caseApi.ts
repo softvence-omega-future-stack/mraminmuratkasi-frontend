@@ -9,14 +9,15 @@ export const caseApi = baseApi.injectEndpoints({
       }),
       providesTags: ["Case"],
     }),
-    deleteCase: builder.mutation({
-      query: (id) => ({
-        url: `/cases/manageCase/${id}`,
-        method: "DELETE",
+    addAssetToCase: builder.mutation({
+      query: (data) => ({
+        url: "/cases/addAssetToCase",
+        method: "POST",
+        body: data,
       }),
       invalidatesTags: ["Case"],
     }),
   }),
 });
 
-export const { useGetCaseDetailsQuery, useDeleteCaseMutation } = caseApi;
+export const { useGetCaseDetailsQuery, useAddAssetToCaseMutation } = caseApi;

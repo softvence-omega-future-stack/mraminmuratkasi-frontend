@@ -95,6 +95,13 @@ const authApi = baseApi.injectEndpoints({
         method: "DELETE",
       }),
     }),
+    setFCMToken: builder.mutation({
+      query: (data) => ({
+        url: "/users/setFCMToken",
+        method: "POST",
+        body: data,
+      }),
+    }),
   }),
 });
 
@@ -112,4 +119,5 @@ export const {
   useLogOutMutation,
   useToggleNotificationMutation,
   useSelfDestructMutation,
+  useSetFCMTokenMutation,
 } = authApi;
