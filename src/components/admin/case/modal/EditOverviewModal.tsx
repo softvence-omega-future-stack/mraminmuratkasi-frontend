@@ -203,7 +203,7 @@ const EditOverviewModal: React.FC<CreateCaseModalProps> = ({
               Cancel
             </CommonButton>
             <CommonButton type="submit" disabled={isLoading}>
-              Update Overflow
+              Update Overview
             </CommonButton>
           </div>
         </form>
