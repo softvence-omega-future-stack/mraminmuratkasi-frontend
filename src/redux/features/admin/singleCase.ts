@@ -1,4 +1,12 @@
-// ===== Root API Response =====
+export type CaseStatus =
+  | "In Bearbeitung"
+  | "Fall bei der Versicherung eingereicht"
+  | "Fall abgeschlossen"
+  | "Entscheidung der Versicherung noch ausstehend"
+  | "Vorschadenproblematik"
+  | "Ermittlungsakte wurde angefordert"
+  | "Versicherungsnehmer hat Schaden noch nicht gemeldet";
+
 export interface GetCaseDetailsResponse {
   status: "success" | "error";
   message: string;
@@ -15,8 +23,8 @@ export interface CaseOverview {
   clientName: string;
   caseTitle: string;
   caseType: string;
-  case_status: "Pending" | "Approved" | "Closed" | string;
-  coatDate: string; // ISO date string
+  case_status: CaseStatus;
+  coatDate: string;
   note: string;
   vehicleNumber: string;
   isMailSent: boolean;
