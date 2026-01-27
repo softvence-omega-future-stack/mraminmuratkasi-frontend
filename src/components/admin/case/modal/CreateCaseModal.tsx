@@ -1,8 +1,10 @@
 import CommonButton from "@/common/CommonButton";
 import CommonHeader from "@/common/CommonHeader";
 import CommonSelect from "@/common/CommonSelect";
-import { useCreateCaseMutation } from "@/redux/features/admin/case/caseApi";
-import { useGetAlCasesQuery } from "@/redux/features/admin/clientAPI";
+import {
+  useCreateCaseMutation,
+  useGetAllUserQuery,
+} from "@/redux/features/admin/clientAPI";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Trash2, UploadCloud, X } from "lucide-react";
 import { ChangeEvent, useState } from "react";
@@ -51,14 +53,12 @@ interface Props {
 const CreateCaseModal = ({ isOpen, onClose }: Props) => {
   const [files, setFiles] = useState<UploadedFile[]>([]);
   const [createCase, { isLoading }] = useCreateCaseMutation();
-
-  /* -------- BACKEND DATA (LIKE wwwwwwCreateCaseModal) -------- */
-  const { data } = useGetAlCasesQuery();
+  const { data: userData } = useGetAllUserQuery();
 
   const clientsOptions =
-    data?.data.cases.map((client) => ({
-      label: client.clientName,
-      value: client.client_user_id,
+    userData?.data.map((client) => ({
+      label: client.name,
+      value: client._id,
     })) || [];
 
   const {
