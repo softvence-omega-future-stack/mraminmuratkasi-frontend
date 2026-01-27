@@ -26,7 +26,9 @@ export const requestForToken = async () => {
       if (currentToken) {
         return currentToken;
       } else {
-        console.log("No registration token available. Request permission to generate one.");
+        console.log(
+          "No registration token available. Request permission to generate one.",
+        );
         return null;
       }
     }
