@@ -26,6 +26,23 @@ const clientAPI = baseApi.injectEndpoints({
       }),
       providesTags: ["AdminCase"],
     }),
+    createCase: build.mutation<any, FormData>({
+      query: (data) => ({
+        url: `/cases/manageCase`,
+        method: "POST",
+        body: data,
+      }),
+      invalidatesTags: ["AdminCase"],
+    }),
+
+    updateCases: build.mutation<any, { data: any; id: string }>({
+      query: ({ data, id }) => ({
+        url: `/cases/manageCase/${id}`,
+        method: "PATCH",
+        body: data,
+      }),
+      invalidatesTags: ["AdminCase"],
+    }),
     blockUser: build.mutation<any, string>({
       query: (id) => ({
         url: `/users/block/${id}`,
@@ -49,4 +66,6 @@ export const {
   useGetSingleCasesQuery,
   useBlockUserMutation,
   useUnBlockUserMutation,
+  useUpdateCasesMutation,
+  useCreateCaseMutation,
 } = clientAPI;

@@ -5,6 +5,7 @@ import CommonHeader from "@/common/CommonHeader";
 import Spinner from "@/common/Spinner";
 import { useGetSingleCasesQuery } from "@/redux/features/admin/clientAPI";
 import { formatDate } from "@/utils/data";
+import { formatFileSize } from "@/utils/mb";
 import { skipToken } from "@reduxjs/toolkit/query";
 import { Download, FileText } from "lucide-react";
 import { useState } from "react";
@@ -14,6 +15,7 @@ import { LuPencilLine } from "react-icons/lu";
 import { RiVerifiedBadgeFill } from "react-icons/ri";
 import { useNavigate, useParams } from "react-router-dom";
 import EditOverviewModal from "./modal/EditOverviewModal";
+import NoteModal from "./modal/NoteModal";
 import TimelineModal from "./modal/TimelineModal";
 import UploadDocumentsModal from "./modal/UploadDocumentsModal";
 
@@ -26,19 +28,11 @@ type ModalType =
 
 export default function CaseDetails() {
   const [openModal, setOpenModal] = useState<ModalType>(null);
-  const [editingTimelineId, setEditingTimelineId] = useState<string | null>(
-    null,
-  );
 
   const openEditOverview = () => setOpenModal("edit-overview");
   const openEditNote = () => setOpenModal("edit-note");
   const openUploadDocs = () => setOpenModal("upload-docs");
   const openAddTimeline = () => {
-    setEditingTimelineId(null);
-    setOpenModal("timeline");
-  };
-  const openEditTimeline = (id: string) => {
-    setEditingTimelineId(id);
     setOpenModal("timeline");
   };
 
@@ -52,7 +46,6 @@ export default function CaseDetails() {
 
   const navigate = useNavigate();
 
-  console.log("singleCase", singleCase);
   const handleBack = () => {
     navigate(-1);
   };
@@ -167,16 +160,19 @@ export default function CaseDetails() {
                   {singleCase?.caseTitle}
                 </h3>
                 <div className="space-y-2.5 ">
-                  {singleCase?.timeLine_id.timeLine.map((doc, i) => (
+                  {singleCase?.assetList_id.assets.map((doc, i) => (
                     <div
                       key={i}
                       className="flex items-center justify-between p-6 bg-[#E8F2F8] border-[#B7D5E8] rounded-lg  "
                     >
                       <div className="flex items-center gap-3">
                         <FileText size={20} className="text-[#1878B5]" />
-                        <span className="font-medium text-gray-900">
-                          {doc.assetName}
-                        </span>
+                        <div className="font-medium text-[#3C3B3B]">
+                          <p>{doc.assetName}</p>
+                          <p className=" text-[#747C81] text-xs mt-1">
+                            {formatFileSize(doc.fileSize)}
+                          </p>
+                        </div>
                       </div>
                       <button className="flex items-center gap-1.5 text-sm text-[#1878B5]">
                         <Download size={16} /> Download
@@ -203,37 +199,29 @@ export default function CaseDetails() {
                 <CommonButton onClick={openAddTimeline}>
                   Add Timeline
                 </CommonButton>
-                <CommonButton
-                  onClick={() => openEditTimeline(id ?? "")}
-                  className="!bg-[#E8F2F8] !text-[#1878B5] border !border-[#1878B5]"
-                >
-                  Update Timeline
-                </CommonButton>
               </div>
             </div>
 
             {/* Timeline Cards */}
             <div className="relative">
               <div className="flex gap-6 overflow-x-auto pb-4 scrollbar-hide">
-                {singleCase?.assetList_id.assets.map((item, index) => (
+                {singleCase?.timeLine_id.timeLine.map((item, index) => (
                   <div
                     key={index}
                     className="min-w-[320px] rounded-[8px] bg-[#F9F9F9] backdrop-blur-[20.1px] p-5"
                   >
-                    <RiVerifiedBadgeFill className="w-7 h-7 text-blue-600 mb-4" />
+                    <RiVerifiedBadgeFill className="w-7 h-7 text-[#1878B5] mb-4" />
 
-                    <h3 className="text-blue-600 font-semibold mb-2">
-                      {item.assetName}
-                    </h3>
-
-                    <p className="text-sm text-gray-600 mb-6">
-                      {item.assetName}
-                    </p>
+                    <div>
+                      <p className="text-sm text-gray-600 mb-2">{item.title}</p>
+                      <p className="text-sm text-gray-500">
+                        {item.description}
+                      </p>
+                    </div>
 
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2 text-sm text-gray-500">
-                        <RiVerifiedBadgeFill className="w-4 h-4 text-blue-600" />
-                        <span>{item.fileSize}</span>
+                        <span>{item.assetName}</span>
                       </div>
 
                       <span className="px-4 py-1 rounded-full bg-[#C28956] text-white text-xs font-medium">
@@ -261,16 +249,15 @@ export default function CaseDetails() {
             <EditOverviewModal onClose={closeModal} singleCase={data} />
           )}
 
+          {openModal === "edit-note" && singleCase && (
+            <NoteModal onClose={closeModal} singleCase={data} />
+          )}
           {openModal === "upload-docs" && singleCase && (
             <UploadDocumentsModal onClose={closeModal} singleCase={data} />
           )}
 
           {openModal === "timeline" && singleCase && (
-            <TimelineModal
-              isEdit={!!editingTimelineId}
-              onClose={closeModal}
-              singleCase={data}
-            />
+            <TimelineModal onClose={closeModal} singleCase={data} />
           )}
         </div>
       )}
