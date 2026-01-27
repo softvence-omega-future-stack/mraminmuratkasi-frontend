@@ -49,6 +49,17 @@ export default function CaseDetails() {
   const handleBack = () => {
     navigate(-1);
   };
+  const handleDownload = (fileUrl: string) => {
+    const downloadUrl = fileUrl.replace("/upload/", "/upload/fl_attachment/");
+
+    const a = document.createElement("a");
+    a.href = downloadUrl;
+    a.download = "";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+  };
+
   return (
     <>
       {isLoading ? (
@@ -174,7 +185,10 @@ export default function CaseDetails() {
                           </p>
                         </div>
                       </div>
-                      <button className="flex items-center gap-1.5 text-sm text-[#1878B5]">
+                      <button
+                        onClick={() => handleDownload(doc.assetUrl)}
+                        className="flex items-center gap-1.5 text-sm text-[#1878B5] cursor-pointer"
+                      >
                         <Download size={16} /> Download
                       </button>
                     </div>
