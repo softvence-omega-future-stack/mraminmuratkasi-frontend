@@ -17,7 +17,17 @@ export const caseApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["Case"],
     }),
+
+    deleteCase: builder.mutation({
+      query: (id) => ({
+        url: `/cases/manageCase/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["Case"],
+    }),
+
   }),
 });
 
-export const { useGetCaseDetailsQuery, useAddAssetToCaseMutation } = caseApi;
+export const { useGetCaseDetailsQuery, useAddAssetToCaseMutation, useDeleteCaseMutation } = caseApi;
+
