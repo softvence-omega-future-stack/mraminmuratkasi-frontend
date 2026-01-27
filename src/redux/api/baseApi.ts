@@ -2,7 +2,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { logout } from "../features/auth/authSlice";
 
 const baseQuery = fetchBaseQuery({
-  baseUrl: import.meta.env.VITE_API_URL,
+  baseUrl: import.meta.env.VITE_API_URL || "https://unfall-update.de/api/v1",
   prepareHeaders: (headers) => {
     const token = localStorage.getItem("token");
     if (token) {
@@ -11,6 +11,7 @@ const baseQuery = fetchBaseQuery({
     return headers;
   },
 });
+console.log(import.meta.env.VITE_API_URL);
 
 export const baseApi = createApi({
   reducerPath: "baseApi",
@@ -30,6 +31,6 @@ export const baseApi = createApi({
     }
     return result;
   },
-  tagTypes: ["User", "Notification", "Message", "Case"],
+  tagTypes: ["User", "Notification", "Message", "Case", "Client", "AdminCase"],
   endpoints: () => ({}),
 });

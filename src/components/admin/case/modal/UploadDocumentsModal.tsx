@@ -1,6 +1,6 @@
 import CommonButton from "@/common/CommonButton";
 import CommonHeader from "@/common/CommonHeader";
-import { useCreateCaseMutation } from "@/redux/features/admin/case/caseApi";
+import { useCreateCaseMutation } from "@/redux/features/admin/clientAPI";
 import { GetCaseDetailsResponse } from "@/redux/features/admin/singleCase";
 import { Pause, SquareX, Trash2, UploadCloud, X } from "lucide-react";
 import { ChangeEvent, useState } from "react";
@@ -24,8 +24,7 @@ const UploadDocumentsModal: React.FC<CreateCaseModalProps> = ({
   singleCase,
 }) => {
   const [files, setFiles] = useState<UploadedFile[]>([]);
-  const [createCase, { isLoading: isCreating }] = useCreateCaseMutation();
-
+  const [uploadDocument, { isLoading }] = useCreateCaseMutation();
   const singleCaseData = singleCase?.data.caseOverview;
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -66,24 +65,28 @@ const UploadDocumentsModal: React.FC<CreateCaseModalProps> = ({
 
   const handleUpload = async () => {
     const formData = new FormData();
-
     files.forEach((f) => formData.append("files", f.file));
-    const payload = {
-      client_user_id: singleCaseData?.client_user_id,
-      title: singleCaseData?.caseTitle,
-      clientName: singleCaseData?.clientName,
-      status: singleCaseData?.case_status,
-      date: singleCaseData?.coatDate,
-      note: singleCaseData?.note,
-    };
-    formData.append("data", JSON.stringify(payload));
+    formData.append(
+      "data",
+      JSON.stringify({
+        caseOverviewId: singleCaseData._id,
+        assetListData: [
+          {
+            assetName: files[0].name,
+            uploadDate: new Date().toISOString(),
+          },
+        ],
+      }),
+    );
 
     try {
-      const response = await createCase(formData).unwrap();
+      const response = await uploadDocument(formData).unwrap();
       toast.success(response.message);
 
       onClose();
-    } catch (err) {
+    } catch (err: any) {
+      toast.error(err?.message || "Failed to upload document");
+
       console.error(err);
     }
   };
@@ -208,8 +211,8 @@ const UploadDocumentsModal: React.FC<CreateCaseModalProps> = ({
             <CommonButton onClick={onClose} variant="secondary" type="button">
               Cancel
             </CommonButton>
-            <CommonButton onClick={handleUpload} disabled={isCreating}>
-              Submit
+            <CommonButton onClick={handleUpload} disabled={isLoading}>
+              Upload Documents
             </CommonButton>
           </div>
         </form>

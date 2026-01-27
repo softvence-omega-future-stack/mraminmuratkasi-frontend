@@ -2,8 +2,10 @@
 import CommonButton from "@/common/CommonButton";
 import CommonHeader from "@/common/CommonHeader";
 import CommonSelect from "@/common/CommonSelect";
-import { useCreateCaseMutation } from "@/redux/features/admin/case/caseApi";
-import { useGetAlCasesQuery } from "@/redux/features/admin/clientAPI";
+import {
+  useGetAllUserQuery,
+  useUpdateCasesMutation,
+} from "@/redux/features/admin/clientAPI";
 import { GetCaseDetailsResponse } from "@/redux/features/admin/singleCase";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { X } from "lucide-react";
@@ -44,14 +46,17 @@ interface CreateCaseModalProps {
   singleCase: GetCaseDetailsResponse;
 }
 
-const EditOverviewModal: React.FC<CreateCaseModalProps> = ({ onClose }) => {
-  const [createCase, { isLoading: isCreating }] = useCreateCaseMutation();
-  const { data } = useGetAlCasesQuery();
+const EditOverviewModal: React.FC<CreateCaseModalProps> = ({
+  onClose,
+  singleCase,
+}) => {
+  const [overviewUpdate, { isLoading }] = useUpdateCasesMutation();
+  const { data: userData } = useGetAllUserQuery();
 
   const clientsOptions =
-    data?.data.cases.map((client) => ({
-      label: client.clientName,
-      value: client.client_user_id,
+    userData?.data.map((client) => ({
+      label: client.name,
+      value: client._id,
     })) || [];
 
   const {
@@ -62,29 +67,27 @@ const EditOverviewModal: React.FC<CreateCaseModalProps> = ({ onClose }) => {
   } = useForm<CaseFormValues>({
     resolver: zodResolver(caseSchema),
     defaultValues: {
-      title: "",
-      clientName: "",
-      status: "In Bearbeitung",
-      date: "",
+      title: singleCase.data.caseOverview.caseTitle || "",
+      clientName: singleCase.data.caseOverview.clientName || "",
+      status: singleCase.data.caseOverview.case_status || "In Bearbeitung",
+      date: singleCase.data.caseOverview.coatDate || "",
     },
   });
 
   const onSubmit: SubmitHandler<CaseFormValues> = async (data) => {
     const payload = {
-      client_user_id: data.client_user_id,
       clientName: data.clientName,
       caseTitle: data.title,
       caseStatus: data.status,
       coatDate: data.date,
     };
-    // FormData for file upload
-    const formData = new FormData();
-    formData.append("data", JSON.stringify(payload));
 
     try {
-      const response = await createCase(formData).unwrap();
+      const response = await overviewUpdate({
+        id: singleCase.data.caseOverview._id,
+        data: payload,
+      }).unwrap();
       toast.success(response.message);
-
       onClose();
     } catch (err) {
       console.error(err);
@@ -199,8 +202,8 @@ const EditOverviewModal: React.FC<CreateCaseModalProps> = ({ onClose }) => {
             <CommonButton onClick={onClose} variant="secondary" type="button">
               Cancel
             </CommonButton>
-            <CommonButton type="submit" disabled={isCreating}>
-              Submit
+            <CommonButton type="submit" disabled={isLoading}>
+              Update Overflow
             </CommonButton>
           </div>
         </form>
