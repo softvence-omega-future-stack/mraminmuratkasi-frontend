@@ -9,11 +9,10 @@ import {
   Paperclip,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import DocumentUploadModal from "@/common/DocumentUploadModal";
-import { useGetCaseDetailsQuery, useAddAssetToCaseMutation } from "@/redux/api/caseApi";
+import UploadDocumentsModal from "@/components/admin/case/modal/UploadDocumentsModal";
+import { useGetCaseDetailsQuery } from "@/redux/api/caseApi";
 import { getStatusStyles } from "./ClientCasesPage";
 import star from "/images/star.png";
-import { toast } from "sonner";
 
 
 
@@ -25,7 +24,6 @@ export default function CaseDetails() {
   const [fromPage, setFromPage] = useState<string>("/client/dashboard");
 
   const { data: caseResponse, isLoading } = useGetCaseDetailsQuery(id);
-  const [addAssetToCase, { isLoading: isUploading }] = useAddAssetToCaseMutation();
   const caseData = caseResponse?.data?.caseOverview;
 
   useEffect(() => {
@@ -56,25 +54,6 @@ export default function CaseDetails() {
     navigate(fromPage);
   };
 
-  const handleDocumentUpload = async (assets: any[]) => {
-    if (!caseData) return;
-
-    try {
-      const payload = {
-        user_id: caseData.user_id,
-        caseOverview_id: caseData._id,
-        assetListId: caseData.assetList_id?._id,
-        assetList: assets
-      };
-
-      await addAssetToCase(payload).unwrap();
-      toast.success("Documents uploaded successfully");
-      setShowUploadModal(false);
-    } catch (err: any) {
-      toast.error(err?.data?.message || "Failed to upload documents to case");
-      console.error("Failed to add assets to case:", err);
-    }
-  };
 
   if (isLoading) {
     return (
@@ -97,8 +76,8 @@ export default function CaseDetails() {
   const timeline = caseData.timeLine_id?.timeLine || [];
 
   return (
-      <div className="min-h-screen bg-[#F7F9FC]">
-        <div className="pb-5">
+    <div className="min-h-screen bg-[#F7F9FC]">
+      <div className="pb-5">
         <div className="bg-white rounded-xl shadow-sm p-5">
           <div className="flex items-center justify-between">
             <h2 className="text-lg font-semibold text-black">Case Details</h2>
@@ -147,7 +126,7 @@ export default function CaseDetails() {
 
               <div className="bg-[#F3FAFF] rounded-xl shadow-sm p-5">
                 <div className="flex items-center gap-2 mb-3">
-                   <FileText className="w-6 h-6 text-[#1878B5]" />
+                  <FileText className="w-6 h-6 text-[#1878B5]" />
                   <h3 className="font-medium text-[#1878B5]">Notes</h3>
                 </div>
 
@@ -201,9 +180,9 @@ export default function CaseDetails() {
                         </div>
                       </div>
 
-                      <a 
-                        href={doc.assetUrl} 
-                        target="_blank" 
+                      <a
+                        href={doc.assetUrl}
+                        target="_blank"
                         rel="noopener noreferrer"
                         className="flex items-center gap-1.5 text-[#1878B5] hover:text-[#146499] transition-colors"
                       >
@@ -252,34 +231,34 @@ export default function CaseDetails() {
               <p className="text-sm text-gray-500 w-full text-center py-8">No timeline updates yet</p>
             ) : (
               timeline.map((event: any, i: number) => (
-              <div
-                key={event._id || i}
-                className="min-w-[320px] bg-[#F9FAFB] rounded-[20px] p-6 flex flex-col hover:shadow-md transition-shadow duration-200 border border-transparent hover:border-blue-100"
-              >
-                  <img className="mb-5" src={star} alt="star" width={40} height={40}/>
-                <h4 className="text-[#1878B5] font-bold text-[17px] mb-2 leading-tight">
-                  {event.title}
-                </h4>
-                <p className="text-gray-500 text-[13px] leading-relaxed mb-6 font-normal">
-                  {event.description}
-                </p>
+                <div
+                  key={event._id || i}
+                  className="min-w-[320px] bg-[#F9FAFB] rounded-[20px] p-6 flex flex-col hover:shadow-md transition-shadow duration-200 border border-transparent hover:border-blue-100"
+                >
+                  <img className="mb-5" src={star} alt="star" width={40} height={40} />
+                  <h4 className="text-[#1878B5] font-bold text-[17px] mb-2 leading-tight">
+                    {event.title}
+                  </h4>
+                  <p className="text-gray-500 text-[13px] leading-relaxed mb-6 font-normal">
+                    {event.description}
+                  </p>
 
-                <div className="mt-auto flex items-center justify-between">
-                  {event.assetUrl && event.assetUrl.length > 0 ? (
-                    <div className="flex items-center gap-2 px-2 py-1.5 bg-[#E8F2F8] rounded-md transition-colors hover:bg-blue-100 cursor-pointer">
-                      <span className="text-[11px] font-medium text-gray-500">
-                        Attachment Available
-                      </span>
+                  <div className="mt-auto flex items-center justify-between">
+                    {event.assetUrl && event.assetUrl.length > 0 ? (
+                      <div className="flex items-center gap-2 px-2 py-1.5 bg-[#E8F2F8] rounded-md transition-colors hover:bg-blue-100 cursor-pointer">
+                        <span className="text-[11px] font-medium text-gray-500">
+                          Attachment Available
+                        </span>
+                      </div>
+                    ) : (
+                      <div></div>
+                    )}
+                    <div className="bg-[#C48C57] text-white text-[11px] font-bold px-4 py-1.5 rounded-lg shadow-sm">
+                      {formatDate(event.date)}
                     </div>
-                  ) : (
-                    <div></div>
-                  )}
-                  <div className="bg-[#C48C57] text-white text-[11px] font-bold px-4 py-1.5 rounded-lg shadow-sm">
-                    {formatDate(event.date)}
                   </div>
                 </div>
-              </div>
-            )))}
+              )))}
           </div>
 
           {/* Progress Bar & Status Footer */}
@@ -287,7 +266,7 @@ export default function CaseDetails() {
             <div className="w-full bg-[#E5E7EB] h-1.5 rounded-full overflow-hidden mb-6">
               <div className="bg-[#1878B5] h-full w-[40px] rounded-full"></div>
             </div>
-            
+
             <div className="space-y-1">
               <h4 className="text-gray-900 font-bold text-base">
                 Case Status : <span className="text-gray-700 font-semibold">{caseData.case_status}</span>
@@ -300,12 +279,12 @@ export default function CaseDetails() {
         </div>
       </div>
 
-      <DocumentUploadModal
-        open={showUploadModal}
-        onClose={() => setShowUploadModal(false)}
-        onUpload={handleDocumentUpload}
-        isUploadingToCase={isUploading}
-      />
+      {showUploadModal && caseResponse && (
+        <UploadDocumentsModal
+          onClose={() => setShowUploadModal(false)}
+          singleCase={caseResponse}
+        />
+      )}
     </div>
   );
 }
