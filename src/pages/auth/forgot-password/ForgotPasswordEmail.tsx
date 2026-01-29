@@ -34,16 +34,16 @@ export default function ForgotPasswordEmail() {
     <div className="min-h-screen bg-[#1878B5] flex items-center justify-center p-4">
       <div className="bg-white rounded-lg shadow-2xl p-8 max-w-md w-full">
         <h1 className="text-2xl font-bold text-center text-[#1878B5] mb-2">
-          Forget password!
+          Passwort vergessen!
         </h1>
         <p className="text-center text-gray-600 text-sm mb-6">
-          Please enter your email to receive a confirmation code
+          Bitte gebe deine E-Mail Adresse ein. Sie erhalten einen Code.
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
             <p className="text-gray-900 text-base font-semibold mb-2">
-              Email
+              E-Mail Adresse
             </p>
             <div className="relative">
               <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
@@ -54,7 +54,7 @@ export default function ForgotPasswordEmail() {
                   setEmail(e.target.value);
                   setError("");
                 }}
-                placeholder="Enter your email"
+                placeholder="E-Mail Adresse eingeben"
                 className={`pl-10 py-6 ${
                   error ? "border border-[#FE1B1B] bg-[#FFECE6]" : ""
                 }`}
@@ -86,7 +86,7 @@ export default function ForgotPasswordEmail() {
             disabled={isLoading}
             className="w-full bg-[#1878B5] py-5 cursor-pointer hover:bg-[#1878D9] font-semibold"
           >
-            {isLoading ? "Sending..." : "Send Code"}
+            {isLoading ? "Senden..." : "Code senden"}
           </Button>
         </form>
 
@@ -94,7 +94,7 @@ export default function ForgotPasswordEmail() {
           onClick={() => navigate(-1)}
           className="w-full text-center text-[#1878B5] hover:underline text-sm font-medium mt-4 cursor-pointer"
         >
-          Back to login
+          Zurück zum Login
         </button>
       </div>
     </div>

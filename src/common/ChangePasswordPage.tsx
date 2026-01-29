@@ -94,7 +94,7 @@ export default function ChangePasswordPage() {
       <div className="p-6">
         <div className="bg-white rounded-lg shadow p-8 max-w-4xl mx-auto">
           <h1 className="text-2xl font-semibold text-gray-900 mb-8">
-            Change Password
+            Passwort ändern
           </h1>
 
           {/* Messages */}
@@ -131,7 +131,7 @@ export default function ChangePasswordPage() {
             {/* Current Password */}
             <div>
               <p className="text-gray-900 text-base font-medium mb-2">
-                Current Password
+                Altes Passwort
               </p>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-[#1878B5] w-5 h-5" />
@@ -140,7 +140,7 @@ export default function ChangePasswordPage() {
                   type={showOldPassword ? "text" : "password"}
                   value={formData.oldPassword}
                   onChange={handleChange}
-                  placeholder="Enter your current password"
+                  placeholder="Bitte gebe dein altes Passwort ein"
                   className={`pl-10 pr-10 py-6 ${errors.oldPassword ? errorInputStyle : ""}`}
                 />
                 <button
@@ -165,7 +165,7 @@ export default function ChangePasswordPage() {
             {/* New Password */}
             <div>
               <p className="text-gray-900 text-base font-medium mb-2">
-                New Password
+                Neues Passwort
               </p>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-[#1878B5] w-5 h-5" />
@@ -174,7 +174,7 @@ export default function ChangePasswordPage() {
                   type={showNewPassword ? "text" : "password"}
                   value={formData.newPassword}
                   onChange={handleChange}
-                  placeholder="Enter your new password"
+                  placeholder="Bitte gebe dein neues Passwort ein"
                   className={`pl-10 pr-10 py-6 ${errors.newPassword ? errorInputStyle : ""}`}
                 />
                 <button
@@ -199,7 +199,7 @@ export default function ChangePasswordPage() {
             {/* Confirm Password */}
             <div>
               <p className="text-gray-900 text-base font-medium mb-2">
-                Confirm Password
+                Passwort bestätigen
               </p>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-[#1878B5] w-5 h-5" />
@@ -208,7 +208,7 @@ export default function ChangePasswordPage() {
                   type={showConfirmPassword ? "text" : "password"}
                   value={formData.confirmPassword}
                   onChange={handleChange}
-                  placeholder="Confirm your new password"
+                  placeholder="Bestätige dein neues Passwort"
                   className={`pl-10 pr-10 py-6 ${errors.confirmPassword ? errorInputStyle : ""}`}
                 />
                 <button
@@ -236,7 +236,7 @@ export default function ChangePasswordPage() {
                 disabled={isLoading}
                 className="px-8 py-5 bg-[#1878B5] hover:bg-[#1878D9] rounded-[40px] cursor-pointer"
               >
-                {isLoading ? "Changing..." : "Change Password"}
+                {isLoading ? "Ändern..." : "Passwort ändern"}
               </Button>
               <Button
                 type="button"
@@ -244,7 +244,7 @@ export default function ChangePasswordPage() {
                 className="px-8 py-5 text-[#1878B5] border-gray-300 bg-[#E8F2F8] hover:bg-gray-50 rounded-[40px] cursor-pointer"
                 onClick={() => navigate(-1)}
               >
-                Cancel
+                Stornieren
               </Button>
             </div>
           </form>
