@@ -527,7 +527,7 @@ export default function ClientChatPage() {
                 value={newMessage}
                 onChange={(e) => setNewMessage(e.target.value)}
                 onKeyPress={handleKeyPress}
-                placeholder="Type a message..."
+                placeholder="Geben Sie eine Nachricht ein..."
                 className="flex-1 bg-transparent text-gray-900 placeholder-gray-500 outline-none text-sm"
               />
               <button

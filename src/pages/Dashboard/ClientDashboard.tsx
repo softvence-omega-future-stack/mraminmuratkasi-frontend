@@ -64,7 +64,7 @@ export default function ClientDashboard() {
         {/* Active Cases */}
         <div className="bg-white rounded-2xl p-6 shadow-sm">
           <h3 className="text-lg font-semibold text-black mb-4">
-            Active Cases
+            Aktuelle Fälle
           </h3>
 
           <div className="flex flex-wrap gap-4">
@@ -82,7 +82,7 @@ export default function ClientDashboard() {
                 <img src={activeCaseIcon} alt="" className="w-12 h-12 mb-8" />
 
                 <p className="text-sm text-[#3C3B3B] font-normal mb-1">
-                  CASE: {item.caseNumber}
+                  Aktenzeichen: {item.caseNumber}
                 </p>
 
                 <h4 className="text-lg font-semibold text-[#3C3B3B] leading-snug truncate w-full" title={item.caseTitle}>
@@ -90,7 +90,7 @@ export default function ClientDashboard() {
                 </h4>
 
                 <p className="text-[11px] text-gray-600 font-normal mt-1">
-                  Last Updated : {formatDate(item.updatedAt)}
+                  Letztes Update : {formatDate(item.updatedAt)}
                 </p>
 
                 <span className="inline-block px-3 py-1 text-[11px] text-white bg-[#1878B5] font-normal rounded-full mt-8">
@@ -104,14 +104,14 @@ export default function ClientDashboard() {
         {/* Recent Uploads */}
         <div className="bg-white rounded-2xl p-6 shadow-sm">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold text-black">Recent Uploads</h3>
+            <h3 className="text-lg font-semibold text-black">Letzter Sachstand</h3>
           </div>
 
           <div className="space-y-3">
             {isLoading ? (
-               <p className="text-gray-500 text-sm">Loading uploads...</p>
+               <p className="text-gray-500 text-sm">Uploads werden geladen...</p>
             ) : recentUploads.length === 0 ? (
-               <p className="text-gray-500 text-sm">No recent uploads found.</p>
+               <p className="text-gray-500 text-sm">Keine kürzlich hochgeladenen Dateien gefunden.</p>
             ) : (
               recentUploads.map((upload: any) => (
                 <div
@@ -142,10 +142,10 @@ export default function ClientDashboard() {
 
       <div className="p-4 sm:p-6 bg-white rounded-[24px] font-inter">
         <div className="flex justify-between items-center mb-6">
-          <h3 className="font-bold text-gray-900">All Cases</h3>
+          <h3 className="font-bold text-gray-900">Alle Fälle</h3>
           <Link to="/client/cases">
             <button className="text-[#1878B5] cursor-pointer text-sm font-semibold hover:underline mr-2">
-              See all
+              Alle einsehen
             </button>
           </Link>
         </div>
@@ -156,11 +156,11 @@ export default function ClientDashboard() {
             <table className="min-w-[900px] w-full border-collapse">
               <thead className="bg-[#FDFDFD]">
                 <tr className="text-left text-sm font-medium text-gray-500 ">
-                  <th className="px-6 py-4">Case No</th>
+                  <th className="px-6 py-4">Aktenzeichen</th>
                   <th className="px-6 py-4">Name</th>
-                  <th className="px-6 py-4">Type</th>
-                  <th className="px-6 py-4">Created</th>
-                  <th className="px-6 py-4">Court Date</th>
+                  <th className="px-6 py-4">Typ</th>
+                  <th className="px-6 py-4">Erstellt</th>
+                  <th className="px-6 py-4">Gerichtstermin</th>
                   <th className="px-6 py-4">Status</th>
                   <th className="px-4 py-4 w-10"></th>
                 </tr>
@@ -168,9 +168,9 @@ export default function ClientDashboard() {
 
               <tbody className="divide-y divide-gray-200 bg-[#F0FAFF] text-gray-900 font-inter">
                 {isLoading ? (
-                   <tr><td colSpan={7} className="px-6 py-8 text-center text-sm text-gray-500">Loading cases...</td></tr>
+                   <tr><td colSpan={7} className="px-6 py-8 text-center text-sm text-gray-500">Fälle werden geladen...</td></tr>
                 ) : displayCases.length === 0 ? (
-                   <tr><td colSpan={7} className="px-6 py-8 text-center text-sm text-gray-500">No cases found.</td></tr>
+                   <tr><td colSpan={7} className="px-6 py-8 text-center text-sm text-gray-500">Keine Fälle gefunden.</td></tr>
                 ) : (displayCases.map((item: any, index: number) => (
                   <tr
                     key={item._id || index}

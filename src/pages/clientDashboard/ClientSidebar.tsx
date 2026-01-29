@@ -23,11 +23,11 @@ export default function ClientSidebar({ isOpen, onClose }: SidebarProps) {
   useEffect(() => {
     const hour = new Date().getHours();
     if (hour < 12) {
-      setGreeting({ text: "Good Morning", icon: <Sun className="w-5 h-5 text-[#F4B402]" /> });
+      setGreeting({ text: "Guten Morgen", icon: <Sun className="w-5 h-5 text-[#F4B402]" /> });
     } else if (hour < 18) {
-      setGreeting({ text: "Good Afternoon", icon: <Sun className="w-5 h-5 text-[#F4B402]" /> });
+      setGreeting({ text: "Guten Nachmittag", icon: <Sun className="w-5 h-5 text-[#F4B402]" /> });
     } else {
-      setGreeting({ text: "Good Evening", icon: <Moon className="w-5 h-5 text-[#1878B5]" /> });
+      setGreeting({ text: "Guten Abend", icon: <Moon className="w-5 h-5 text-[#1878B5]" /> });
     }
   }, []);
 
@@ -92,7 +92,7 @@ export default function ClientSidebar({ isOpen, onClose }: SidebarProps) {
             className="mt-4 flex items-center gap-2 text-[#1878B5] bg-[#F6F6F6] px-7 py-3 rounded-[30px] text-sm font-semibold hover:bg-blue-100 transition-colors justify-center cursor-pointer"
           >
             <PenLine className="w-4 h-4 mb-1" />
-            Edit Profile
+            Profil bearbeiten
           </button>
 
           {/* <div className="mt-8 w-full bg-[#1878B5] rounded-2xl px-16 py-3 text-white text-left overflow-hidden relative">
@@ -140,7 +140,7 @@ export default function ClientSidebar({ isOpen, onClose }: SidebarProps) {
                   {user?.case_ids?.length || 0}
                 </h3>
                 <p className="text-[#B7D5E8] text-xs md:text-sm mt-1 capitalize">
-                  Total Cases
+                  Alle Fälle
                 </p>
               </div>
 
@@ -163,7 +163,7 @@ export default function ClientSidebar({ isOpen, onClose }: SidebarProps) {
                   }).length || 0}
                 </h3>
                 <p className="text-[#B7D5E8] text-xs md:text-sm mt-1 capitalize">
-                  In Progress
+                  In Bearbeitung
                 </p>
               </div>
             </div>
@@ -174,7 +174,7 @@ export default function ClientSidebar({ isOpen, onClose }: SidebarProps) {
               onClick={handleLogout}
               className="w-full py-3 bg-[#E8F2F8] text-[#1878B5] text-lg font-semibold rounded-[40px] hover:bg-gray-100 transition-colors cursor-pointer"
             >
-              Log Out
+              Ausloggen
             </button>
           </div>
 

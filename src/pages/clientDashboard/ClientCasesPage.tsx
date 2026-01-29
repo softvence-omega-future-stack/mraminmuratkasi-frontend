@@ -184,7 +184,7 @@ export default function ClientCasesPage() {
       <div className="p-4 sm:p-6 bg-white rounded-[24px] font-inter">
         {/* Header */}
         <div className="mb-6">
-          <h2 className="text-lg font-semibold text-gray-900">All Cases</h2>
+          <h2 className="text-lg font-semibold text-gray-900">Alle Fälle</h2>
         </div>
 
         {/* Table Container */}
@@ -193,11 +193,11 @@ export default function ClientCasesPage() {
             <table className="min-w-[900px] w-full border-collapse">
               <thead className="bg-[#FDFDFD]">
                 <tr className="text-left text-sm font-medium text-gray-500 ">
-                  <th className="px-6 py-4">Case No</th>
+                  <th className="px-6 py-4">Aktenzeichen:</th>
                   <th className="px-6 py-4">Name</th>
-                  <th className="px-6 py-4">Type</th>
-                  <th className="px-6 py-4">Created</th>
-                  <th className="px-6 py-4">Court Date</th>
+                  <th className="px-6 py-4">Typ</th>
+                  <th className="px-6 py-4">Erstellt</th>
+                  <th className="px-6 py-4">Gerichtstermin</th>
                   <th className="px-6 py-4">Status</th>
                   <th className="px-4 py-4 w-10"></th>
                 </tr>

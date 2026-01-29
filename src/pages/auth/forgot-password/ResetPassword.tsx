@@ -62,7 +62,7 @@ export default function ResetPassword() {
     <div className="min-h-screen bg-[#1878B5] flex items-center justify-center p-4">
       <div className="bg-white rounded-lg shadow-2xl p-8 max-w-md w-full">
         <h1 className="text-2xl font-bold text-center text-[#1878B5] mb-6">
-          Reset Password
+          Passwort zurücksetzen
         </h1>
 
         <form onSubmit={handleSubmit} className="space-y-5">
@@ -80,7 +80,7 @@ export default function ResetPassword() {
             <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
             <Input
               type={showPassword ? "text" : "password"}
-              placeholder="New password"
+              placeholder="Neues Passwort"
               className={`pl-10 pr-10 py-6 ${
                 errors.password ? "border border-[#FE1B1B] bg-[#FFECE6]" : ""
               }`}
@@ -102,7 +102,7 @@ export default function ResetPassword() {
             <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
             <Input
               type={showConfirm ? "text" : "password"}
-              placeholder="Confirm password"
+              placeholder="Passwort bestätigen"
               className={`pl-10 pr-10 py-6 ${
                 errors.confirmPassword
                   ? "border border-[#FE1B1B] bg-[#FFECE6]"
@@ -151,7 +151,7 @@ export default function ResetPassword() {
             disabled={isLoading}
             className="w-full bg-[#1878B5] py-6 hover:bg-[#1878D9] font-semibold cursor-pointer"
           >
-            {isLoading ? "Resetting..." : "Reset Password"}
+            {isLoading ? "Zurücksetzen..." : "Passwort zurücksetzen"}
           </Button>
         </form>
       </div>
