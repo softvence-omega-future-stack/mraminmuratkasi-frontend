@@ -23,6 +23,7 @@ import HomePage from "@/pages/adminDashboard/HomePage";
 import Login from "@/pages/Login";
 import RoleSelection from "@/pages/RoleSelection";
 import Signup from "@/pages/Signup";
+import ProtectedRoute from "./ProtectedRoute";
 import { createBrowserRouter } from "react-router-dom";
 import App from "../App";
 import NotFound from "../pages/NotFound";
@@ -74,15 +75,27 @@ const routes = createBrowserRouter([
       },
       {
         path: "/change-password",
-        element: <ChangePasswordPage />,
+        element: (
+          <ProtectedRoute>
+            <ChangePasswordPage />
+          </ProtectedRoute>
+        ),
       },
       {
         path: "/edit-profile",
-        element: <EditProfilePage />,
+        element: (
+          <ProtectedRoute>
+            <EditProfilePage />
+          </ProtectedRoute>
+        ),
       },
       {
         path: "/admin",
-        element: <AdminDashboardLayout />,
+        element: (
+          <ProtectedRoute role="admin">
+            <AdminDashboardLayout />
+          </ProtectedRoute>
+        ),
         children: [
           {
             path: "",
@@ -118,7 +131,11 @@ const routes = createBrowserRouter([
       },
       {
         path: "client",
-        element: <ClientDashboardLayout />,
+        element: (
+          <ProtectedRoute role="client">
+            <ClientDashboardLayout />
+          </ProtectedRoute>
+        ),
         children: [
           {
             path: "",
