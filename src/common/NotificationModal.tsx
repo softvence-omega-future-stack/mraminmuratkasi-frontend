@@ -1,4 +1,4 @@
-import { X, Trash2, Loader2 } from "lucide-react";
+import { Loader2, Trash2, X } from "lucide-react";
 
 interface Notification {
   id: string | number;
@@ -39,7 +39,9 @@ export default function NotificationModal({
       >
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-4 border-b">
-          <h2 className="text-xl font-semibold text-gray-900">Notifications</h2>
+          <h2 className="text-xl font-semibold text-gray-900">
+            Benachrichtigungen
+          </h2>
           <button
             onClick={onClose}
             className="p-1 rounded-full hover:bg-gray-100"
@@ -52,7 +54,7 @@ export default function NotificationModal({
         <div className="overflow-y-auto max-h-[440px]">
           {notifications.length === 0 ? (
             <div className="p-5 text-center text-gray-500">
-              No notifications
+              No Benachrichtigungen
             </div>
           ) : (
             notifications.map((notif) => (

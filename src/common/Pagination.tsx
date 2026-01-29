@@ -41,7 +41,7 @@ const Pagination: React.FC<PaginationProps> = ({
         className="flex items-center gap-1 px-3 py-1 text-sm rounded-md disabled:opacity-40 hover:bg-gray-100 cursor-pointer text-[#09090B]"
       >
         <ChevronLeft size={16} />
-        Previous
+        Vorherige
       </button>
 
       {pages.map((page, idx) =>
@@ -61,7 +61,7 @@ const Pagination: React.FC<PaginationProps> = ({
           >
             {page}
           </button>
-        )
+        ),
       )}
 
       <button
@@ -69,7 +69,7 @@ const Pagination: React.FC<PaginationProps> = ({
         disabled={currentPage === totalPages}
         className="flex items-center gap-1 px-3 py-1 text-sm rounded-md disabled:opacity-40 hover:bg-gray-100 cursor-pointer text-[#09090B]"
       >
-        Next
+        nächste
         <ChevronRight size={16} />
       </button>
     </div>
