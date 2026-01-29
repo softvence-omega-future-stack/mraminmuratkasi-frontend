@@ -97,7 +97,7 @@ export default function EditProfilePage() {
       <div className="p-6">
         <div className="bg-white rounded-lg shadow p-8 max-w-5xl mx-auto">
           <h1 className="text-2xl font-semibold text-gray-900 mb-8">
-            Edit Profile
+            Profil bearbeiten
           </h1>
 
           {/* Messages */}
@@ -146,25 +146,25 @@ export default function EditProfilePage() {
               onClick={handleUpdateImage}
               className="bg-[#1878B5] hover:bg-[#1878D9] rounded-[40px] px-6 py-2 h-auto text-sm"
             >
-              {isUploading ? "Uploading..." : "Update Profile Image"}
+              {isUploading ? "Hochladen..." : "Profilbild aktualisieren"}
             </Button>
           </div>
 
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-6 max-w-3xl">
             <div>
-              <p className="text-gray-900 text-base font-medium mb-2">Full Name</p>
+              <p className="text-gray-900 text-base font-medium mb-2">Name</p>
               <Input
                 name="name"
                 value={formData.name}
                 onChange={handleChange}
-                placeholder="Enter your name"
+                placeholder="Bitte gebe deinen Namen ein"
                 className="py-6"
               />
             </div>
 
             <div>
-              <p className="text-gray-900 text-base font-medium mb-2">Email Address</p>
+              <p className="text-gray-900 text-base font-medium mb-2">E-Mail Adresse</p>
               <Input
                 name="email"
                 type="email"
@@ -180,7 +180,7 @@ export default function EditProfilePage() {
                 disabled={isUpdating}
                 className="px-8 py-5 bg-[#1878B5] hover:bg-[#1878D9] rounded-[40px] cursor-pointer"
               >
-                {isUpdating ? "Saving..." : "Save Changes"}
+                {isUpdating ? "Liebe..." : "Einstellungen speichern"}
               </Button>
 
               <Button
@@ -189,7 +189,7 @@ export default function EditProfilePage() {
                 onClick={handleCancel}
                 className="px-8 py-5 text-[#1878B5] border-gray-300 bg-[#E8F2F8] hover:bg-gray-50 rounded-[40px] cursor-pointer"
               >
-                Cancel
+                stornieren
               </Button>
             </div>
           </form>

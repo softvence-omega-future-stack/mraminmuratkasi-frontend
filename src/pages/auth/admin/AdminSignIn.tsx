@@ -1,4 +1,3 @@
-
 import type React from "react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -54,11 +53,11 @@ export default function AdminSignIn() {
 
     try {
       const res = await login(formData).unwrap();
-      
+
       // Fixed: Access user and approvalToken directly from response
       dispatch(setCredentials({ user: res.user, token: res.approvalToken }));
       localStorage.setItem("token", res.approvalToken);
-      
+
       setSuccessMessage(res.message || "Sign in successful!");
 
       // Redirect based on role after 1.5 seconds
@@ -69,10 +68,11 @@ export default function AdminSignIn() {
           navigate("/client");
         }
       }, 1500);
-
     } catch (err: any) {
       setErrorMessage(
-        err?.data?.message || err?.message || "Failed to sign in. Please try again."
+        err?.data?.message ||
+          err?.message ||
+          "Failed to sign in. Please try again.",
       );
       console.error("Failed to sign in:", err);
     }
@@ -89,7 +89,7 @@ export default function AdminSignIn() {
         </div>
 
         <h1 className="text-3xl font-bold text-center text-[#1878B5] mb-8">
-          Sign In
+          Anmelden
         </h1>
 
         {/* Success Section */}
@@ -129,7 +129,9 @@ export default function AdminSignIn() {
         <form onSubmit={handleSubmit} className="space-y-5">
           {/* Email */}
           <div>
-            <p className="text-gray-900 text-base font-semibold mb-2">Email</p>
+            <p className="text-gray-900 text-base font-semibold mb-2">
+              E-Mail Adresse
+            </p>
             <div className="relative">
               <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-[#1878B5] w-5 h-5" />
               <Input
@@ -137,7 +139,7 @@ export default function AdminSignIn() {
                 type="email"
                 value={formData.email}
                 onChange={handleChange}
-                placeholder="Enter email address"
+                placeholder="E-Mail Adresse eingeben"
                 className={`pl-10 py-6 ${errors.email ? errorInputStyle : ""}`}
               />
             </div>
@@ -146,7 +148,7 @@ export default function AdminSignIn() {
           {/* Password */}
           <div>
             <p className="text-gray-900 text-base font-semibold mb-2">
-              Password
+              Passwort
             </p>
             <div className="relative">
               <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-[#1878B5] w-5 h-5" />
@@ -155,7 +157,7 @@ export default function AdminSignIn() {
                 type={showPassword ? "text" : "password"}
                 value={formData.password}
                 onChange={handleChange}
-                placeholder="Enter password"
+                placeholder="Passwort eingeben"
                 className={`pl-10 pr-10 py-6 ${
                   errors.password ? errorInputStyle : ""
                 }`}
@@ -181,7 +183,7 @@ export default function AdminSignIn() {
               onClick={() => navigate("/forgot-password")}
               className="text-[#1878B5] hover:underline text-sm font-medium cursor-pointer -mt-4"
             >
-              Forgot password?
+              Passwort vergessen?
             </button>
           </div>
 
@@ -191,18 +193,18 @@ export default function AdminSignIn() {
             disabled={isLoginLoading}
             className="w-full bg-[#1878B5] py-5 rounded-[6px] hover:bg-[#1878D9] cursor-pointer"
           >
-            {isLoginLoading ? "Signing In..." : "Sign In"}
+            {isLoginLoading ? "Anmelden..." : "Anmelden"}
           </Button>
         </form>
 
         {/* Sign up */}
         <p className="text-center text-gray-600 text-sm mt-4">
-          Don't have an account?{" "}
+          Ich habe keinen Account.{" "}
           <button
             onClick={() => navigate("/client/signup")}
             className="text-[#1878B5] hover:underline font-medium cursor-pointer"
           >
-            Sign up
+            Jetzt registrieren
           </button>
         </p>
       </div>

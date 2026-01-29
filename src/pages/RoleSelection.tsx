@@ -25,7 +25,7 @@ export default function RoleSelection() {
           <img src={Logo} alt="" />
         </div>
         <h1 className="text-2xl font-bold text-center text-white mb-2">
-          Welcome to Unfall Update
+          Willkommen bei Unfall Update
         </h1>
 
         <div className="flex flex-col md:flex-row gap-4">
@@ -67,7 +67,7 @@ const AdminCardButton = ({ handleAdminClick }: any) => {
 
       {/* Subtitle */}
       <p className="mt-1 text-sm text-gray-500">
-        Manage users and system settings
+        Verwalte als Admin die Kunden
       </p>
     </button>
   );
@@ -99,11 +99,11 @@ const ClientCardButton = ({ handleClientClick }: any) => {
       </div>
 
       {/* Title */}
-      <h3 className="text-lg font-semibold text-gray-900">Client</h3>
+      <h3 className="text-lg font-semibold text-gray-900">Kunde</h3>
 
       {/* Subtitle */}
       <p className="mt-1 text-sm text-gray-500">
-        Access services and manage account{" "}
+        Logge dich als Kunde oder Sachverständiger ein{" "}
       </p>
     </button>
   );

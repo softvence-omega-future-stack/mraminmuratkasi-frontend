@@ -63,10 +63,10 @@ export default function ForgotPasswordOTP() {
     <div className="min-h-screen bg-[#1878B5] flex items-center justify-center p-4">
       <div className="bg-white rounded-lg shadow-2xl p-8 max-w-md w-full">
         <h1 className="text-2xl font-bold text-center text-[#1878B5] mb-1">
-          Enter the confirmation code
+          Bitte gebe hier den Code ein
         </h1>
         <p className="text-center mb-6 md:px-12 text-gray-700">
-          Verification code has been sent to your email {email}
+          Den Code haben wir an deine angegebene E-Mail Adresse gesendet! {email}
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -94,7 +94,7 @@ export default function ForgotPasswordOTP() {
             disabled={isVerifying}
             className="w-full bg-[#1878B5] hover:bg-[#1878D9] py-5 cursor-pointer font-semibold"
           >
-            {isVerifying ? "Verifying..." : "Verify"}
+            {isVerifying ? "Überprüfung..." : "Jetzt Verifizieren"}
           </Button>
         </form>
 
@@ -104,7 +104,7 @@ export default function ForgotPasswordOTP() {
             onClick={handleResend}
             className="text-[#1878B5] hover:underline text-sm font-medium cursor-pointer disabled:opacity-50"
           >
-            {isResending ? "Resending..." : "Resend"}
+            {isResending ? "Erneut senden..." : "Erneut senden"}
           </button>
         </div>
       </div>

@@ -80,7 +80,7 @@ export default function CaseDetails() {
       <div className="pb-5">
         <div className="bg-white rounded-xl shadow-sm p-5">
           <div className="flex items-center justify-between">
-            <h2 className="text-lg font-semibold text-black">Case Details</h2>
+            <h2 className="text-lg font-semibold text-black">Falleinzelheiten</h2>
             {/* Back */}
             <Button
               onClick={handleBack}
@@ -88,7 +88,7 @@ export default function CaseDetails() {
               className="mb-4 text-sm text-[#1878B5] bg-[#F3FAFF] hover:text-gray-900 hover:bg-gray-100 rounded-full px-5 py-2"
             >
               {/* <ArrowLeft className="w-4 h-4 mr-2" /> */}
-              Back
+              Zurück
             </Button>
           </div>
 
@@ -99,7 +99,7 @@ export default function CaseDetails() {
               <div className="bg-[#F3FAFF] rounded-xl shadow-sm p-5">
                 <div className="flex items-center gap-2 mb-3">
                   <NotepadText className="w-6 h-6 text-[#1878B5]" />
-                  <h3 className="font-medium text-[#1878B5]">Case Overview</h3>
+                  <h3 className="font-medium text-[#1878B5]">Fallübersicht</h3>
                 </div>
 
                 <p className="text-lg font-semibold text-gray-900 mb-2">
@@ -138,7 +138,7 @@ export default function CaseDetails() {
               <div className="bg-[#F3FAFF] rounded-xl shadow-sm p-5">
                 <div className="flex items-center gap-2 mb-3">
                   <FileText className="w-6 h-6 text-[#1878B5]" />
-                  <h3 className="font-medium text-[#1878B5]">Notes</h3>
+                  <h3 className="font-medium text-[#1878B5]">Zusammenfassung des Falles</h3>
                 </div>
 
                 <p className="text-xs text-gray-900 font-normal mb-4 border-l-[3px] py-2 border-l-[#1878B5] pl-2.5 rounded-[6px] whitespace-pre-wrap">
@@ -153,7 +153,7 @@ export default function CaseDetails() {
                 <div className="flex items-center gap-2">
                   <Paperclip className="w-5 h-5 text-[#1878B5]" />
                   <h3 className="text-sm font-semibold text-[#1878B5]">
-                    Case Documents
+                    Falldokumente
                   </h3>
                 </div>
                 <Button
@@ -161,7 +161,7 @@ export default function CaseDetails() {
                   className="bg-[#1878B5] text-white"
                   onClick={() => setShowUploadModal(true)}
                 >
-                  Upload Documents
+                  Dokumente hochladen
                 </Button>
               </div>
 
@@ -222,11 +222,10 @@ export default function CaseDetails() {
           <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
             <div>
               <h3 className="text-lg font-semibold text-gray-900 mb-1">
-                Case Timeline
+                Sachstand-Zeitstrahl
               </h3>
               <p className="text-sm font-normal text-gray-500">
-                Track important events and documents for case #
-                {caseData.caseNumber}
+                Hier finden Sie die wichtigsten Informationen zu diesem Fall #{caseData.caseNumber}
               </p>
             </div>
             {/* <div className="flex gap-3">
@@ -286,19 +285,16 @@ export default function CaseDetails() {
 
           {/* Progress Bar & Status Footer */}
           <div className="mt-8 border-t border-gray-100 pt-8">
-            <div className="w-full bg-[#E5E7EB] h-1.5 rounded-full overflow-hidden mb-6">
+            {/* <div className="w-full bg-[#E5E7EB] h-1.5 rounded-full overflow-hidden mb-6">
               <div className="bg-[#1878B5] h-full w-[40px] rounded-full"></div>
-            </div>
+            </div> */}
 
             <div className="space-y-1">
               <h4 className="text-gray-900 font-bold text-base">
-                Case Status :{" "}
-                <span className="text-gray-700 font-semibold">
-                  {caseData.case_status}
-                </span>
+                Fallstatus : <span className="text-gray-700 font-semibold">{caseData.case_status}</span>
               </h4>
               <p className="text-gray-400 text-xs font-normal">
-                Last Update : {formatDate(caseData.updatedAt)}
+                Letzte Aktualisierung : {formatDate(caseData.updatedAt)}
               </p>
             </div>
           </div>

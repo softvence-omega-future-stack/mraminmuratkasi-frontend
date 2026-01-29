@@ -91,7 +91,7 @@ export default function ClientSignUp() {
         </div>
 
         <h1 className="text-3xl font-bold text-center text-[#1878B5] my-6 md:my-8 text-[32px]">
-          Sign Up
+          Jetzt registrieren
         </h1>
 
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -99,7 +99,7 @@ export default function ClientSignUp() {
             {/* Full Name */}
             <div className="col-span-2">
               <p className="font-semibold mb-2">
-                Full Name <span className="text-[#FE1B1B]">*</span>
+                Name <span className="text-[#FE1B1B]">*</span>
               </p>
               <div className="relative">
                 <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-[#1878B5]" />
@@ -107,17 +107,17 @@ export default function ClientSignUp() {
                   name="name"
                   value={formData.name}
                   onChange={handleChange}
-                  placeholder="Enter full name"
-                  className={`pl-10 py-6 ${
-                    errors.name ? errorInputStyle : ""
-                  }`}
+                  placeholder="Gebe deinen Namen ein"
+                  className={`pl-10 py-6 ${errors.name ? errorInputStyle : ""}`}
                 />
               </div>
             </div>
 
             {/* Email */}
             <div className="col-span-2">
-              <p className="font-semibold mb-2">Email Address <span className="text-[#FE1B1B]">*</span></p>
+              <p className="font-semibold mb-2">
+                E-Mail Adresse<span className="text-[#FE1B1B]">*</span>
+              </p>
               <div className="relative">
                 <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-[#1878B5]" />
                 <Input
@@ -125,7 +125,7 @@ export default function ClientSignUp() {
                   type="email"
                   value={formData.email}
                   onChange={handleChange}
-                  placeholder="Enter email address"
+                  placeholder="E-Mail Adresse eingeben"
                   className={`pl-10 py-6 ${
                     errors.email ? errorInputStyle : ""
                   }`}
@@ -153,7 +153,7 @@ export default function ClientSignUp() {
             {/* Password */}
             <div className="col-span-2 md:col-span-1">
               <p className="font-semibold mb-2">
-                Password <span className="text-[#FE1B1B]">*</span>
+                Passwort <span className="text-[#FE1B1B]">*</span>
               </p>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-[#1878B5]" />
@@ -162,7 +162,7 @@ export default function ClientSignUp() {
                   type={showPassword ? "text" : "password"}
                   value={formData.password}
                   onChange={handleChange}
-                  placeholder="Enter password"
+                  placeholder="Passwort eingeben"
                   className={`pl-10 pr-10 py-6 ${
                     errors.password ? errorInputStyle : ""
                   }`}
@@ -184,7 +184,7 @@ export default function ClientSignUp() {
             {/* Confirm Password */}
             <div className="col-span-2 md:col-span-1">
               <p className="font-semibold mb-2">
-                Confirm Password <span className="text-[#FE1B1B]">*</span>
+                Passwort bestätigen <span className="text-[#FE1B1B]">*</span>
               </p>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-[#1878B5]" />
@@ -193,7 +193,7 @@ export default function ClientSignUp() {
                   type={showConfirmPassword ? "text" : "password"}
                   value={formData.confirmPassword}
                   onChange={handleChange}
-                  placeholder="Confirm password"
+                  placeholder="Passwort bestätigen"
                   className={`pl-10 pr-10 py-6 ${
                     errors.confirmPassword ? errorInputStyle : ""
                   }`}
@@ -232,21 +232,21 @@ export default function ClientSignUp() {
             </div>
           )}
 
-          <Button 
+          <Button
             disabled={isLoading}
             className="w-full bg-[#1878B5] py-5 hover:bg-[#1878D9] cursor-pointer text-base font-semibold"
           >
-            {isLoading ? "Signing Up..." : "Sign Up"}
+            {isLoading ? "Anmelden..." : "Anmelden"}
           </Button>
         </form>
 
         <p className="text-center text-[#90969A] text-sm mt-6">
-          I have an account.{" "}
+          Ich habe ein Konto.{" "}
           <button
-            onClick={() => navigate("/client/signin")}
+            onClick={() => navigate("/admin/signin")}
             className="text-[#1878B5] hover:underline font-medium cursor-pointer"
           >
-            Sign in
+            Anmelden
           </button>
         </p>
       </div>

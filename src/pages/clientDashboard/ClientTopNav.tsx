@@ -241,19 +241,19 @@ export default function ClientTopNav({
                       className="w-full flex items-center space-x-2 px-3 py-2 text-sm font-normal text-gray-900 hover:bg-gray-50 rounded transition-colors cursor-pointer"
                     >
                       <SquarePen className="w-4 h-4" />
-                      <span>Edit Profile</span>
+                      <span>Profil bearbeiten</span>
                     </button>
                     <button
                       onClick={() => navigate("/change-password")}
                       className="w-full flex items-center space-x-2 px-3 py-4 text-sm text-gray-900 hover:bg-gray-50 rounded transition-colors border-t border-t-gray-50 cursor-pointer"
                     >
                       <LockKeyhole className="w-4 h-4" />
-                      <span>Change Password</span>
+                      <span>Passwort zurücksetzen</span>
                     </button>
                     <div className="w-full flex items-center justify-between px-3 py-4 text-sm text-gray-900 border-t border-t-gray-50">
                       <div className="flex items-center space-x-2">
                         <MessageSquareDot className="w-4 h-4" />
-                        <span>Push Notification</span>
+                        <span>Push Mitteilungen erlauben</span>
                       </div>
                       
                       <Switch 
@@ -269,7 +269,7 @@ export default function ClientTopNav({
                       className="w-full flex items-center space-x-2 px-3 py-4 text-sm text-[#FE1B1B] hover:bg-gray-50 rounded transition-colors border-t border-t-gray-50 cursor-pointer font-medium"
                     >
                       <UserRound className="w-4 h-4" />
-                      <span>Delete Account</span>
+                      <span>Account löschen</span>
                     </button>
                   </div>
                 </div>
