@@ -148,6 +148,7 @@
 import { MoreVertical } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useGetProfileQuery } from "@/redux/api/authApi";
+import Loader from "@/components/ui/Loader";
 
 
 
@@ -181,90 +182,90 @@ export default function ClientCasesPage() {
   };
 
   return (
-      <div className="p-4 sm:p-6 bg-white rounded-[24px] font-inter">
-        {/* Header */}
-        <div className="mb-6">
-          <h2 className="text-lg font-semibold text-gray-900">Alle Fälle</h2>
-        </div>
+    <div className="p-4 sm:p-6 bg-white rounded-[24px] font-inter">
+      {/* Header */}
+      <div className="mb-6">
+        <h2 className="text-lg font-semibold text-gray-900">Alle Fälle</h2>
+      </div>
 
-        {/* Table Container */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-          <div className="overflow-x-auto">
-            <table className="min-w-[900px] w-full border-collapse">
-              <thead className="bg-[#FDFDFD]">
-                <tr className="text-left text-sm font-medium text-gray-500 ">
-                  <th className="px-6 py-4">Aktenzeichen:</th>
-                  <th className="px-6 py-4">Name</th>
-                  <th className="px-6 py-4">Typ</th>
-                  <th className="px-6 py-4">Erstellt</th>
-                  <th className="px-6 py-4">Gerichtstermin</th>
-                  <th className="px-6 py-4">Status</th>
-                  <th className="px-4 py-4 w-10"></th>
+      {/* Table Container */}
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+        <div className="overflow-x-auto">
+          <table className="min-w-[900px] w-full border-collapse">
+            <thead className="bg-[#FDFDFD]">
+              <tr className="text-left text-sm font-medium text-gray-500 ">
+                <th className="px-6 py-4">Aktenzeichen:</th>
+                <th className="px-6 py-4">Name</th>
+                <th className="px-6 py-4">Typ</th>
+                <th className="px-6 py-4">Erstellt</th>
+                <th className="px-6 py-4">Gerichtstermin</th>
+                <th className="px-6 py-4">Status</th>
+                <th className="px-4 py-4 w-10"></th>
+              </tr>
+            </thead>
+
+            <tbody className="divide-y divide-gray-200 bg-[#F0FAFF] text-gray-900 font-inter">
+              {isLoading ? (
+                <tr>
+                  <td colSpan={7} className="px-6 py-8">
+                    <Loader />
+                  </td>
                 </tr>
-              </thead>
+              ) : userCases.length === 0 ? (
+                <tr>
+                  <td colSpan={7} className="px-6 py-8 text-center text-sm text-gray-500">
+                    No cases found.
+                  </td>
+                </tr>
+              ) : (
+                userCases.map((item: any) => (
+                  <tr
+                    key={item._id}
+                    className="hover:bg-gray-50 transition-colors cursor-pointer"
+                    onClick={() => handleCaseClick(item._id)}
+                  >
+                    <td className="px-6 py-4 text-sm font-medium text-gray-900">
+                      {item.caseNumber || "N/A"}
+                    </td>
 
-              <tbody className="divide-y divide-gray-200 bg-[#F0FAFF] text-gray-900 font-inter">
-                {isLoading ? (
-                  <tr>
-                    <td colSpan={7} className="px-6 py-8 text-center text-sm text-gray-500">
-                      Loading cases...
+                    <td className="px-6 py-4 text-sm text-gray-700 max-w-[320px] truncate">
+                      {item.caseTitle}
+                    </td>
+
+                    <td className="px-6 py-4 text-sm text-gray-700">
+                      {item.caseType}
+                    </td>
+
+                    <td className="px-6 py-4 text-sm text-gray-700">
+                      {formatDate(item.createdAt)}
+                    </td>
+
+                    <td className="px-6 py-4 text-sm text-gray-700">
+                      {formatDate(item.coatDate)}
+                    </td>
+
+                    <td className="px-6 py-4">
+                      <span
+                        className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${getStatusStyles(
+                          item.case_status
+                        )}`}
+                      >
+                        {item.case_status}
+                      </span>
+                    </td>
+
+                    <td className="px-4 py-4 text-right">
+                      <button className="text-gray-500 hover:text-gray-700">
+                        <MoreVertical className="w-4 h-4" />
+                      </button>
                     </td>
                   </tr>
-                ) : userCases.length === 0 ? (
-                  <tr>
-                    <td colSpan={7} className="px-6 py-8 text-center text-sm text-gray-500">
-                      No cases found.
-                    </td>
-                  </tr>
-                ) : (
-                  userCases.map((item: any) => (
-                    <tr
-                      key={item._id}
-                      className="hover:bg-gray-50 transition-colors cursor-pointer"
-                      onClick={() => handleCaseClick(item._id)}
-                    >
-                      <td className="px-6 py-4 text-sm font-medium text-gray-900">
-                        {item.caseNumber || "N/A"}
-                      </td>
-
-                      <td className="px-6 py-4 text-sm text-gray-700 max-w-[320px] truncate">
-                        {item.caseTitle}
-                      </td>
-
-                      <td className="px-6 py-4 text-sm text-gray-700">
-                        {item.caseType}
-                      </td>
-
-                      <td className="px-6 py-4 text-sm text-gray-700">
-                        {formatDate(item.createdAt)}
-                      </td>
-
-                      <td className="px-6 py-4 text-sm text-gray-700">
-                        {formatDate(item.coatDate)}
-                      </td>
-
-                      <td className="px-6 py-4">
-                        <span
-                          className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${getStatusStyles(
-                            item.case_status
-                          )}`}
-                        >
-                          {item.case_status}
-                        </span>
-                      </td>
-
-                      <td className="px-4 py-4 text-right">
-                        <button className="text-gray-500 hover:text-gray-700">
-                          <MoreVertical className="w-4 h-4" />
-                        </button>
-                      </td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
+                ))
+              )}
+            </tbody>
+          </table>
         </div>
       </div>
+    </div>
   );
 }
