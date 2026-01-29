@@ -1,17 +1,20 @@
 "use client";
 
-import DocumentUploadModal from "@/common/DocumentUploadModal";
-import { Button } from "@/components/ui/button";
+import { useState, useEffect } from "react";
+import { useNavigate, useLocation, useParams } from "react-router-dom";
 import {
-  useAddAssetToCaseMutation,
-  useGetCaseDetailsQuery,
-} from "@/redux/api/caseApi";
-import { Download, FileText, NotepadText, Paperclip } from "lucide-react";
-import { useEffect, useState } from "react";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
-import { toast } from "sonner";
+  FileText,
+  Download,
+  NotepadText,
+  Paperclip,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import UploadDocumentsModal from "@/components/admin/case/modal/UploadDocumentsModal";
+import { useGetCaseDetailsQuery } from "@/redux/api/caseApi";
 import { getStatusStyles } from "./ClientCasesPage";
 import star from "/images/star.png";
+
+
 
 export default function CaseDetails() {
   const { id } = useParams<{ id: string }>();
@@ -21,8 +24,6 @@ export default function CaseDetails() {
   const [fromPage, setFromPage] = useState<string>("/client/dashboard");
 
   const { data: caseResponse, isLoading } = useGetCaseDetailsQuery(id);
-  const [addAssetToCase, { isLoading: isUploading }] =
-    useAddAssetToCaseMutation();
   const caseData = caseResponse?.data?.caseOverview;
 
   useEffect(() => {
@@ -53,25 +54,6 @@ export default function CaseDetails() {
     navigate(fromPage);
   };
 
-  const handleDocumentUpload = async (assets: any[]) => {
-    if (!caseData) return;
-
-    try {
-      const payload = {
-        user_id: caseData.user_id,
-        caseOverview_id: caseData._id,
-        assetListId: caseData.assetList_id?._id,
-        assetList: assets,
-      };
-
-      await addAssetToCase(payload).unwrap();
-      toast.success("Documents uploaded successfully");
-      setShowUploadModal(false);
-    } catch (err: any) {
-      toast.error(err?.data?.message || "Failed to upload documents to case");
-      console.error("Failed to add assets to case:", err);
-    }
-  };
 
   if (isLoading) {
     return (
@@ -276,13 +258,7 @@ export default function CaseDetails() {
                   key={event._id || i}
                   className="min-w-[320px] bg-[#F9FAFB] rounded-[20px] p-6 flex flex-col hover:shadow-md transition-shadow duration-200 border border-transparent hover:border-blue-100"
                 >
-                  <img
-                    className="mb-5"
-                    src={star}
-                    alt="star"
-                    width={40}
-                    height={40}
-                  />
+                  <img className="mb-5" src={star} alt="star" width={40} height={40} />
                   <h4 className="text-[#1878B5] font-bold text-[17px] mb-2 leading-tight">
                     {event.title}
                   </h4>
@@ -305,8 +281,7 @@ export default function CaseDetails() {
                     </div>
                   </div>
                 </div>
-              ))
-            )}
+              )))}
           </div>
 
           {/* Progress Bar & Status Footer */}
@@ -330,12 +305,12 @@ export default function CaseDetails() {
         </div>
       </div>
 
-      <DocumentUploadModal
-        open={showUploadModal}
-        onClose={() => setShowUploadModal(false)}
-        onUpload={handleDocumentUpload}
-        isUploadingToCase={isUploading}
-      />
+      {showUploadModal && caseResponse && (
+        <UploadDocumentsModal
+          onClose={() => setShowUploadModal(false)}
+          singleCase={caseResponse}
+        />
+      )}
     </div>
   );
 }
