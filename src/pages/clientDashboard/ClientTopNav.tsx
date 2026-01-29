@@ -71,7 +71,7 @@ export default function ClientTopNav({
       setViewingId(notif.id);
       // Mark as read
       await viewNotification(notif.id).unwrap();
-      
+
       // Close modal
       setOpen(false);
 
@@ -101,6 +101,12 @@ export default function ClientTopNav({
   };
 
   const isActiveRoute = (path: string) => {
+    if (path === "/client/cases") {
+      return (
+        location.pathname === "/client/cases" ||
+        location.pathname.startsWith("/client/case/")
+      );
+    }
     return location.pathname === path;
   };
 
@@ -152,36 +158,33 @@ export default function ClientTopNav({
         <div className="md:h-[52px] hidden md:flex items-center bg-gray-100 rounded-full p-1 space-x-3">
           <button
             onClick={() => navigate("/client")}
-            className={`flex items-center space-x-2 px-4.5 py-2 rounded-full transition-all cursor-pointer ${
-              isActiveRoute("/client")
+            className={`flex items-center space-x-2 px-4.5 py-2 rounded-full transition-all cursor-pointer ${isActiveRoute("/client")
                 ? "bg-[#1878B5] text-white shadow-sm"
                 : "text-gray-500 hover:bg-[#1878B5] hover:text-white"
-            }`}
+              }`}
           >
             <Home className="w-5 h-5" />
-            <span className="font-medium">Home</span>
+            <span className="font-medium">Heim</span>
           </button>
           <button
             onClick={() => navigate("/client/cases")}
-            className={`flex items-center space-x-2 px-6 py-2 rounded-full transition-all cursor-pointer ${
-              isActiveRoute("/client/cases")
+            className={`flex items-center space-x-2 px-6 py-2 rounded-full transition-all cursor-pointer ${isActiveRoute("/client/cases")
                 ? "bg-[#1878B5] text-white shadow-sm"
                 : "text-gray-500 hover:bg-[#1878B5] hover:text-white"
-            }`}
+              }`}
           >
             <FileText className="w-5 h-5" />
-            <span className="font-medium">Cases</span>
+            <span className="font-medium">Fälle</span>
           </button>
           <button
             onClick={() => navigate("/client/chat")}
-            className={`relative flex items-center space-x-2 px-6 py-2 rounded-full transition-all cursor-pointer ${
-              isActiveRoute("/client/chat")
+            className={`relative flex items-center space-x-2 px-6 py-2 rounded-full transition-all cursor-pointer ${isActiveRoute("/client/chat")
                 ? "bg-[#1878B5] text-white shadow-sm"
                 : "text-gray-500 hover:bg-[#1878B5] hover:text-white"
-            }`}
+              }`}
           >
             <MessageCircleMore className="w-4 h-4" />
-            <span className="font-medium">Chat</span>
+            <span className="font-medium">Chatten</span>
             {totalUnseenCount > 0 && (
               <span className="absolute -top-1 -right-1 min-w-4.5 h-4.5 bg-red-500 text-white text-[10px] font-bold flex items-center justify-center rounded-full border-2 border-white px-1">
                 {totalUnseenCount}
@@ -255,8 +258,8 @@ export default function ClientTopNav({
                         <MessageSquareDot className="w-4 h-4" />
                         <span>Push Mitteilungen erlauben</span>
                       </div>
-                      
-                      <Switch 
+
+                      <Switch
                         checked={user?.user_id?.notificationsEnabled}
                         onCheckedChange={handleToggleNotification}
                       />
@@ -292,7 +295,7 @@ export default function ClientTopNav({
       {/* Delete Account Warning Modal */}
       {showDeleteModal && (
         <div className="fixed inset-0 z-100 flex items-center justify-center p-4">
-          <div 
+          <div
             className="absolute inset-0 bg-black/50 backdrop-blur-sm"
             onClick={() => setShowDeleteModal(false)}
           />

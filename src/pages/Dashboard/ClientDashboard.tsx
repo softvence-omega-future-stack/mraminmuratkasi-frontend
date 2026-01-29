@@ -7,6 +7,7 @@ import activeCaseIcon from "/public/images/activeCaseIcon.png";
 import resentUploadIcon from "/public/images/resentUploadIcon.png";
 import { Link, useNavigate } from "react-router-dom";
 import { useGetProfileQuery } from "@/redux/api/authApi";
+import Loader from "@/components/ui/Loader";
 
 export default function ClientDashboard() {
   const navigate = useNavigate();
@@ -30,15 +31,15 @@ export default function ClientDashboard() {
   // User asked for "in_progress", sample has "Pending". 
   // I'll treat non-completed as active.
   const activeCasesData = userCases.filter((c: any) => {
-     const status = c.case_status?.toLowerCase();
-     return status !== "complete" && status !== "completed" && status !== "closed";
+    const status = c.case_status?.toLowerCase();
+    return status !== "complete" && status !== "completed" && status !== "closed";
   }).slice(0, 3);
 
   const displayCases = userCases.slice(0, 5);
 
   // Extract recent uploads from all cases
   const recentUploads = userCases
-    .flatMap((c: any) => 
+    .flatMap((c: any) =>
       (c.assetList_id?.assets || []).map((asset: any) => ({
         id: asset._id || `${c._id}-${asset.assetName}`,
         title: asset.assetName,
@@ -69,35 +70,35 @@ export default function ClientDashboard() {
 
           <div className="flex flex-wrap gap-4">
             {isLoading ? (
-               <p className="text-gray-500 text-sm">Loading...</p>
+              <Loader />
             ) : activeCasesData.length === 0 ? (
-               <p className="text-gray-500 text-sm">No active cases found.</p>
+              <p className="text-gray-500 text-sm">No active cases found.</p>
             ) : (
-            activeCasesData.map((item: any, index: number) => (
-              <div
-                key={item._id || index}
-                className="bg-[#EAF4FB] rounded-xl p-4 max-w-[190px] cursor-pointer hover:bg-[#D4E8F8] transition-colors"
-                onClick={() => handleCaseClick(item._id)}
-              >
-                <img src={activeCaseIcon} alt="" className="w-12 h-12 mb-8" />
+              activeCasesData.map((item: any, index: number) => (
+                <div
+                  key={item._id || index}
+                  className="bg-[#EAF4FB] rounded-xl p-4 max-w-[190px] cursor-pointer hover:bg-[#D4E8F8] transition-colors"
+                  onClick={() => handleCaseClick(item._id)}
+                >
+                  <img src={activeCaseIcon} alt="" className="w-12 h-12 mb-8" />
 
-                <p className="text-sm text-[#3C3B3B] font-normal mb-1">
-                  Aktenzeichen: {item.caseNumber}
-                </p>
+                  <p className="text-sm text-[#3C3B3B] font-normal mb-1">
+                    Aktenzeichen: {item.caseNumber}
+                  </p>
 
-                <h4 className="text-lg font-semibold text-[#3C3B3B] leading-snug truncate w-full" title={item.caseTitle}>
-                  {item.caseTitle}
-                </h4>
+                  <h4 className="text-lg font-semibold text-[#3C3B3B] leading-snug truncate w-full" title={item.caseTitle}>
+                    {item.caseTitle}
+                  </h4>
 
-                <p className="text-[11px] text-gray-600 font-normal mt-1">
-                  Letztes Update : {formatDate(item.updatedAt)}
-                </p>
+                  <p className="text-[11px] text-gray-600 font-normal mt-1">
+                    Letztes Update : {formatDate(item.updatedAt)}
+                  </p>
 
-                <span className="inline-block px-3 py-1 text-[11px] text-white bg-[#1878B5] font-normal rounded-full mt-8">
-                  {item.case_status}
-                </span>
-              </div>
-            )))}
+                  <span className="inline-block px-3 py-1 text-[11px] text-white bg-[#1878B5] font-normal rounded-full mt-8">
+                    {item.case_status}
+                  </span>
+                </div>
+              )))}
           </div>
         </div>
 
@@ -109,9 +110,9 @@ export default function ClientDashboard() {
 
           <div className="space-y-3">
             {isLoading ? (
-               <p className="text-gray-500 text-sm">Uploads werden geladen...</p>
+              <Loader />
             ) : recentUploads.length === 0 ? (
-               <p className="text-gray-500 text-sm">Keine kürzlich hochgeladenen Dateien gefunden.</p>
+              <p className="text-gray-500 text-sm">Keine kürzlich hochgeladenen Dateien gefunden.</p>
             ) : (
               recentUploads.map((upload: any) => (
                 <div
@@ -168,9 +169,9 @@ export default function ClientDashboard() {
 
               <tbody className="divide-y divide-gray-200 bg-[#F0FAFF] text-gray-900 font-inter">
                 {isLoading ? (
-                   <tr><td colSpan={7} className="px-6 py-8 text-center text-sm text-gray-500">Fälle werden geladen...</td></tr>
+                  <tr><td colSpan={7} className="px-6 py-8"><Loader /></td></tr>
                 ) : displayCases.length === 0 ? (
-                   <tr><td colSpan={7} className="px-6 py-8 text-center text-sm text-gray-500">Keine Fälle gefunden.</td></tr>
+                  <tr><td colSpan={7} className="px-6 py-8 text-center text-sm text-gray-500">Keine Fälle gefunden.</td></tr>
                 ) : (displayCases.map((item: any, index: number) => (
                   <tr
                     key={item._id || index}

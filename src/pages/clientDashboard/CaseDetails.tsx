@@ -13,6 +13,7 @@ import UploadDocumentsModal from "@/components/admin/case/modal/UploadDocumentsM
 import { useGetCaseDetailsQuery } from "@/redux/api/caseApi";
 import { getStatusStyles } from "./ClientCasesPage";
 import star from "/images/star.png";
+import Loader from "@/components/ui/Loader";
 
 
 
@@ -57,8 +58,8 @@ export default function CaseDetails() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-100">
-        <p className="text-gray-500">Loading case details...</p>
+      <div className="flex items-center justify-center min-h-screen bg-[#F7F9FC]">
+        <Loader />
       </div>
     );
   }
