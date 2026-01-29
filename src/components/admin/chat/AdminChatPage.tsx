@@ -432,7 +432,7 @@ export default function AdminChatPage() {
           ) : (
             <div className="hidden md:flex px-5 pt-4 pb-3 border-b border-gray-200 items-center justify-between">
               <p className="font-medium text-gray-500">
-                Select a chat to start messaging
+                Wählen Sie einen Chat aus, um eine Nachricht zu starten.
               </p>
             </div>
           )}
@@ -445,7 +445,7 @@ export default function AdminChatPage() {
               </div>
             ) : messages.length === 0 ? (
               <div className="flex h-full items-center justify-center">
-                <p className="text-gray-500">No messages found</p>
+                <p className="text-gray-500">Keine Nachrichten gefunden</p>
               </div>
             ) : (
               messages.map((message) => (
@@ -584,7 +584,7 @@ export default function AdminChatPage() {
                 value={newMessage}
                 onChange={(e) => setNewMessage(e.target.value)}
                 onKeyPress={handleKeyPress}
-                placeholder="Type a message..."
+                placeholder="Geben Sie eine Nachricht ein…"
                 className="flex-1 bg-transparent text-gray-900 placeholder-gray-500 outline-none text-sm"
               />
               <button

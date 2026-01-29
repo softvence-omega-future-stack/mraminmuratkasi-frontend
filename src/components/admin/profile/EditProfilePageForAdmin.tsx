@@ -1,136 +1,3 @@
-// import CommonBorderWrapper from "@/common/CommonBorderWrapper";
-// import { Button } from "@/components/ui/button";
-// import { Input } from "@/components/ui/input";
-// import { useUpdateProfileMutation } from "@/redux/api/authApi";
-// import { Camera } from "lucide-react";
-// import { useRef, useState } from "react";
-// import { useNavigate } from "react-router-dom";
-
-// const EditProfilePageForAdmin = () => {
-//   const navigate = useNavigate();
-//   const fileInputRef = useRef<HTMLInputElement | null>(null);
-//   const [updateProfile, { isLoading: isUpdating }] = useUpdateProfileMutation();
-
-//   const [formData, setFormData] = useState({
-//     name: "",
-//     email: "",
-//   });
-
-//   const [imagePreview, setImagePreview] = useState<string | null>(null);
-
-//   const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-//     const file = e.target.files?.[0];
-//     if (!file) return;
-
-//     const previewUrl = URL.createObjectURL(file);
-//     setImagePreview(previewUrl);
-//   };
-
-//   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-//     const { name, value } = e.target;
-//     setFormData((prev) => ({
-//       ...prev,
-//       [name]: value,
-//     }));
-//   };
-
-//   const handleSubmit = async (e: React.FormEvent) => {
-//     e.preventDefault();
-
-//     try {
-//       const payload = {
-//         name: formData.name,
-//       };
-//       await updateProfile(payload).unwrap();
-//     } catch (err: any) {}
-//   };
-
-//   const handleCancel = () => {
-//     navigate(-1);
-//   };
-
-//   return (
-//     <CommonBorderWrapper className="bg-white ">
-//       <h1 className="text-2xl font-semibold text-gray-900 mb-8">
-//         Edit Profile
-//       </h1>
-
-//       {/* Profile Image Section */}
-//       <div className="flex flex-col md:flex-row items-center gap-6 mb-10">
-//         <div className="relative">
-//           <img
-//             src={imagePreview || "/images/sidebarProfile.png"}
-//             alt="Profile"
-//             className="w-24 h-24 rounded-full object-cover border"
-//           />
-
-//           <button
-//             type="button"
-//             onClick={() => fileInputRef.current?.click()}
-//             className="absolute bottom-1 right-1 w-8 h-8 flex items-center justify-center bg-[#1878B5] rounded-full border-2 border-white hover:bg-[#1878D9]"
-//           >
-//             <Camera className="w-4 h-4 text-white" />
-//           </button>
-
-//           <input
-//             ref={fileInputRef}
-//             type="file"
-//             accept="image/*"
-//             onChange={handleImageSelect}
-//             className="hidden"
-//           />
-//         </div>
-//       </div>
-
-//       {/* Form */}
-//       <form onSubmit={handleSubmit} className="space-y-6 max-w-3xl">
-//         <div>
-//           <p className="text-gray-900 text-base font-medium mb-2">Full Name</p>
-//           <Input
-//             name="name"
-//             value={formData.name}
-//             onChange={handleChange}
-//             placeholder="Enter your name"
-//             className="py-6"
-//           />
-//         </div>
-
-//         <div>
-//           <p className="text-gray-900 text-base font-medium mb-2">
-//             Email Address
-//           </p>
-//           <Input
-//             name="email"
-//             type="email"
-//             value={formData.email}
-//             disabled
-//             className="py-6 bg-gray-50 text-gray-500 cursor-not-allowed"
-//           />
-//         </div>
-
-//         <div className="flex space-x-4 pt-6">
-//           <Button
-//             type="submit"
-//             disabled={isUpdating}
-//             className="px-8 py-5 bg-[#1878B5] hover:bg-[#1878D9] rounded-[40px] cursor-pointer"
-//           >
-//             {isUpdating ? "Saving..." : "Save Changes"}
-//           </Button>
-
-//           <Button
-//             type="button"
-//             variant="outline"
-//             onClick={handleCancel}
-//             className="px-8 py-5 text-[#1878B5] border-gray-300 bg-[#E8F2F8] hover:bg-gray-50 rounded-[40px] cursor-pointer"
-//           >
-//             Cancel
-//           </Button>
-//         </div>
-//       </form>
-//     </CommonBorderWrapper>
-//   );
-// };
-// export default EditProfilePageForAdmin;
 import CommonBorderWrapper from "@/common/CommonBorderWrapper";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -190,11 +57,13 @@ export default function EditProfilePage() {
 
     try {
       await uploadImage(data).unwrap();
-      setSuccessMessage("Profile image updated successfully!");
+      setSuccessMessage("Profilbild erfolgreich aktualisiert!");
       setSelectedFile(null);
       setImagePreview(null);
     } catch (err: any) {
-      setErrorMessage(err?.data?.message || "Failed to update image");
+      setErrorMessage(
+        err?.data?.message || "Profilbild konnte nicht aktualisiert werden",
+      );
     }
   };
 
@@ -216,9 +85,11 @@ export default function EditProfilePage() {
         name: formData.name,
       };
       await updateProfile(payload).unwrap();
-      setSuccessMessage("Profile updated successfully!");
+      setSuccessMessage("Profil erfolgreich aktualisiert!");
     } catch (err: any) {
-      setErrorMessage(err?.data?.message || "Failed to update profile");
+      setErrorMessage(
+        err?.data?.message || "Profil konnte nicht aktualisiert werden",
+      );
     }
   };
 
@@ -230,7 +101,7 @@ export default function EditProfilePage() {
     <CommonBorderWrapper className="">
       <div className="">
         <h1 className="text-2xl font-semibold text-gray-900 mb-8">
-          Edit Profile
+          Profil bearbeiten
         </h1>
 
         {/* Messages */}
@@ -262,7 +133,7 @@ export default function EditProfilePage() {
           <div className="relative">
             <img
               src={imagePreview || user?.img || "/images/sidebarProfile.png"}
-              alt="Profile"
+              alt="Profil"
               className="w-24 h-24 rounded-full object-cover border"
             />
 
@@ -289,7 +160,7 @@ export default function EditProfilePage() {
             onClick={handleUpdateImage}
             className="bg-[#1878B5] hover:bg-[#1878D9] rounded-[40px] px-6 py-2 h-auto text-sm"
           >
-            {isUploading ? "Uploading..." : "Update Profile Image"}
+            {isUploading ? "Wird hochgeladen..." : "Profilbild aktualisieren"}
           </Button>
         </div>
 
@@ -297,20 +168,20 @@ export default function EditProfilePage() {
         <form onSubmit={handleSubmit} className="space-y-6 max-w-3xl">
           <div>
             <p className="text-gray-900 text-base font-medium mb-2">
-              Full Name
+              Vollständiger Name
             </p>
             <Input
               name="name"
               value={formData.name}
               onChange={handleChange}
-              placeholder="Enter your name"
+              placeholder="Geben Sie Ihren Namen ein"
               className="py-6"
             />
           </div>
 
           <div>
             <p className="text-gray-900 text-base font-medium mb-2">
-              Email Address
+              E-Mail-Adresse
             </p>
             <Input
               name="email"
@@ -327,7 +198,7 @@ export default function EditProfilePage() {
               disabled={isUpdating}
               className="px-8 py-5 bg-[#1878B5] hover:bg-[#1878D9] rounded-[40px] cursor-pointer"
             >
-              {isUpdating ? "Saving..." : "Save Changes"}
+              {isUpdating ? "Speichert..." : "Änderungen speichern"}
             </Button>
 
             <Button
@@ -336,7 +207,7 @@ export default function EditProfilePage() {
               onClick={handleCancel}
               className="px-8 py-5 text-[#1878B5] border-gray-300 bg-[#E8F2F8] hover:bg-gray-50 rounded-[40px] cursor-pointer"
             >
-              Cancel
+              Abbrechen
             </Button>
           </div>
         </form>

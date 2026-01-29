@@ -45,9 +45,9 @@ export default function CaseDetails() {
   const formatFileSize = (bytes: number) => {
     if (!bytes) return "0 Bytes";
     const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const sizes = ["Bytes", "KB", "MB", "GB"];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
   };
 
   const handleBack = () => {
@@ -105,22 +105,33 @@ export default function CaseDetails() {
                 <p className="text-lg font-semibold text-gray-900 mb-2">
                   {caseData.caseTitle}
                 </p>
-                <p className="text-xs text-gray-400 mb-4">{caseData.caseNumber}</p>
+                <p className="text-xs text-gray-400 mb-4">
+                  {caseData.caseNumber}
+                </p>
 
                 <div className="space-y-3">
                   <Info label="Type" value={caseData.caseType} />
                   <Info label="Status">
                     <span
                       className={`px-2 py-0.5 rounded-full text-xs font-medium ${getStatusStyles(
-                        caseData.case_status
+                        caseData.case_status,
                       )}`}
                     >
                       {caseData.case_status}
                     </span>
                   </Info>
-                  <Info label="Court Date" value={formatDate(caseData.coatDate)} />
-                  <Info label="Created" value={formatDate(caseData.createdAt)} />
-                  <Info label="Last Updated" value={formatDate(caseData.updatedAt)} />
+                  <Info
+                    label="Court Date"
+                    value={formatDate(caseData.coatDate)}
+                  />
+                  <Info
+                    label="Created"
+                    value={formatDate(caseData.createdAt)}
+                  />
+                  <Info
+                    label="Last Updated"
+                    value={formatDate(caseData.updatedAt)}
+                  />
                 </div>
               </div>
 
@@ -157,11 +168,15 @@ export default function CaseDetails() {
               <p className="text-lg font-semibold text-gray-900">
                 {caseData.caseTitle}
               </p>
-              <p className="text-xs text-gray-400 mb-4">{caseData.caseNumber}</p>
+              <p className="text-xs text-gray-400 mb-4">
+                {caseData.caseNumber}
+              </p>
 
               <div className="space-y-3">
                 {documents.length === 0 ? (
-                  <p className="text-sm text-gray-500 text-center py-4">No documents uploaded</p>
+                  <p className="text-sm text-gray-500 text-center py-4">
+                    No documents uploaded
+                  </p>
                 ) : (
                   documents.map((doc: any) => (
                     <div
@@ -173,10 +188,15 @@ export default function CaseDetails() {
                           <FileText className="w-4 h-4 text-[#1878B5]" />
                         </div>
                         <div>
-                          <p className="text-sm font-medium text-gray-900 truncate max-w-[150px]" title={doc.assetName}>
+                          <p
+                            className="text-sm font-medium text-gray-900 truncate max-w-[150px]"
+                            title={doc.assetName}
+                          >
                             {doc.assetName}
                           </p>
-                          <p className="text-xs text-gray-500">{formatFileSize(doc.fileSize)}</p>
+                          <p className="text-xs text-gray-500">
+                            {formatFileSize(doc.fileSize)}
+                          </p>
                         </div>
                       </div>
 
@@ -228,7 +248,9 @@ export default function CaseDetails() {
           {/* Cards Container */}
           <div className="flex gap-5 overflow-x-auto pb-6 scrollbar-hide no-scrollbar -mx-2 px-2">
             {timeline.length === 0 ? (
-              <p className="text-sm text-gray-500 w-full text-center py-8">No timeline updates yet</p>
+              <p className="text-sm text-gray-500 w-full text-center py-8">
+                No timeline updates yet
+              </p>
             ) : (
               timeline.map((event: any, i: number) => (
                 <div

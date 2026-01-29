@@ -32,9 +32,7 @@ export default function CaseDetails() {
   const openEditOverview = () => setOpenModal("edit-overview");
   const openEditNote = () => setOpenModal("edit-note");
   const openUploadDocs = () => setOpenModal("upload-docs");
-  const openAddTimeline = () => {
-    setOpenModal("timeline");
-  };
+  const openAddTimeline = () => setOpenModal("timeline");
 
   const closeModal = () => setOpenModal(null);
 
@@ -49,6 +47,17 @@ export default function CaseDetails() {
   const handleBack = () => {
     navigate(-1);
   };
+  const handleDownload = (fileUrl: string) => {
+    const downloadUrl = fileUrl.replace("/upload/", "/upload/fl_attachment/");
+
+    const a = document.createElement("a");
+    a.href = downloadUrl;
+    a.download = "";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+  };
+
   return (
     <>
       {isLoading ? (
@@ -57,8 +66,8 @@ export default function CaseDetails() {
         <div className="">
           <CommonBorderWrapper className="">
             <div className=" flex justify-between pb-6">
-              <CommonHeader>All Cases Details</CommonHeader>
-              <CommonButton onClick={handleBack}>Back</CommonButton>
+              <CommonHeader>Alle Falldetails</CommonHeader>
+              <CommonButton onClick={handleBack}>Zurück</CommonButton>
             </div>
             <div className="flex justify-between w-full gap-5">
               <div className="space-y-5 flex-1">
@@ -66,7 +75,7 @@ export default function CaseDetails() {
                   <div className="flex items-center justify-between  px-6 py-4">
                     <div className="text-[#1878B5] flex gap-1 items-center">
                       <FaRegFileLines size={20} />
-                      <h2 className="text-lg font-semibold ">Case Overview</h2>
+                      <h2 className="text-lg font-semibold ">Fallübersicht</h2>
                     </div>
 
                     <button
@@ -92,41 +101,41 @@ export default function CaseDetails() {
                         </div>
                       </div>
                       <div>
-                        <div className="text-gray-500">Type</div>
+                        <div className="text-gray-500">Typ</div>
                         <div className="font-medium">
                           {singleCase?.caseType}
                         </div>
                       </div>
                       <div>
                         <div className="text-gray-500">Status</div>
-                        <select
-                          value={singleCase?.case_status}
-                          className="mt-1 block w-full rounded border-gray-300 py-1.5 text-sm"
-                          disabled
-                        >
-                          <option value="inprogress">In Progress</option>
-                        </select>
+
+                        <div className="font-medium">
+                          {singleCase?.case_status}
+                        </div>
                       </div>
                       <div>
-                        <div className="text-gray-500">Court Date</div>
+                        <div className="text-gray-500">Gerichtstermin</div>
                         <div>{formatDate(singleCase?.coatDate || "")}</div>
                       </div>
                       <div>
-                        <div className="text-gray-500">Last Updated</div>
+                        <div className="text-gray-500">
+                          Zuletzt aktualisiert
+                        </div>
                         <div>{formatDate(singleCase?.updatedAt || "")}</div>
                       </div>
                       <div>
-                        <div className="text-gray-500">Created</div>
+                        <div className="text-gray-500">Erstellt am</div>
                         <div>{formatDate(singleCase?.createdAt || "")}</div>
                       </div>
                     </div>
                   </div>
                 </div>
+
                 <div className=" rounded-xl border bg-[#F3FAFF] p-5">
                   <div className="flex items-center justify-between mb-3">
                     <div className="text-[#1878B5] flex gap-1 items-center">
                       <FaRegFileLines size={20} />
-                      <h2 className="text-lg font-semibold ">Case Note</h2>
+                      <h2 className="text-lg font-semibold ">Fallnotiz</h2>
                     </div>
 
                     <button
@@ -137,7 +146,8 @@ export default function CaseDetails() {
                     </button>
                   </div>
                   <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-line">
-                    {singleCase?.note}
+                    {singleCase?.note ||
+                      "Keine Notizen für diesen Fall vorhanden."}
                   </p>
                 </div>
               </div>
@@ -146,14 +156,14 @@ export default function CaseDetails() {
                 <div className="flex items-center justify-between  ">
                   <div className="text-[#1878B5] flex gap-1 items-center">
                     <ImAttachment size={20} />
-                    <h2 className="text-lg font-semibold ">Case Documents</h2>
+                    <h2 className="text-lg font-semibold ">Falldokumente</h2>
                   </div>
 
                   <CommonButton
                     onClick={openUploadDocs}
                     className=" bg-[#1878B5]"
                   >
-                    Upload Documents
+                    Dokumente hochladen
                   </CommonButton>
                 </div>
                 <h3 className="font-medium text-gray-900 py-4">
@@ -174,8 +184,11 @@ export default function CaseDetails() {
                           </p>
                         </div>
                       </div>
-                      <button className="flex items-center gap-1.5 text-sm text-[#1878B5]">
-                        <Download size={16} /> Download
+                      <button
+                        onClick={() => handleDownload(doc.assetUrl)}
+                        className="flex items-center gap-1.5 text-sm text-[#1878B5] cursor-pointer"
+                      >
+                        <Download size={16} /> Herunterladen
                       </button>
                     </div>
                   ))}
@@ -183,26 +196,25 @@ export default function CaseDetails() {
               </div>
             </div>
           </CommonBorderWrapper>
+
           <CommonBorderWrapper className="my-6">
-            {/* Header */}
             <div className="flex items-center justify-between mb-6">
               <div>
                 <h2 className="text-xl font-semibold text-gray-900">
-                  Case Timeline
+                  Fall-Zeitleiste
                 </h2>
                 <p className="text-sm text-gray-500">
-                  Track important events and documents for case #2024-001
+                  Wichtige Ereignisse und Dokumente für Fall #2024-001 verfolgen
                 </p>
               </div>
 
               <div className="flex gap-3">
                 <CommonButton onClick={openAddTimeline}>
-                  Add Timeline
+                  Zeitleiste hinzufügen
                 </CommonButton>
               </div>
             </div>
 
-            {/* Timeline Cards */}
             <div className="relative">
               <div className="flex gap-6 overflow-x-auto pb-4 scrollbar-hide">
                 {singleCase?.timeLine_id.timeLine.map((item, index) => (
@@ -233,14 +245,13 @@ export default function CaseDetails() {
               </div>
             </div>
 
-            {/* Case Status */}
             <div className="mt-6">
               <p className="text-sm font-medium text-gray-900">
-                Case Status :{" "}
+                Fallstatus :{" "}
                 <span className="font-semibold">{singleCase?.case_status}</span>
               </p>
               <p className="text-sm text-gray-500">
-                Last Update : Insurance claim filed
+                Letzte Aktualisierung : Versicherung eingereicht
               </p>
             </div>
           </CommonBorderWrapper>
