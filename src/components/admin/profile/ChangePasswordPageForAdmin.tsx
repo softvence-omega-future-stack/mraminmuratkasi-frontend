@@ -27,18 +27,19 @@ const ChangePasswordPageForAdmin = () => {
     const newErrors: Record<string, string> = {};
 
     if (!formData.oldPassword.trim())
-      newErrors.oldPassword = "Current password is required";
+      newErrors.oldPassword = "Aktuelles Passwort ist erforderlich";
     if (!formData.newPassword.trim())
-      newErrors.newPassword = "New password is required";
+      newErrors.newPassword = "Neues Passwort ist erforderlich";
     if (!formData.confirmPassword.trim())
-      newErrors.confirmPassword = "Please confirm your password";
+      newErrors.confirmPassword = "Bitte bestätigen Sie Ihr Passwort";
 
     if (formData.newPassword !== formData.confirmPassword) {
-      newErrors.confirmPassword = "New passwords do not match";
+      newErrors.confirmPassword = "Die neuen Passwörter stimmen nicht überein";
     }
 
     if (formData.newPassword.length < 8) {
-      newErrors.newPassword = "Password must be at least 8 characters long";
+      newErrors.newPassword =
+        "Das Passwort muss mindestens 8 Zeichen lang sein";
     }
 
     setErrors(newErrors);
@@ -67,14 +68,16 @@ const ChangePasswordPageForAdmin = () => {
         newPassword: formData.newPassword,
       }).unwrap();
 
-      setSuccess("Password changed successfully!");
+      setSuccess("Passwort erfolgreich geändert!");
       setFormData({
         oldPassword: "",
         newPassword: "",
         confirmPassword: "",
       });
     } catch (err: any) {
-      setSubmitError(err?.data?.message || "Failed to change password");
+      setSubmitError(
+        err?.data?.message || "Passwort konnte nicht geändert werden",
+      );
     }
   };
 
@@ -84,7 +87,7 @@ const ChangePasswordPageForAdmin = () => {
     <CommonBorderWrapper className="">
       <div className="">
         <h1 className="text-2xl font-semibold text-gray-900 mb-8">
-          Change Password
+          Passwort ändern
         </h1>
 
         {/* Messages */}
@@ -92,7 +95,7 @@ const ChangePasswordPageForAdmin = () => {
           <div className="flex justify-between items-start bg-[#FFECE6] rounded-md mb-6 p-4">
             <div className="">
               <p className="text-[#FE1B1B] font-semibold">
-                Failed to change password
+                Passwortänderung fehlgeschlagen
               </p>
               <p className="text-[#FE1B1B] text-sm">{submitError}</p>
             </div>
@@ -108,7 +111,7 @@ const ChangePasswordPageForAdmin = () => {
         {success && (
           <div className="flex justify-between items-start bg-green-50 border border-green-200 rounded-md mb-6 p-4">
             <div className="">
-              <p className="text-green-700 font-semibold">Success!</p>
+              <p className="text-green-700 font-semibold">Erfolg!</p>
               <p className="text-green-700 text-sm">{success}</p>
             </div>
             <button onClick={() => setSuccess("")} className="cursor-pointer">
@@ -121,7 +124,7 @@ const ChangePasswordPageForAdmin = () => {
           {/* Current Password */}
           <div>
             <p className="text-gray-900 text-base font-medium mb-2">
-              Current Password
+              Aktuelles Passwort
             </p>
             <div className="relative">
               <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-[#1878B5] w-5 h-5" />
@@ -130,7 +133,7 @@ const ChangePasswordPageForAdmin = () => {
                 type={showOldPassword ? "text" : "password"}
                 value={formData.oldPassword}
                 onChange={handleChange}
-                placeholder="Enter your current password"
+                placeholder="Geben Sie Ihr aktuelles Passwort ein"
                 className={`pl-10 pr-10 py-6 ${errors.oldPassword ? errorInputStyle : ""}`}
               />
               <button
@@ -155,7 +158,7 @@ const ChangePasswordPageForAdmin = () => {
           {/* New Password */}
           <div>
             <p className="text-gray-900 text-base font-medium mb-2">
-              New Password
+              Neues Passwort
             </p>
             <div className="relative">
               <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-[#1878B5] w-5 h-5" />
@@ -164,7 +167,7 @@ const ChangePasswordPageForAdmin = () => {
                 type={showNewPassword ? "text" : "password"}
                 value={formData.newPassword}
                 onChange={handleChange}
-                placeholder="Enter your new password"
+                placeholder="Geben Sie Ihr neues Passwort ein"
                 className={`pl-10 pr-10 py-6 ${errors.newPassword ? errorInputStyle : ""}`}
               />
               <button
@@ -189,7 +192,7 @@ const ChangePasswordPageForAdmin = () => {
           {/* Confirm Password */}
           <div>
             <p className="text-gray-900 text-base font-medium mb-2">
-              Confirm Password
+              Passwort bestätigen
             </p>
             <div className="relative">
               <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-[#1878B5] w-5 h-5" />
@@ -198,7 +201,7 @@ const ChangePasswordPageForAdmin = () => {
                 type={showConfirmPassword ? "text" : "password"}
                 value={formData.confirmPassword}
                 onChange={handleChange}
-                placeholder="Confirm your new password"
+                placeholder="Bestätigen Sie Ihr neues Passwort"
                 className={`pl-10 pr-10 py-6 ${errors.confirmPassword ? errorInputStyle : ""}`}
               />
               <button
@@ -226,7 +229,7 @@ const ChangePasswordPageForAdmin = () => {
               disabled={isLoading}
               className="px-8 py-5 bg-[#1878B5] hover:bg-[#1878D9] rounded-[40px] cursor-pointer"
             >
-              {isLoading ? "Changing..." : "Change Password"}
+              {isLoading ? "Ändern..." : "Passwort ändern"}
             </Button>
             <Button
               type="button"
@@ -234,7 +237,7 @@ const ChangePasswordPageForAdmin = () => {
               className="px-8 py-5 text-[#1878B5] border-gray-300 bg-[#E8F2F8] hover:bg-gray-50 rounded-[40px] cursor-pointer"
               onClick={() => navigate(-1)}
             >
-              Cancel
+              Abbrechen
             </Button>
           </div>
         </form>

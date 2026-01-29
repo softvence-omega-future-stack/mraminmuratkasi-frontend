@@ -1,6 +1,9 @@
 import AlertDialogBox from "@/common/asdflkjsad";
 import CommonBorderWrapper from "@/common/CommonBorderWrapper";
 import CommonHeader from "@/common/CommonHeader";
+import DashboardCardSkeleton from "@/common/DashboardCardSkeleton";
+import LoadingStatus from "@/common/LoadingStatus";
+import { statusStyles } from "@/components/admin/case/AdminCasesPage";
 import CreateCaseModal from "@/components/admin/case/modal/CreateCaseModal";
 import { useDeleteCaseMutation } from "@/redux/api/caseApi";
 import {
@@ -18,7 +21,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
 const HomePage: React.FC = () => {
-  const { data } = useGetAlCasesQuery();
+  const { data, isLoading } = useGetAlCasesQuery();
   const { data: userData } = useGetAllUserQuery();
   const totalCases = data?.data?.cases.length || 0;
   const totalClients = userData?.data?.length || 0;
@@ -27,12 +30,12 @@ const HomePage: React.FC = () => {
 
   const stats = [
     {
-      label: "Total Clients",
+      label: "Gesamtanzahl Kunden",
       count: totalClients,
       icon: <FiUsers />,
     },
-    { label: "Total Cases", count: totalCases, icon: <TbFileText /> },
-    { label: "Active Cases", count: activeClass, icon: <BsFileEarmarkCheck /> },
+    { label: "Gesamtanzahl Fälle", count: totalCases, icon: <TbFileText /> },
+    { label: "Aktive Fälle", count: activeClass, icon: <BsFileEarmarkCheck /> },
   ];
 
   const clients = [
@@ -66,7 +69,7 @@ const HomePage: React.FC = () => {
 
   const buttons = [
     {
-      title: "Create New Case",
+      title: "Neuen Fall erstellen",
       icon: <AiOutlineFileAdd size={20} className="text-white" />,
       bgColor: "bg-blue-600",
       onClick: (setIsCaseModalOpen: (val: boolean) => void) =>
@@ -74,14 +77,14 @@ const HomePage: React.FC = () => {
       bgButton: "bg-blue-50 hover:bg-blue-100",
     },
     {
-      title: "Client Management",
+      title: "Kundenverwaltung",
       icon: <FiUsers size={20} className="text-white" />,
       bgColor: "bg-blue-600",
       onClick: handleClient,
       bgButton: "bg-gray-50 hover:bg-gray-100",
     },
     {
-      title: "Settings",
+      title: "Einstellungen",
       icon: <Settings size={20} className="text-white" />,
       bgColor: "bg-blue-600",
       onClick: handleChangePassword,
@@ -100,15 +103,14 @@ const HomePage: React.FC = () => {
 
   const handleDelete = async (id: string) => {
     const res = await deleteCase(id);
-    toast.success(res.data.message);
+    toast.success(res.data.message || "Fall erfolgreich gelöscht");
   };
   return (
     <div className=" space-y-5 pb-5 ">
-      <div className="flex  gap-5 w-full">
+      <div className="flex gap-5 w-full">
         <CommonBorderWrapper>
           <p className="text-main text-base mb-4  ">
-            Welcome to your admin control center. Here's an overview of your
-            system.
+            Willkommen im Admin-Bereich. Hier ist eine Übersicht Ihres Systems.
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
@@ -145,7 +147,7 @@ const HomePage: React.FC = () => {
         </CommonBorderWrapper>
 
         <CommonBorderWrapper>
-          <CommonHeader>Quick Actions</CommonHeader>
+          <CommonHeader>Schnellaktionen</CommonHeader>
 
           <div className="space-y-4 pt-4">
             {buttons.map((btn, index) => (
@@ -178,124 +180,145 @@ const HomePage: React.FC = () => {
       </div>
 
       <CommonBorderWrapper>
-        <CommonHeader> Recent Activities</CommonHeader>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-3.5 pt-4">
-          {data?.data?.cases.slice(0, 6).map((activity, index) => (
-            <div
-              key={index}
-              className="border border-gray-200 rounded-lg p-4 bg-[#F6F6F6]"
-            >
-              <span
-                className={`inline-block px-2 py-1 rounded-full text-xs font-medium mb-2  ${
-                  activity.case_status === "Pending"
-                    ? "bg-yellow-100 text-yellow-800"
-                    : "bg-green-100 text-green-800"
-                }`}
+        <CommonHeader>Letzte Aktivitäten</CommonHeader>
+        {isLoading && (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-3.5 pt-4">
+            {new Array(6).fill(0).map((_, index) => (
+              <DashboardCardSkeleton key={index} />
+            ))}
+          </div>
+        )}
+        {!isLoading && data && paginatedData.length > 0 && (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-3.5 pt-4">
+            {data?.data?.cases.slice(0, 6).map((activity, index) => (
+              <div
+                key={index}
+                className="border border-gray-200 rounded-lg p-4 bg-[#F6F6F6]"
               >
-                {activity.case_status}
-              </span>
-              <CommonHeader size="sm" className="text-[#0F1010]! line-clamp-1">
-                {activity.caseTitle}
-              </CommonHeader>
-              <CommonHeader size="sm" className="text-[#747C81]!">
-                Case : {activity.caseNumber}
-              </CommonHeader>
-            </div>
-          ))}
-        </div>
-      </CommonBorderWrapper>
-
-      <CommonBorderWrapper>
-        <div className="flex items-center justify-between mb-4">
-          <CommonHeader>Recent Cases</CommonHeader>
-
-          {cases.length > 10 && (
-            <button
-              onClick={() => setShowAll(!showAll)}
-              className="text-primary underline mt-4 cursor-pointer"
-            >
-              {showAll ? "Show Less" : "Show All"}
-            </button>
-          )}
-        </div>
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead>
-              <tr className="border-b border-gray-200">
-                <th className="text-left py-3 px-4 text-sm font-medium text-gray-600">
-                  Case No:
-                </th>
-                <th className="text-left py-3 px-4 text-sm font-medium text-gray-600">
-                  Name
-                </th>
-                <th className="text-left py-3 px-4 text-sm font-medium text-gray-600">
-                  Type
-                </th>
-                <th className="text-left py-3 px-4 text-sm font-medium text-gray-600">
-                  Created
-                </th>
-                <th className="text-left py-3 px-4 text-sm font-medium text-gray-600">
-                  Court Date
-                </th>
-                <th className="text-left py-3 px-4 text-sm font-medium text-gray-600">
-                  Status
-                </th>
-                <th className="py-3 px-4"></th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-200  text-gray-900 font-inter">
-              {paginatedData.map((item, index) => (
-                <tr
-                  key={index}
-                  className="hover:bg-gray-50 transition-colors cursor-pointer"
+                <div
+                  className={` px-2 py-1 rounded-full text-xs font-medium mb-2 line-clamp-1   ${
+                    statusStyles[activity.case_status] ||
+                    "bg-gray-100 text-gray-800"
+                  }`}
                 >
-                  <td className="px-6 py-4 text-sm font-medium text-gray-900">
-                    <Link to={`/admin/cases/${item._id}`}>
-                      {item.caseNumber}
-                    </Link>
-                  </td>
-
-                  <td className="px-6 py-4 text-sm text-gray-700 max-w-[320px] truncate">
-                    {item.clientName}
-                  </td>
-
-                  <td className="px-6 py-4 text-sm text-gray-700">
-                    {item.caseType}
-                  </td>
-
-                  <td className="px-6 py-4 text-sm text-gray-700">
-                    {formatDate(item.createdAt)}
-                  </td>
-
-                  <td className="px-6 py-4 text-sm text-gray-700">
-                    {formatDate(item.coatDate)}
-                  </td>
-
-                  <td className="px-6 py-4">
-                    <span
-                      className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium  ${item.case_status === "Pending" ? "bg-yellow-100 text-yellow-800" : "bg-green-100 text-green-800"}`}
-                    >
-                      {item.case_status}
-                    </span>
-                  </td>
-
-                  <td className="px-4 py-4 text-right">
-                    <AlertDialogBox
-                      action={() => handleDelete(item._id)}
-                      isLoading={isDeleting}
-                      trigger={
-                        <button className="text-gray-500 hover:text-gray-700 cursor-pointer">
-                          <MoreVertical className="w-4 h-4" />
-                        </button>
-                      }
-                    />
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+                  {activity.case_status}
+                </div>
+                <CommonHeader
+                  size="sm"
+                  className="text-[#0F1010]! line-clamp-1"
+                >
+                  {activity.caseTitle}
+                </CommonHeader>
+                <CommonHeader size="sm" className="text-[#747C81]!">
+                  Fall : {activity.caseNumber}
+                </CommonHeader>
+              </div>
+            ))}
+          </div>
+        )}
       </CommonBorderWrapper>
+
+      <LoadingStatus
+        isLoading={isLoading}
+        items={paginatedData}
+        itemName="Fälle"
+      />
+      {!isLoading && data && paginatedData.length > 0 && (
+        <CommonBorderWrapper>
+          <div className="flex items-center justify-between mb-4">
+            <CommonHeader>Letzte Fälle</CommonHeader>
+
+            {cases.length > 10 && (
+              <button
+                onClick={() => setShowAll(!showAll)}
+                className="text-primary underline mt-4 cursor-pointer"
+              >
+                {showAll ? "Weniger anzeigen" : "Alle anzeigen"}
+              </button>
+            )}
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead>
+                <tr className="border-b border-gray-200">
+                  <th className="text-left py-3 px-4 text-sm font-medium text-gray-600">
+                    Fall-Nr.:
+                  </th>
+                  <th className="text-left py-3 px-4 text-sm font-medium text-gray-600">
+                    Name
+                  </th>
+                  <th className="text-left py-3 px-4 text-sm font-medium text-gray-600">
+                    Typ
+                  </th>
+                  <th className="text-left py-3 px-4 text-sm font-medium text-gray-600">
+                    Erstellt am
+                  </th>
+                  <th className="text-left py-3 px-4 text-sm font-medium text-gray-600">
+                    Gerichtstermin
+                  </th>
+                  <th className="text-left py-3 px-4 text-sm font-medium text-gray-600">
+                    Status
+                  </th>
+                  <th className="py-3 px-4"></th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-200  text-gray-900 font-inter">
+                {paginatedData.map((item, index) => (
+                  <tr
+                    key={index}
+                    className="hover:bg-gray-50 transition-colors cursor-pointer"
+                  >
+                    <td className="px-6 py-4 text-sm font-medium text-gray-900">
+                      <Link to={`/admin/cases/${item._id}`}>
+                        {item.caseNumber}
+                      </Link>
+                    </td>
+
+                    <td className="px-6 py-4 text-sm text-gray-700 max-w-[320px] truncate">
+                      {item.clientName}
+                    </td>
+
+                    <td className="px-6 py-4 text-sm text-gray-700">
+                      {item.caseType}
+                    </td>
+
+                    <td className="px-6 py-4 text-sm text-gray-700">
+                      {formatDate(item.createdAt)}
+                    </td>
+
+                    <td className="px-6 py-4 text-sm text-gray-700">
+                      {formatDate(item.coatDate)}
+                    </td>
+
+                    <td className="px-6 py-4">
+                      <span
+                        className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium  ${
+                          statusStyles[item.case_status] ||
+                          "bg-gray-100 text-gray-800"
+                        }`}
+                      >
+                        {item.case_status}
+                      </span>
+                    </td>
+
+                    <td className="px-4 py-4 text-right">
+                      <AlertDialogBox
+                        action={() => handleDelete(item._id)}
+                        isLoading={isDeleting}
+                        trigger={
+                          <button className="text-gray-500 hover:text-gray-700 cursor-pointer">
+                            <MoreVertical className="w-4 h-4" />
+                          </button>
+                        }
+                      />
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </CommonBorderWrapper>
+      )}
       {isCaseModalOpen && (
         <CreateCaseModal
           isOpen={isCaseModalOpen}

@@ -32,11 +32,11 @@ const CASE_STATUSES = [
 
 // Zod schema
 const caseSchema = z.object({
-  title: z.string().min(3, "Title is required"),
-  client_user_id: z.string().min(2, "Client is required"),
-  clientName: z.string().min(2, "Client Name is required"),
+  title: z.string().min(3, "Titel ist erforderlich"),
+  client_user_id: z.string().min(2, "Kunde ist erforderlich"),
+  clientName: z.string().min(2, "Name des Kunden ist erforderlich"),
   status: z.enum(CASE_STATUSES),
-  date: z.string().nonempty("Date is required"),
+  date: z.string().nonempty("Datum ist erforderlich"),
 });
 
 type CaseFormValues = z.infer<typeof caseSchema>;
@@ -100,7 +100,7 @@ const EditOverviewModal: React.FC<CreateCaseModalProps> = ({
         {/* Header */}
         <div className="flex items-center justify-between border-b px-6 py-4">
           <CommonHeader size="xl" className="text-[#0F1010]">
-            Edit Case Overview
+            Fallübersicht bearbeiten
           </CommonHeader>
           <button
             onClick={onClose}
@@ -115,10 +115,10 @@ const EditOverviewModal: React.FC<CreateCaseModalProps> = ({
           {/* Two column fields */}
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
             <div>
-              <label className={inputClass.label}>Case Title</label>
+              <label className={inputClass.label}>Falltitel</label>
               <input
                 type="text"
-                placeholder="Enter case title"
+                placeholder="Falltitel eingeben"
                 {...register("title")}
                 className={inputClass.input}
               />
@@ -128,10 +128,10 @@ const EditOverviewModal: React.FC<CreateCaseModalProps> = ({
             </div>
 
             <div>
-              <label className={inputClass.label}>Client Name</label>
+              <label className={inputClass.label}>Name des Kunden</label>
               <input
                 type="text"
-                placeholder="Enter client name"
+                placeholder="Name des Kunden eingeben"
                 {...register("clientName")}
                 className={inputClass.input}
               />
@@ -144,7 +144,7 @@ const EditOverviewModal: React.FC<CreateCaseModalProps> = ({
           {/* Case Status */}
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
             <div>
-              <label className={inputClass.label}>Select Client</label>
+              <label className={inputClass.label}>Kunde auswählen</label>
               <Controller
                 control={control}
                 name="client_user_id"
@@ -162,7 +162,7 @@ const EditOverviewModal: React.FC<CreateCaseModalProps> = ({
               )}
             </div>
             <div>
-              <label className={inputClass.label}>Case Status</label>
+              <label className={inputClass.label}>Fallstatus</label>
               <Controller
                 control={control}
                 name="status"
@@ -186,7 +186,7 @@ const EditOverviewModal: React.FC<CreateCaseModalProps> = ({
 
           {/* Date */}
           <div>
-            <label className={inputClass.label}>Date</label>
+            <label className={inputClass.label}>Datum</label>
             <input
               type="date"
               {...register("date")}
@@ -200,10 +200,10 @@ const EditOverviewModal: React.FC<CreateCaseModalProps> = ({
           {/* Footer */}
           <div className="flex justify-end gap-3 pt-4">
             <CommonButton onClick={onClose} variant="secondary" type="button">
-              Cancel
+              Abbrechen
             </CommonButton>
             <CommonButton type="submit" disabled={isLoading}>
-              Update Overview
+              Übersicht aktualisieren
             </CommonButton>
           </div>
         </form>

@@ -1,4 +1,3 @@
-// TimelineModal.tsx
 import CommonButton from "@/common/CommonButton";
 import CommonHeader from "@/common/CommonHeader";
 import { useCreateCaseMutation } from "@/redux/features/admin/clientAPI";
@@ -18,9 +17,9 @@ const inputClass = {
 
 // Zod schema matching backend requirements
 const timelineSchema = z.object({
-  title: z.string().min(3, "Title is required"),
-  description: z.string().min(10, "Description is required"),
-  date: z.string().nonempty("Date is required"),
+  title: z.string().min(3, "Titel ist erforderlich"),
+  description: z.string().min(10, "Beschreibung ist erforderlich"),
+  date: z.string().nonempty("Datum ist erforderlich"),
 });
 
 type TimelineFormValues = z.infer<typeof timelineSchema>;
@@ -63,10 +62,12 @@ const TimelineModal: React.FC<TimelineModalProps> = ({
 
     try {
       const response = await updateTimeline(formData).unwrap();
-      toast.success(response.message || "Timeline updated successfully");
+      toast.success(response.message || "Timeline erfolgreich hinzugefügt");
       onClose();
     } catch (err: any) {
-      toast.error(err?.data?.message || "Failed to update timeline");
+      toast.error(
+        err?.data?.message || "Timeline konnte nicht hinzugefügt werden",
+      );
       console.error(err);
     }
   };
@@ -77,7 +78,7 @@ const TimelineModal: React.FC<TimelineModalProps> = ({
         {/* Header */}
         <div className="flex items-center justify-between border-b px-6 py-4">
           <CommonHeader size="xl" className="text-[#0F1010]">
-            Add Timeline
+            Timeline hinzufügen
           </CommonHeader>
           <button
             onClick={onClose}
@@ -91,10 +92,10 @@ const TimelineModal: React.FC<TimelineModalProps> = ({
         <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-6">
           {/* Title */}
           <div>
-            <label className={inputClass.label}>Timeline Title</label>
+            <label className={inputClass.label}>Titel der Timeline</label>
             <input
               type="text"
-              placeholder="Enter timeline title"
+              placeholder="Titel der Timeline eingeben"
               {...register("title")}
               className={inputClass.input}
             />
@@ -105,11 +106,11 @@ const TimelineModal: React.FC<TimelineModalProps> = ({
 
           {/* Description */}
           <div>
-            <label className={inputClass.label}>Description</label>
+            <label className={inputClass.label}>Beschreibung</label>
             <textarea
               {...register("description")}
               rows={4}
-              placeholder="Enter timeline description"
+              placeholder="Beschreibung der Timeline eingeben"
               className={inputClass.input}
             />
             {errors.description && (
@@ -119,7 +120,7 @@ const TimelineModal: React.FC<TimelineModalProps> = ({
 
           {/* Date */}
           <div>
-            <label className={inputClass.label}>Date</label>
+            <label className={inputClass.label}>Datum</label>
             <input
               type="date"
               {...register("date")}
@@ -133,10 +134,10 @@ const TimelineModal: React.FC<TimelineModalProps> = ({
           {/* Footer */}
           <div className="flex justify-end gap-3 pt-4">
             <CommonButton onClick={onClose} variant="secondary" type="button">
-              Cancel
+              Abbrechen
             </CommonButton>
             <CommonButton type="submit" disabled={isLoading}>
-              {isLoading ? "Submitting..." : "Add Timeline"}
+              {isLoading ? "Senden..." : "Timeline hinzufügen"}
             </CommonButton>
           </div>
         </form>
