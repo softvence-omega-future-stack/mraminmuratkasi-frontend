@@ -1,21 +1,17 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useNavigate, useLocation, useParams } from "react-router-dom";
-import {
-  FileText,
-  Download,
-  NotepadText,
-  Paperclip,
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
 import DocumentUploadModal from "@/common/DocumentUploadModal";
-import { useGetCaseDetailsQuery, useAddAssetToCaseMutation } from "@/redux/api/caseApi";
+import { Button } from "@/components/ui/button";
+import {
+  useAddAssetToCaseMutation,
+  useGetCaseDetailsQuery,
+} from "@/redux/api/caseApi";
+import { Download, FileText, NotepadText, Paperclip } from "lucide-react";
+import { useEffect, useState } from "react";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { toast } from "sonner";
 import { getStatusStyles } from "./ClientCasesPage";
 import star from "/images/star.png";
-import { toast } from "sonner";
-
-
 
 export default function CaseDetails() {
   const { id } = useParams<{ id: string }>();
@@ -25,7 +21,8 @@ export default function CaseDetails() {
   const [fromPage, setFromPage] = useState<string>("/client/dashboard");
 
   const { data: caseResponse, isLoading } = useGetCaseDetailsQuery(id);
-  const [addAssetToCase, { isLoading: isUploading }] = useAddAssetToCaseMutation();
+  const [addAssetToCase, { isLoading: isUploading }] =
+    useAddAssetToCaseMutation();
   const caseData = caseResponse?.data?.caseOverview;
 
   useEffect(() => {
@@ -47,9 +44,9 @@ export default function CaseDetails() {
   const formatFileSize = (bytes: number) => {
     if (!bytes) return "0 Bytes";
     const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const sizes = ["Bytes", "KB", "MB", "GB"];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
   };
 
   const handleBack = () => {
@@ -64,7 +61,7 @@ export default function CaseDetails() {
         user_id: caseData.user_id,
         caseOverview_id: caseData._id,
         assetListId: caseData.assetList_id?._id,
-        assetList: assets
+        assetList: assets,
       };
 
       await addAssetToCase(payload).unwrap();
@@ -97,8 +94,8 @@ export default function CaseDetails() {
   const timeline = caseData.timeLine_id?.timeLine || [];
 
   return (
-      <div className="min-h-screen bg-[#F7F9FC]">
-        <div className="pb-5">
+    <div className="min-h-screen bg-[#F7F9FC]">
+      <div className="pb-5">
         <div className="bg-white rounded-xl shadow-sm p-5">
           <div className="flex items-center justify-between">
             <h2 className="text-lg font-semibold text-black">Case Details</h2>
@@ -126,28 +123,39 @@ export default function CaseDetails() {
                 <p className="text-lg font-semibold text-gray-900 mb-2">
                   {caseData.caseTitle}
                 </p>
-                <p className="text-xs text-gray-400 mb-4">{caseData.caseNumber}</p>
+                <p className="text-xs text-gray-400 mb-4">
+                  {caseData.caseNumber}
+                </p>
 
                 <div className="space-y-3">
                   <Info label="Type" value={caseData.caseType} />
                   <Info label="Status">
                     <span
                       className={`px-2 py-0.5 rounded-full text-xs font-medium ${getStatusStyles(
-                        caseData.case_status
+                        caseData.case_status,
                       )}`}
                     >
                       {caseData.case_status}
                     </span>
                   </Info>
-                  <Info label="Court Date" value={formatDate(caseData.coatDate)} />
-                  <Info label="Created" value={formatDate(caseData.createdAt)} />
-                  <Info label="Last Updated" value={formatDate(caseData.updatedAt)} />
+                  <Info
+                    label="Court Date"
+                    value={formatDate(caseData.coatDate)}
+                  />
+                  <Info
+                    label="Created"
+                    value={formatDate(caseData.createdAt)}
+                  />
+                  <Info
+                    label="Last Updated"
+                    value={formatDate(caseData.updatedAt)}
+                  />
                 </div>
               </div>
 
               <div className="bg-[#F3FAFF] rounded-xl shadow-sm p-5">
                 <div className="flex items-center gap-2 mb-3">
-                   <FileText className="w-6 h-6 text-[#1878B5]" />
+                  <FileText className="w-6 h-6 text-[#1878B5]" />
                   <h3 className="font-medium text-[#1878B5]">Notes</h3>
                 </div>
 
@@ -178,11 +186,15 @@ export default function CaseDetails() {
               <p className="text-lg font-semibold text-gray-900">
                 {caseData.caseTitle}
               </p>
-              <p className="text-xs text-gray-400 mb-4">{caseData.caseNumber}</p>
+              <p className="text-xs text-gray-400 mb-4">
+                {caseData.caseNumber}
+              </p>
 
               <div className="space-y-3">
                 {documents.length === 0 ? (
-                  <p className="text-sm text-gray-500 text-center py-4">No documents uploaded</p>
+                  <p className="text-sm text-gray-500 text-center py-4">
+                    No documents uploaded
+                  </p>
                 ) : (
                   documents.map((doc: any) => (
                     <div
@@ -194,16 +206,21 @@ export default function CaseDetails() {
                           <FileText className="w-4 h-4 text-[#1878B5]" />
                         </div>
                         <div>
-                          <p className="text-sm font-medium text-gray-900 truncate max-w-[150px]" title={doc.assetName}>
+                          <p
+                            className="text-sm font-medium text-gray-900 truncate max-w-[150px]"
+                            title={doc.assetName}
+                          >
                             {doc.assetName}
                           </p>
-                          <p className="text-xs text-gray-500">{formatFileSize(doc.fileSize)}</p>
+                          <p className="text-xs text-gray-500">
+                            {formatFileSize(doc.fileSize)}
+                          </p>
                         </div>
                       </div>
 
-                      <a 
-                        href={doc.assetUrl} 
-                        target="_blank" 
+                      <a
+                        href={doc.assetUrl}
+                        target="_blank"
                         rel="noopener noreferrer"
                         className="flex items-center gap-1.5 text-[#1878B5] hover:text-[#146499] transition-colors"
                       >
@@ -226,7 +243,8 @@ export default function CaseDetails() {
                 Case Timeline
               </h3>
               <p className="text-sm font-normal text-gray-500">
-                Track important events and documents for case #{caseData.caseNumber}
+                Track important events and documents for case #
+                {caseData.caseNumber}
               </p>
             </div>
             {/* <div className="flex gap-3">
@@ -249,37 +267,46 @@ export default function CaseDetails() {
           {/* Cards Container */}
           <div className="flex gap-5 overflow-x-auto pb-6 scrollbar-hide no-scrollbar -mx-2 px-2">
             {timeline.length === 0 ? (
-              <p className="text-sm text-gray-500 w-full text-center py-8">No timeline updates yet</p>
+              <p className="text-sm text-gray-500 w-full text-center py-8">
+                No timeline updates yet
+              </p>
             ) : (
               timeline.map((event: any, i: number) => (
-              <div
-                key={event._id || i}
-                className="min-w-[320px] bg-[#F9FAFB] rounded-[20px] p-6 flex flex-col hover:shadow-md transition-shadow duration-200 border border-transparent hover:border-blue-100"
-              >
-                  <img className="mb-5" src={star} alt="star" width={40} height={40}/>
-                <h4 className="text-[#1878B5] font-bold text-[17px] mb-2 leading-tight">
-                  {event.title}
-                </h4>
-                <p className="text-gray-500 text-[13px] leading-relaxed mb-6 font-normal">
-                  {event.description}
-                </p>
+                <div
+                  key={event._id || i}
+                  className="min-w-[320px] bg-[#F9FAFB] rounded-[20px] p-6 flex flex-col hover:shadow-md transition-shadow duration-200 border border-transparent hover:border-blue-100"
+                >
+                  <img
+                    className="mb-5"
+                    src={star}
+                    alt="star"
+                    width={40}
+                    height={40}
+                  />
+                  <h4 className="text-[#1878B5] font-bold text-[17px] mb-2 leading-tight">
+                    {event.title}
+                  </h4>
+                  <p className="text-gray-500 text-[13px] leading-relaxed mb-6 font-normal">
+                    {event.description}
+                  </p>
 
-                <div className="mt-auto flex items-center justify-between">
-                  {event.assetUrl && event.assetUrl.length > 0 ? (
-                    <div className="flex items-center gap-2 px-2 py-1.5 bg-[#E8F2F8] rounded-md transition-colors hover:bg-blue-100 cursor-pointer">
-                      <span className="text-[11px] font-medium text-gray-500">
-                        Attachment Available
-                      </span>
+                  <div className="mt-auto flex items-center justify-between">
+                    {event.assetUrl && event.assetUrl.length > 0 ? (
+                      <div className="flex items-center gap-2 px-2 py-1.5 bg-[#E8F2F8] rounded-md transition-colors hover:bg-blue-100 cursor-pointer">
+                        <span className="text-[11px] font-medium text-gray-500">
+                          Attachment Available
+                        </span>
+                      </div>
+                    ) : (
+                      <div></div>
+                    )}
+                    <div className="bg-[#C48C57] text-white text-[11px] font-bold px-4 py-1.5 rounded-lg shadow-sm">
+                      {formatDate(event.date)}
                     </div>
-                  ) : (
-                    <div></div>
-                  )}
-                  <div className="bg-[#C48C57] text-white text-[11px] font-bold px-4 py-1.5 rounded-lg shadow-sm">
-                    {formatDate(event.date)}
                   </div>
                 </div>
-              </div>
-            )))}
+              ))
+            )}
           </div>
 
           {/* Progress Bar & Status Footer */}
@@ -287,10 +314,13 @@ export default function CaseDetails() {
             <div className="w-full bg-[#E5E7EB] h-1.5 rounded-full overflow-hidden mb-6">
               <div className="bg-[#1878B5] h-full w-[40px] rounded-full"></div>
             </div>
-            
+
             <div className="space-y-1">
               <h4 className="text-gray-900 font-bold text-base">
-                Case Status : <span className="text-gray-700 font-semibold">{caseData.case_status}</span>
+                Case Status :{" "}
+                <span className="text-gray-700 font-semibold">
+                  {caseData.case_status}
+                </span>
               </h4>
               <p className="text-gray-400 text-xs font-normal">
                 Last Update : {formatDate(caseData.updatedAt)}

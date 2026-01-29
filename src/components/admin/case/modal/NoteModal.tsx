@@ -15,7 +15,7 @@ const inputClass = {
 
 // Zod schema
 const caseSchema = z.object({
-  note: z.string().min(1, "Note is required"),
+  note: z.string().min(1, "Notiz ist erforderlich"),
 });
 
 type CaseFormValues = z.infer<typeof caseSchema>;
@@ -55,11 +55,11 @@ const NoteModal: React.FC<CreateCaseModalProps> = ({ onClose, singleCase }) => {
       <div className="w-full max-w-2xl rounded-xl bg-white shadow-2xl p-6 ">
         <form onSubmit={handleSubmit(onSubmit)}>
           <div>
-            <label className={inputClass.label}>Note</label>
+            <label className={inputClass.label}>Notiz</label>
             <textarea
               {...register("note")}
               rows={4}
-              placeholder="Add note"
+              placeholder="Notiz hinzufügen"
               className={inputClass.input}
             />
             {errors.note && (
@@ -68,10 +68,10 @@ const NoteModal: React.FC<CreateCaseModalProps> = ({ onClose, singleCase }) => {
           </div>
           <div className="flex justify-end gap-3 pt-4">
             <CommonButton onClick={onClose} variant="secondary" type="button">
-              Cancel
+              Abbrechen
             </CommonButton>
             <CommonButton type="submit" disabled={isLoading}>
-              Update Note
+              Notiz aktualisieren
             </CommonButton>
           </div>
         </form>

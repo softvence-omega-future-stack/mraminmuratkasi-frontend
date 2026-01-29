@@ -19,17 +19,14 @@ import {
 import { useState } from "react";
 import { FaUserFriends } from "react-icons/fa";
 import { useLocation, useNavigate } from "react-router-dom";
+
 interface ClientTopNavProps {
   onMenuClick: () => void;
   showProfileMenu: boolean;
   setShowProfileMenu: (show: boolean) => void;
 }
 
-const AdminNavBar = ({
-  onMenuClick,
-}: //   showProfileMenu,
-//   setShowProfileMenu,
-ClientTopNavProps) => {
+const AdminNavBar = ({ onMenuClick }: ClientTopNavProps) => {
   const navigate = useNavigate();
   const { data: profileData } = useGetProfileQuery(undefined);
   const user = profileData?.data;
@@ -58,50 +55,40 @@ ClientTopNavProps) => {
     try {
       await deleteNotification(id).unwrap();
     } catch (error) {
-      console.error("Failed to delete notification:", error);
+      console.error("Löschen der Benachrichtigung fehlgeschlagen:", error);
     }
   };
-  // const handleLogout = async () => {
-  //   try {
-  //     await logOut(undefined).unwrap();
-  //   } catch (err) {
-  //     console.error("Logout failed:", err);
-  //   } finally {
-  //     dispatch(logout());
-  //     localStorage.removeItem("token");
-  //     navigate("/");
-  //   }
-  // };
 
   const accountMenuItems = [
     {
-      label: "Edit Profile",
+      label: "Profil bearbeiten",
       icon: SquarePen,
       onClick: () => navigate("/admin/edit-profile"),
       danger: false,
     },
     {
-      label: "Change Password",
+      label: "Passwort ändern",
       icon: LockKeyhole,
       onClick: () => navigate("/admin/change-password"),
       danger: false,
     },
   ];
+
   const navItems = [
     {
-      label: "Home",
+      label: "Startseite",
       path: "/admin",
       icon: Home,
       padding: "px-4.5",
     },
     {
-      label: "Cases",
+      label: "Fälle",
       path: "/admin/cases",
       icon: FileText,
       padding: "px-6",
     },
     {
-      label: "Clients",
+      label: "Kunden",
       path: "/admin/client",
       icon: FaUserFriends,
       padding: "px-6",
@@ -113,6 +100,7 @@ ClientTopNavProps) => {
       padding: "px-6",
     },
   ];
+
   const isActiveRoute = (path: string) => {
     const currentPath = location.pathname;
     if (path === "/admin") {
@@ -120,6 +108,7 @@ ClientTopNavProps) => {
     }
     return currentPath === path || currentPath.startsWith(`${path}/`);
   };
+
   const { totalUnseenCount } = useSocket();
 
   return (
@@ -184,7 +173,7 @@ ClientTopNavProps) => {
                   user?.img ||
                   "https://media.istockphoto.com/id/2235903620/photo/happy-50-years-old-business-man-in-suit-standing-in-office-headshot-portrait.webp?a=1&b=1&s=612x612&w=0&k=20&c=2say2ge83Ytw-k3YPSCweS8BcXoira3VoIiZjwGzghQ="
                 }
-                alt="Profile"
+                alt="Profil"
                 className="w-8 h-8 rounded-full bg-white"
               />
               <span className="hidden sm:block text-xs font-medium text-gray-900">

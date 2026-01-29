@@ -1,4 +1,3 @@
-// AllCases.tsx
 import CommonBorderWrapper from "@/common/CommonBorderWrapper";
 import CommonButton from "@/common/CommonButton";
 import CommonHeader from "@/common/CommonHeader";
@@ -36,22 +35,22 @@ const AllClients = () => {
     <div className="">
       <CommonBorderWrapper className="">
         <div className="mb-6">
-          <CommonHeader>All Cases</CommonHeader>
+          <CommonHeader>Alle Fälle</CommonHeader>
         </div>
 
         <LoadingStatus
           isLoading={isLoading}
           items={paginatedData}
-          itemName="Client"
+          itemName="Kunde"
         />
         {!isLoading && data && paginatedData.length > 0 && (
           <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
             <div className="grid grid-cols-6 gap-4 border-b bg-gray-50 px-6 py-4 text-left text-sm font-semibold text-gray-700">
               <div className="col-span-2">Name</div>
-              <div>Type</div>
-              <div>Active Cases</div>
-              <div>Last Login</div>
-              <div className="text-right">Action</div>
+              <div>Typ</div>
+              <div>Aktive Fälle</div>
+              <div>Letzte Anmeldung</div>
+              <div className="text-right">Aktion</div>
             </div>
 
             <div className="divide-y divide-gray-100">
@@ -93,7 +92,7 @@ const AllClients = () => {
                           : "bg-green-800 text-white"
                       }`}
                     >
-                      {item.isBlocked ? "Blocked" : "Active"}
+                      {item.isBlocked ? "Gesperrt" : "Aktiv"}
                     </span>
                   </div>
 
@@ -102,14 +101,14 @@ const AllClients = () => {
                   </div>
 
                   <div className="flex items-center text-sm text-gray-600">
-                    Last Login: {getLastActiveTime(item.lastLogin)}
+                    Letzte Anmeldung: {getLastActiveTime(item.lastLogin)}
                   </div>
 
                   <Link
                     to="/admin/chat"
                     className="flex items-center justify-end gap-2"
                   >
-                    <CommonButton>Message</CommonButton>
+                    <CommonButton>Nachricht</CommonButton>
                   </Link>
                 </div>
               ))}

@@ -85,7 +85,7 @@ const UploadDocumentsModal: React.FC<CreateCaseModalProps> = ({
 
       onClose();
     } catch (err: any) {
-      toast.error(err?.message || "Failed to upload document");
+      toast.error(err?.message || "Dokument konnte nicht hochgeladen werden");
 
       console.error(err);
     }
@@ -97,7 +97,7 @@ const UploadDocumentsModal: React.FC<CreateCaseModalProps> = ({
         {/* Header */}
         <div className="flex items-center justify-between  px-6 py-4">
           <CommonHeader size="xl" className="text-[#0F1010]">
-            Upload Document
+            Dokument hochladen
           </CommonHeader>
           <button
             onClick={onClose}
@@ -115,12 +115,12 @@ const UploadDocumentsModal: React.FC<CreateCaseModalProps> = ({
               <UploadCloud className="mx-auto h-10 w-10 text-gray-400" />
               <p className="mt-3 text-sm text-gray-600">
                 <span className="font-medium text-[#1878B5] cursor-pointer">
-                  Browse
+                  Durchsuchen
                 </span>{" "}
-                or drag your file(s) here
+                oder ziehen Sie Ihre Datei(en) hierher
               </p>
               <p className="mt-1 text-xs text-gray-500">
-                Max 10 files • jpg, png, pdf • 10 MB max per file
+                Maximal 10 Dateien • jpg, png, pdf • Max. 10 MB pro Datei
               </p>
               <input
                 type="file"
@@ -134,7 +134,7 @@ const UploadDocumentsModal: React.FC<CreateCaseModalProps> = ({
                 htmlFor="file-upload"
                 className="mt-4 inline-flex cursor-pointer rounded-md bg-[#1878B5] px-4 py-2 text-sm font-medium text-white "
               >
-                Select Files
+                Dateien auswählen
               </label>
             </div>
 
@@ -153,7 +153,7 @@ const UploadDocumentsModal: React.FC<CreateCaseModalProps> = ({
                         </p>
                         {file.status === "completed" && (
                           <span className="text-xs font-medium text-green-700">
-                            Completed
+                            Abgeschlossen
                           </span>
                         )}
                       </div>
@@ -169,7 +169,7 @@ const UploadDocumentsModal: React.FC<CreateCaseModalProps> = ({
                             </div>
                             <div className="mt-1 flex items-center justify-between text-xs text-gray-500">
                               <span>{file.progress}%</span>
-                              <span>~30 seconds remaining</span>
+                              <span>~30 Sekunden verbleibend</span>
                             </div>
                           </div>
                         )}
@@ -209,10 +209,10 @@ const UploadDocumentsModal: React.FC<CreateCaseModalProps> = ({
           {/* Footer */}
           <div className="flex justify-end gap-3 pt-4">
             <CommonButton onClick={onClose} variant="secondary" type="button">
-              Cancel
+              Abbrechen
             </CommonButton>
             <CommonButton onClick={handleUpload} disabled={isLoading}>
-              Upload Documents
+              Dokumente hochladen
             </CommonButton>
           </div>
         </form>
