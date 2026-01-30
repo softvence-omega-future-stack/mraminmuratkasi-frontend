@@ -20,7 +20,7 @@ export default function ClientDashboardLayout({
 
   return (
     <SocketProvider>
-      <div className="flex flex-col h-screen bg-gray-50 overflow-hidden px-6 pt-3">
+      <div className="flex flex-col h-screen bg-gray-50 overflow-hidden px-3 pt-3">
         {/* Top Navigation - Full Width */}
         <ClientTopNav
           onMenuClick={() => setSidebarOpen(true)}
@@ -29,7 +29,7 @@ export default function ClientDashboardLayout({
         />
 
         {/* Main Container - Flex Sidebar and Content */}
-        <div className="flex flex-1 gap-5 overflow-hidden px-6 pt-6">
+        <div className="flex flex-1 gap-5 overflow-hidden px-3 pt-6">
           {/* Mobile Sidebar overlay is inside ClientSidebar, but desktop persistent sidebar is here */}
           <div className="hidden lg:block lg:shrink-0">
             <ClientSidebar
