@@ -69,7 +69,7 @@ export default function CaseDetails() {
               <CommonHeader>Alle Falldetails</CommonHeader>
               <CommonButton onClick={handleBack}>Zurück</CommonButton>
             </div>
-            <div className="flex justify-between w-full gap-5">
+            <div className="flex flex-col 2xl:flex-row justify-between w-full gap-5">
               <div className="space-y-5 flex-1">
                 <div className="rounded-xl  bg-[#F3FAFF] ">
                   <div className="flex items-center justify-between  px-6 py-4">
@@ -153,7 +153,7 @@ export default function CaseDetails() {
               </div>
 
               <div className="rounded-xl bg-[#F3FAFF]  flex-1 p-5 ">
-                <div className="flex items-center justify-between  ">
+                <div className="flex flex-wrap items-center justify-between gap-3  ">
                   <div className="text-[#1878B5] flex gap-1 items-center">
                     <ImAttachment size={20} />
                     <h2 className="text-lg font-semibold ">Falldokumente</h2>
@@ -169,26 +169,36 @@ export default function CaseDetails() {
                 <h3 className="font-medium text-gray-900 py-4">
                   {singleCase?.caseTitle}
                 </h3>
-                <div className="space-y-2.5 ">
+                <div className="space-y-2.5">
                   {singleCase?.assetList_id?.assets?.map((doc, i) => (
                     <div
                       key={i}
-                      className="flex items-center justify-between p-6 bg-[#E8F2F8] border-[#B7D5E8] rounded-lg  "
+                      className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-6 bg-[#E8F2F8] border border-[#B7D5E8] rounded-lg"
                     >
-                      <div className="flex items-center gap-3">
-                        <FileText size={20} className="text-[#1878B5]" />
-                        <div className="font-medium text-[#3C3B3B]">
-                          <p>{doc?.assetName}</p>
-                          <p className=" text-[#747C81] text-xs mt-1">
+                      {/* Left content */}
+                      <div className="flex items-start gap-3 min-w-0">
+                        <FileText
+                          size={20}
+                          className="text-[#1878B5] shrink-0"
+                        />
+
+                        <div className="min-w-0">
+                          <p className="font-medium text-[#3C3B3B] break-words sm:line-clamp-1">
+                            {doc?.assetName}
+                          </p>
+                          <p className="text-[#747C81] text-xs mt-1">
                             {formatFileSize(doc?.fileSize)}
                           </p>
                         </div>
                       </div>
+
+                      {/* Download button */}
                       <button
                         onClick={() => handleDownload(doc.assetUrl)}
-                        className="flex items-center gap-1.5 text-sm text-[#1878B5] cursor-pointer"
+                        className="flex items-center gap-1.5 text-sm text-[#1878B5] cursor-pointer self-start sm:self-center"
                       >
-                        <Download size={16} /> Herunterladen
+                        <Download size={16} />
+                        Herunterladen
                       </button>
                     </div>
                   ))}
@@ -198,7 +208,7 @@ export default function CaseDetails() {
           </CommonBorderWrapper>
 
           <CommonBorderWrapper className="my-6">
-            <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
               <div>
                 <h2 className="text-xl font-semibold text-gray-900">
                   Fall-Zeitleiste
@@ -216,27 +226,29 @@ export default function CaseDetails() {
             </div>
 
             <div className="relative">
-              <div className="flex gap-6 overflow-x-auto pb-4 scrollbar-hide">
+              <div className="flex gap-4 sm:gap-6 overflow-x-auto pb-4">
                 {singleCase?.timeLine_id?.timeLine.map((item, index) => (
                   <div
                     key={index}
-                    className="min-w-[320px] rounded-[8px] bg-[#F9F9F9] backdrop-blur-[20.1px] p-5"
+                    className="min-w-[280px] sm:min-w-[320px] rounded-[8px] bg-[#F9F9F9] backdrop-blur-[20.1px] p-4 sm:p-5 flex flex-col gap-3"
                   >
-                    <RiVerifiedBadgeFill className="w-7 h-7 text-[#1878B5] mb-4" />
+                    <RiVerifiedBadgeFill className="w-7 h-7 text-[#1878B5]" />
 
-                    <div>
-                      <p className="text-sm text-gray-600 mb-2">{item.title}</p>
-                      <p className="text-sm text-gray-500">
+                    <div className="min-w-0">
+                      <p className="text-sm text-gray-600 mb-2 break-words">
+                        {item.title}
+                      </p>
+                      <p className="text-sm text-gray-500 break-words">
                         {item.description}
                       </p>
                     </div>
 
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2 text-sm text-gray-500">
-                        <span>{item.assetName}</span>
+                    <div className="flex items-center justify-between gap-3 mt-auto">
+                      <div className="flex items-center gap-2 text-sm text-gray-500 min-w-0">
+                        <span className="truncate">{item.assetName}</span>
                       </div>
 
-                      <span className="px-4 py-1 rounded-full bg-[#C28956] text-white text-xs font-medium">
+                      <span className="px-4 py-1 rounded-full bg-[#C28956] text-white text-xs font-medium whitespace-nowrap">
                         {formatDate(item.createdAt)}
                       </span>
                     </div>
