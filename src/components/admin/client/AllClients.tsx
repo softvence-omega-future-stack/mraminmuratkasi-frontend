@@ -15,7 +15,7 @@ const AllClients = () => {
 
   const { data, isLoading } = useGetAllUserQuery();
   //pagination
-  const ITEMS_PER_PAGE = 10;
+  const ITEMS_PER_PAGE = 7;
   const [currentPage, setCurrentPage] = useState(1);
   const totalItems = data?.data?.length || 0;
   const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE);
@@ -44,81 +44,92 @@ const AllClients = () => {
           itemName="Kunde"
         />
         {!isLoading && data && paginatedData.length > 0 && (
-          <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
-            <div className="grid grid-cols-6 gap-4 border-b bg-gray-50 px-6 py-4 text-left text-sm font-semibold text-gray-700">
-              <div className="col-span-2">Name</div>
-              <div>Typ</div>
-              <div>Aktive Fälle</div>
-              <div>Letzte Anmeldung</div>
-              <div className="text-right">Aktion</div>
-            </div>
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden ">
+            <div className="overflow-x-auto">
+              <table className="w-full min-w-full lg:min-w-[900px] border-collapse">
+                <thead className="bg-gray-50 border-b border-gray-200">
+                  <tr className="text-left text-sm font-semibold text-gray-700">
+                    <th className="px-6 py-4">Name</th>
+                    <th className="px-6 py-4">Typ</th>
+                    <th className="px-6 py-4">Aktive Fälle</th>
+                    <th className="px-6 py-4">Letzte Anmeldung</th>
+                    <th className="px-6 py-4 text-right">Aktion</th>
+                  </tr>
+                </thead>
 
-            <div className="divide-y divide-gray-100">
-              {paginatedData.map((item) => (
-                <div
-                  key={item._id}
-                  className="grid grid-cols-6 gap-4 px-6 py-4 hover:bg-gray-50/70 transition-colors"
-                >
-                  <div
-                    onClick={() => handleClick(item)}
-                    className="col-span-2 flex items-center gap-3 cursor-pointer"
-                  >
-                    <div className="h-10 w-10 shrink-0 rounded-full overflow-hidden border border-gray-200">
-                      <img
-                        src={
-                          item.profile.img ||
-                          `https://i.pravatar.cc/40?u=${item._id}`
-                        }
-                        alt={item.name}
-                        className="h-full w-full object-cover"
-                      />
-                    </div>
-                    <div>
-                      <div className="font-medium text-gray-900">
-                        {item.name}
-                      </div>
-                      <div className="mt-0.5 text-sm text-gray-500">
-                        {item.email}
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Status */}
-                  <div className="flex items-center">
-                    <span
-                      className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${
-                        item.isBlocked
-                          ? "bg-red-800 text-white"
-                          : "bg-green-800 text-white"
-                      }`}
+                <tbody className="divide-y divide-gray-100">
+                  {paginatedData.map((item) => (
+                    <tr
+                      key={item._id}
+                      className="hover:bg-gray-50 transition-colors"
                     >
-                      {item.isBlocked ? "Gesperrt" : "Aktiv"}
-                    </span>
-                  </div>
+                      {/* Name */}
+                      <td
+                        className="px-6 py-4 cursor-pointer"
+                        onClick={() => handleClick(item)}
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className="h-10 w-10 rounded-full overflow-hidden border border-gray-200 shrink-0">
+                            <img
+                              src={
+                                item.profile?.img ||
+                                `https://i.pravatar.cc/40?u=${item._id}`
+                              }
+                              alt={item.name}
+                              className="h-full w-full object-cover"
+                            />
+                          </div>
+                          <div>
+                            <div className="font-medium text-gray-900">
+                              {item.name}
+                            </div>
+                            <div className="text-sm text-gray-500">
+                              {item.email}
+                            </div>
+                          </div>
+                        </div>
+                      </td>
 
-                  <div className="flex items-center text-gray-900">
-                    {item.caseCount}
-                  </div>
+                      {/* Status */}
+                      <td className="px-6 py-4">
+                        <span
+                          className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-medium ${
+                            item.isBlocked
+                              ? "bg-red-800 text-white"
+                              : "bg-green-800 text-white"
+                          }`}
+                        >
+                          {item.isBlocked ? "Gesperrt" : "Aktiv"}
+                        </span>
+                      </td>
 
-                  <div className="flex items-center text-sm text-gray-600">
-                    Letzte Anmeldung: {getLastActiveTime(item.lastLogin)}
-                  </div>
+                      {/* Active Cases */}
+                      <td className="px-6 py-4 text-gray-900">
+                        {item.caseCount}
+                      </td>
 
-                  <Link
-                    to="/admin/chat"
-                    className="flex items-center justify-end gap-2"
-                  >
-                    <CommonButton>Nachricht</CommonButton>
-                  </Link>
-                </div>
-              ))}
+                      {/* Last Login */}
+                      <td className="px-6 py-4 text-sm text-gray-600">
+                        {getLastActiveTime(item.lastLogin)}
+                      </td>
+
+                      {/* Action */}
+                      <td className="px-6 py-4 text-right">
+                        <Link to="/admin/chat">
+                          <CommonButton>Nachricht</CommonButton>
+                        </Link>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           </div>
         )}
       </CommonBorderWrapper>
 
       {paginatedData.length > 0 && (
-        <div className="py-5">
+        <div className="py-5 ">
           <Pagination
             totalPages={totalPages}
             onPageChange={(page) => {

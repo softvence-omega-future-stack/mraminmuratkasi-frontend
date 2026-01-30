@@ -11,14 +11,17 @@ const AdminDashboardLayout = () => {
 
   return (
     <SocketProvider>
-      <div className="flex flex-col h-screen bg-gray-50 overflow-hidden px-6 pt-3">
+      <div
+        className="flex flex-col  h-screen
+      g-gray-50 overflow-hidden px-6 pt-3"
+      >
         <AdminNavBar
           onMenuClick={() => setSidebarOpen(true)}
           showProfileMenu={showProfileMenu}
           setShowProfileMenu={setShowProfileMenu}
         />
 
-        <div className="flex flex-1 gap-6 overflow-hidden px-6 pt-6">
+        <div className="flex flex-1 gap-6 overflow-hidden sm:px-6 pt-6">
           <div className="hidden lg:block lg:shrink-0">
             <AdminSidebar
               isOpen={sidebarOpen}
@@ -41,7 +44,7 @@ const AdminDashboardLayout = () => {
             </div>
           )}
 
-          <main className="flex-1 overflow-auto">
+          <main className="flex-1 overflow-auto scrollbar-hide">
             <div className="max-w-7x mx-auto">
               <Outlet />
             </div>
