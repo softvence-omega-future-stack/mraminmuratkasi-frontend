@@ -170,7 +170,7 @@ export default function CaseDetails() {
                   {singleCase?.caseTitle}
                 </h3>
                 <div className="space-y-2.5 ">
-                  {singleCase?.assetList_id.assets.map((doc, i) => (
+                  {singleCase?.assetList_id?.assets?.map((doc, i) => (
                     <div
                       key={i}
                       className="flex items-center justify-between p-6 bg-[#E8F2F8] border-[#B7D5E8] rounded-lg  "
@@ -178,9 +178,9 @@ export default function CaseDetails() {
                       <div className="flex items-center gap-3">
                         <FileText size={20} className="text-[#1878B5]" />
                         <div className="font-medium text-[#3C3B3B]">
-                          <p>{doc.assetName}</p>
+                          <p>{doc?.assetName}</p>
                           <p className=" text-[#747C81] text-xs mt-1">
-                            {formatFileSize(doc.fileSize)}
+                            {formatFileSize(doc?.fileSize)}
                           </p>
                         </div>
                       </div>
@@ -217,7 +217,7 @@ export default function CaseDetails() {
 
             <div className="relative">
               <div className="flex gap-6 overflow-x-auto pb-4 scrollbar-hide">
-                {singleCase?.timeLine_id.timeLine.map((item, index) => (
+                {singleCase?.timeLine_id?.timeLine.map((item, index) => (
                   <div
                     key={index}
                     className="min-w-[320px] rounded-[8px] bg-[#F9F9F9] backdrop-blur-[20.1px] p-5"
