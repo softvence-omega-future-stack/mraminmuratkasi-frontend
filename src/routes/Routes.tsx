@@ -132,7 +132,7 @@ const routes = createBrowserRouter([
       {
         path: "client",
         element: (
-          <ProtectedRoute role="client">
+          <ProtectedRoute role="user">
             <ClientDashboardLayout />
           </ProtectedRoute>
         ),
