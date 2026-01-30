@@ -107,13 +107,13 @@ const HomePage: React.FC = () => {
   };
   return (
     <div className=" space-y-5 pb-5 ">
-      <div className="flex gap-5 w-full">
+      <div className="flex flex-col xl:flex-row gap-5 w-full">
         <CommonBorderWrapper>
           <p className="text-main text-base mb-4  ">
             Willkommen im Admin-Bereich. Hier ist eine Übersicht Ihres Systems.
           </p>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4 mb-6">
             {stats.map((stat, index) => (
               <div
                 key={index}
@@ -231,7 +231,7 @@ const HomePage: React.FC = () => {
             {cases.length > 10 && (
               <button
                 onClick={() => setShowAll(!showAll)}
-                className="text-primary underline mt-4 cursor-pointer"
+                className="text-primary underline  cursor-pointer"
               >
                 {showAll ? "Weniger anzeigen" : "Alle anzeigen"}
               </button>

@@ -94,14 +94,20 @@ const AdminSidebar = ({ isOpen, onClose }: SidebarProps) => {
               <Home className="w-5 h-5 mb-1" />
               <span className="text-xs">Startseite</span>
             </button>
-            <button className="flex flex-col items-center p-2 text-gray-600 hover:text-[#1878B5] transition-colors">
+            <button
+              onClick={() => {
+                onClose();
+                window.location.href = "/admin/cases";
+              }}
+              className="flex flex-col items-center p-2 text-gray-600 hover:text-[#1878B5] transition-colors"
+            >
               <FileText className="w-5 h-5 mb-1" />
               <span className="text-xs">Fälle</span>
             </button>
             <button
               onClick={() => {
                 onClose();
-                window.location.href = "/client/chat";
+                window.location.href = "/admin/chat";
               }}
               className="flex flex-col items-center p-2 text-gray-600 hover:text-[#1878B5] transition-colors"
             >
