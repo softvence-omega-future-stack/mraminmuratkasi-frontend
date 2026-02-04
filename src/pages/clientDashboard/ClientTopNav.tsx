@@ -201,7 +201,7 @@ export default function ClientTopNav({
         {/* Right: Notifications & Profile */}
         <div className="flex items-center space-x-4">
           {/* Bell Button */}
-          {(user?.notificationsEnabled || user?.user_id?.notificationsEnabled) && (
+          {user && (
             <button
               onClick={() => {
                 setOpen(true);
