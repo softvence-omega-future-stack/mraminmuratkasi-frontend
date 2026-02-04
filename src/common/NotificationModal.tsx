@@ -17,6 +17,7 @@ interface NotificationModalProps {
   onView?: (notif: Notification) => void;
   deletingId?: string | number | null; // Added
   viewingId?: string | number | null; // Added
+  isLoading?: boolean;
 }
 
 export default function NotificationModal({
@@ -27,6 +28,7 @@ export default function NotificationModal({
   onView,
   deletingId,
   viewingId,
+  isLoading,
 }: NotificationModalProps) {
   if (!open) return null;
 
@@ -52,7 +54,11 @@ export default function NotificationModal({
 
         {/* Notification List */}
         <div className="overflow-y-auto max-h-[440px]">
-          {notifications.length === 0 ? (
+          {isLoading ? (
+            <div className="flex items-center justify-center py-20">
+              <Loader2 className="w-8 h-8 animate-spin text-[#1878B5]" />
+            </div>
+          ) : notifications.length === 0 ? (
             <div className="p-5 text-center text-gray-500">
               No Benachrichtigungen
             </div>

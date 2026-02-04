@@ -16,10 +16,12 @@ import {
   AlertTriangle,
 } from "lucide-react";
 import NotificationModal from "@/common/NotificationModal";
-import { useGetAllNotificationsQuery, useGetNotificationForBellQuery, useDeleteNotificationMutation, useViewSpecificNotificationMutation } from "@/redux/api/notificationApi";
+import { useLazyGetAllNotificationsQuery, useGetNotificationForBellQuery, useDeleteNotificationMutation, useViewSpecificNotificationMutation } from "@/redux/api/notificationApi";
 import { Switch } from "@/components/ui/switch";
 import { useToggleNotificationMutation, useSelfDestructMutation } from "@/redux/api/authApi";
 import { useSocket } from "@/context/SocketContext";
+import { baseApi } from "@/redux/api/baseApi";
+import { toast } from "sonner";
 
 interface ClientTopNavProps {
   onMenuClick: () => void;
@@ -37,10 +39,10 @@ export default function ClientTopNav({
   const user = profileData?.data;
 
   // Fetch notifications
-  const { data: notificationData } = useGetAllNotificationsQuery(undefined);
-  const { data: bellNotificationData } = useGetNotificationForBellQuery(undefined);
+  const [trigger, { data: notificationData, isLoading: isNotificationsLoading }] = useLazyGetAllNotificationsQuery();
+  const { data: bellNotificationData, refetch: refetchBell } = useGetNotificationForBellQuery(undefined);
   const [deleteNotification] = useDeleteNotificationMutation();
-  const [toggleNotification] = useToggleNotificationMutation();
+  const [toggleNotification, { isLoading: isToggling }] = useToggleNotificationMutation();
   const [viewNotification] = useViewSpecificNotificationMutation();
 
   const { totalUnseenCount } = useSocket();
@@ -94,8 +96,10 @@ export default function ClientTopNav({
 
   const handleToggleNotification = async (checked: boolean) => {
     try {
-      await toggleNotification({ notificationsEnabled: checked }).unwrap();
+      const res = await toggleNotification({ enabled: checked }).unwrap();
+      toast.success(res.message || (checked ? "Benachrichtigungen aktiviert" : "Benachrichtigungen deaktiviert"));
     } catch (error) {
+      toast.error("Statusaktualisierung fehlgeschlagen");
       console.error("Failed to toggle notification:", error);
     }
   };
@@ -114,6 +118,7 @@ export default function ClientTopNav({
     try {
       await selfDestruct(undefined).unwrap();
       dispatch(logout());
+      dispatch(baseApi.util.resetApiState());
       localStorage.removeItem("token");
       navigate("/");
     } catch (err) {
@@ -159,8 +164,8 @@ export default function ClientTopNav({
           <button
             onClick={() => navigate("/client")}
             className={`flex items-center space-x-2 px-4.5 py-2 rounded-full transition-all cursor-pointer ${isActiveRoute("/client")
-                ? "bg-[#1878B5] text-white shadow-sm"
-                : "text-gray-500 hover:bg-[#1878B5] hover:text-white"
+              ? "bg-[#1878B5] text-white shadow-sm"
+              : "text-gray-500 hover:bg-[#1878B5] hover:text-white"
               }`}
           >
             <Home className="w-5 h-5" />
@@ -169,8 +174,8 @@ export default function ClientTopNav({
           <button
             onClick={() => navigate("/client/cases")}
             className={`flex items-center space-x-2 px-6 py-2 rounded-full transition-all cursor-pointer ${isActiveRoute("/client/cases")
-                ? "bg-[#1878B5] text-white shadow-sm"
-                : "text-gray-500 hover:bg-[#1878B5] hover:text-white"
+              ? "bg-[#1878B5] text-white shadow-sm"
+              : "text-gray-500 hover:bg-[#1878B5] hover:text-white"
               }`}
           >
             <FileText className="w-5 h-5" />
@@ -179,8 +184,8 @@ export default function ClientTopNav({
           <button
             onClick={() => navigate("/client/chat")}
             className={`relative flex items-center space-x-2 px-6 py-2 rounded-full transition-all cursor-pointer ${isActiveRoute("/client/chat")
-                ? "bg-[#1878B5] text-white shadow-sm"
-                : "text-gray-500 hover:bg-[#1878B5] hover:text-white"
+              ? "bg-[#1878B5] text-white shadow-sm"
+              : "text-gray-500 hover:bg-[#1878B5] hover:text-white"
               }`}
           >
             <MessageCircleMore className="w-4 h-4" />
@@ -196,9 +201,13 @@ export default function ClientTopNav({
         {/* Right: Notifications & Profile */}
         <div className="flex items-center space-x-4">
           {/* Bell Button */}
-          {user?.user_id?.notificationsEnabled && (
+          {(user?.notificationsEnabled || user?.user_id?.notificationsEnabled) && (
             <button
-              onClick={() => setOpen(true)}
+              onClick={() => {
+                setOpen(true);
+                trigger(undefined);
+                refetchBell();
+              }}
               className="relative p-3 bg-blue-50 text-blue-600 rounded-full hover:bg-blue-100 transition cursor-pointer"
             >
               <Bell className="w-5 h-5" />
@@ -260,8 +269,9 @@ export default function ClientTopNav({
                       </div>
 
                       <Switch
-                        checked={user?.user_id?.notificationsEnabled}
+                        checked={user?.notificationsEnabled || user?.user_id?.notificationsEnabled}
                         onCheckedChange={handleToggleNotification}
+                        disabled={isToggling}
                       />
                     </div>
                     <button
@@ -290,6 +300,7 @@ export default function ClientTopNav({
         onView={handleViewNotification}
         deletingId={deletingId}
         viewingId={viewingId}
+        isLoading={isNotificationsLoading}
       />
 
       {/* Delete Account Warning Modal */}

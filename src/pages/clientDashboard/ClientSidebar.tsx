@@ -2,6 +2,7 @@ import { Edit, PenLine, Sun, Moon } from "lucide-react";
 import Logo from "/public/images/authLogo.png";
 import { useNavigate } from "react-router-dom";
 import { useGetProfileQuery, useLogOutMutation } from "@/redux/api/authApi";
+import { baseApi } from "@/redux/api/baseApi";
 import { useEffect, useState } from "react";
 import { useAppDispatch } from "@/redux/hooks";
 import { logout } from "@/redux/features/auth/authSlice";
@@ -38,6 +39,7 @@ export default function ClientSidebar({ isOpen, onClose }: SidebarProps) {
       console.error("Logout failed:", err);
     } finally {
       dispatch(logout());
+      dispatch(baseApi.util.resetApiState());
       localStorage.removeItem("token");
       navigate("/");
     }
@@ -55,9 +57,8 @@ export default function ClientSidebar({ isOpen, onClose }: SidebarProps) {
 
       {/* Sidebar / Profile Card Column */}
       <div
-        className={`fixed md:static inset-y-0 left-0 w-[400px] bg-gray-50 md:bg-transparent z-40 transform transition-transform duration-200 ease-in-out h-full ${
-          isOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
-        }`}
+        className={`fixed md:static inset-y-0 left-0 w-[400px] bg-gray-50 md:bg-transparent z-40 transform transition-transform duration-200 ease-in-out h-full ${isOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
+          }`}
       >
         <div className="bg-white rounded-2xl shadow-sm p-6 text-center flex flex-col items-center border border-gray-100 md:border-none h-full overflow-y-auto">
           {/* Logo only on mobile for sidebar if needed */}
@@ -87,7 +88,7 @@ export default function ClientSidebar({ isOpen, onClose }: SidebarProps) {
             <span>{greeting.icon}</span> {greeting.text}
           </p>
 
-          <button 
+          <button
             onClick={() => navigate("/edit-profile")}
             className="mt-4 flex items-center gap-2 text-[#1878B5] bg-[#F6F6F6] px-7 py-3 rounded-[30px] text-sm font-semibold hover:bg-blue-100 transition-colors justify-center cursor-pointer"
           >
@@ -170,7 +171,7 @@ export default function ClientSidebar({ isOpen, onClose }: SidebarProps) {
           </div>
 
           <div className="mt-auto w-full pt-6">
-            <button 
+            <button
               onClick={handleLogout}
               className="w-full py-3 bg-[#E8F2F8] text-[#1878B5] text-lg font-semibold rounded-[40px] hover:bg-gray-100 transition-colors cursor-pointer"
             >

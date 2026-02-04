@@ -1,4 +1,5 @@
 import { baseApi } from "./baseApi";
+import { SendNotificationPayload } from "./notification";
 
 export const notificationApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
@@ -23,6 +24,21 @@ export const notificationApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["Notification"],
     }),
+    deleteNotificationForAdmin: builder.mutation({
+      query: (id) => ({
+        url: `/notifications/deleteAnyNotification/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["Notification"],
+    }),
+    postNotificationFromAdmin: builder.mutation<any, SendNotificationPayload>({
+      query: (data) => ({
+        url: `/notifications/sendNotificationFromAdmin`,
+        method: "POST",
+        body: data,
+      }),
+      invalidatesTags: ["Notification"],
+    }),
     viewSpecificNotification: builder.mutation({
       query: (notification_id) => ({
         url: `/notifications/viewSpecificNotification?notification_id=${notification_id}`,
@@ -33,9 +49,11 @@ export const notificationApi = baseApi.injectEndpoints({
   }),
 });
 
-export const { 
-  useGetAllNotificationsQuery, 
-  useGetNotificationForBellQuery, 
+export const {
+  useGetAllNotificationsQuery,
+  useGetNotificationForBellQuery,
   useDeleteNotificationMutation,
-  useViewSpecificNotificationMutation 
+  useViewSpecificNotificationMutation,
+  useDeleteNotificationForAdminMutation,
+  usePostNotificationFromAdminMutation,
 } = notificationApi;
