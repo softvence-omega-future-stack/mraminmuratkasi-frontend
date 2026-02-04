@@ -10,6 +10,7 @@ import { logout, selectUser } from "@/redux/features/auth/authSlice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import CommonWrapper from "@/common/CommonWrapper";
+import { baseApi } from "@/redux/api/baseApi";
 
 const Navbar: React.FC = () => {
   const navigate = useNavigate();
@@ -20,6 +21,8 @@ const Navbar: React.FC = () => {
 
   const handleLogout = () => {
     dispatch(logout());
+    dispatch(baseApi.util.resetApiState());
+    localStorage.removeItem("token");
     navigate("/login");
   };
 

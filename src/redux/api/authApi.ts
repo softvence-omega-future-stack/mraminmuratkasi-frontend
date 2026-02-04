@@ -87,7 +87,7 @@ const authApi = baseApi.injectEndpoints({
         method: "PATCH",
         body: data,
       }),
-      invalidatesTags: ["User"],
+      invalidatesTags: ["User", "Notification"],
     }),
     selfDestruct: builder.mutation({
       query: () => ({
