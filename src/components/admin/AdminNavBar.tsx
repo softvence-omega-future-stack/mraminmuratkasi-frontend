@@ -1,8 +1,7 @@
-import NotificationModal from "@/common/NotificationModal";
 import { useSocket } from "@/context/SocketContext";
 import { useGetProfileQuery } from "@/redux/api/authApi";
 import {
-  useDeleteNotificationMutation,
+  useDeleteNotificationForAdminMutation,
   useGetAllNotificationsQuery,
   useGetNotificationForBellQuery,
 } from "@/redux/api/notificationApi";
@@ -19,6 +18,9 @@ import {
 import { useState } from "react";
 import { FaUserFriends } from "react-icons/fa";
 import { useLocation, useNavigate } from "react-router-dom";
+
+import { toast } from "sonner";
+import NotificationModalForAdmin from "./case/modal/NotificationModalForAdmin";
 
 interface ClientTopNavProps {
   onMenuClick: () => void;
@@ -38,7 +40,7 @@ const AdminNavBar = ({ onMenuClick }: ClientTopNavProps) => {
   const { data: notificationData } = useGetAllNotificationsQuery(undefined);
   const { data: bellNotificationData } =
     useGetNotificationForBellQuery(undefined);
-  const [deleteNotification] = useDeleteNotificationMutation();
+  const [deleteNotification] = useDeleteNotificationForAdminMutation();
 
   const notificationsList = notificationData?.data?.notificationList || [];
   const newNotificationCount = bellNotificationData?.data?.newNotification || 0;
@@ -49,11 +51,13 @@ const AdminNavBar = ({ onMenuClick }: ClientTopNavProps) => {
     time: formatDate(notif.createdAt),
     unread: !notif.isSeen,
     avatar: notif.Profile_id?.img || "/images/navProfile.png",
+    userId: notif?.user_id,
   }));
 
   const handleDeleteNotification = async (id: string | number) => {
     try {
       await deleteNotification(id).unwrap();
+      toast.success("Benachrichtigung erfolgreich gelöscht");
     } catch (error) {
       console.error("Löschen der Benachrichtigung fehlgeschlagen:", error);
     }
@@ -211,7 +215,7 @@ const AdminNavBar = ({ onMenuClick }: ClientTopNavProps) => {
         </div>
       </div>
       {/* Modal */}
-      <NotificationModal
+      <NotificationModalForAdmin
         open={open}
         onClose={() => setOpen(false)}
         notifications={notifications}
