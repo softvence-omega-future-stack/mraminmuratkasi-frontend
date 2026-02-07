@@ -195,7 +195,7 @@ export default function ClientCasesPage() {
             <thead className="bg-[#FDFDFD]">
               <tr className="text-left text-sm font-medium text-gray-500 ">
                 <th className="px-6 py-4">Aktenzeichen:</th>
-                <th className="px-6 py-4">Name</th>
+                <th className="px-6 py-4">Falltitel</th>
                 <th className="px-6 py-4">Typ</th>
                 <th className="px-6 py-4">Erstellt</th>
                 <th className="px-6 py-4">Gerichtstermin</th>
