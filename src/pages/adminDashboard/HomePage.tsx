@@ -38,6 +38,7 @@ const HomePage: React.FC = () => {
     { label: "Aktive Fälle", count: activeClass, icon: <BsFileEarmarkCheck /> },
   ];
 
+  console.log("totalCases", data?.data);
   const clients = [
     {
       id: 1,
@@ -248,14 +249,14 @@ const HomePage: React.FC = () => {
                     Name
                   </th>
                   <th className="text-left py-3 px-4 text-sm font-medium text-gray-600">
-                    Typ
+                    Fall
                   </th>
                   <th className="text-left py-3 px-4 text-sm font-medium text-gray-600">
                     Erstellt am
                   </th>
-                  <th className="text-left py-3 px-4 text-sm font-medium text-gray-600">
+                  {/* <th className="text-left py-3 px-4 text-sm font-medium text-gray-600">
                     Gerichtstermin
-                  </th>
+                  </th> */}
                   <th className="text-left py-3 px-4 text-sm font-medium text-gray-600">
                     Status
                   </th>
@@ -279,16 +280,16 @@ const HomePage: React.FC = () => {
                     </td>
 
                     <td className="px-6 py-4 text-sm text-gray-700">
-                      {item.caseType}
+                      {item.caseTitle}
                     </td>
 
                     <td className="px-6 py-4 text-sm text-gray-700">
                       {formatDate(item.createdAt)}
                     </td>
 
-                    <td className="px-6 py-4 text-sm text-gray-700">
+                    {/* <td className="px-6 py-4 text-sm text-gray-700">
                       {formatDate(item.coatDate)}
-                    </td>
+                    </td> */}
 
                     <td className="px-6 py-4">
                       <span

@@ -70,9 +70,9 @@ const AdminCasesPage = () => {
                   <tr className="text-left text-sm font-medium text-gray-500 border-b border-gray-200 ">
                     <th className="px-6 py-4">Fall-Nr.</th>
                     <th className="px-6 py-4">Name</th>
-                    <th className="px-6 py-4">Typ</th>
+                    <th className="px-6 py-4">Fall</th>
                     <th className="px-6 py-4">Erstellt am</th>
-                    <th className="px-6 py-4">Gerichtstermin</th>
+                    {/* <th className="px-6 py-4">Gerichtstermin</th> */}
                     <th className="px-6 py-4">Status</th>
                     <th className="px-4 py-4 w-10"></th>
                   </tr>
@@ -97,16 +97,16 @@ const AdminCasesPage = () => {
                       </td>
 
                       <td className="px-6 py-4 text-sm text-gray-700">
-                        {item.caseType}
+                        {item.caseTitle}
                       </td>
 
                       <td className="px-6 py-4 text-sm text-gray-700">
                         {formatDate(item.createdAt)}
                       </td>
 
-                      <td className="px-6 py-4 text-sm text-gray-700">
+                      {/* <td className="px-6 py-4 text-sm text-gray-700">
                         {formatDate(item.coatDate)}
-                      </td>
+                      </td> */}
 
                       <td className="px-6 py-4">
                         <span
